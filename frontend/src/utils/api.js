@@ -1,12 +1,14 @@
-const BACKEND_URL = "http://localhost:5005";
-const FileType = "application/json";
+import config from '../../backend.config.json'; // Import the config file
+
+const BACKEND_URL = `http://localhost:${config.BACKEND_PORT}`; // Use BACKEND_PORT
+const CONTENT_TYPE = "application/json";
 /**
  * Sends an HTTP request to the backend with standardized headers and optional JSON data.
  * 
  * This function builds the full URL by concatenating BACKEND_URL with the specified path, 
  * sets the HTTP method, and prepares the request headers:
- *  - Always sets the 'Accept' header to the value of FileType (typically "application/json").
- *  - If data is provided, sets the 'Content-Type' header to FileType.
+ *  - Always sets the 'Accept' header to the value of CONTENT_TYPE (typically "application/json").
+ *  - If data is provided, sets the 'Content-Type' header to CONTENT_TYPE.
  *  - If an authorization token is stored in localStorage (under "authData"), it includes 
  *    an 'Authorization' header with a Bearer token.
  * 
@@ -15,12 +17,12 @@ const FileType = "application/json";
  * @param {Object} [data=null] - Optional data to send in the request body (will be JSON-stringified>
  * @returns {Promise<Object>} A promise that resolves with the parsed JSON response.
  */
-export function apiCall(path, method, data = null){
+export async function apiCall(path, method, data = null){
   // url for fetch first arg
   const url = BACKEND_URL + path;
 
-  const headers = { 'Accept': FileType };
-  if (data) headers['Content-Type'] = FileType;
+  const headers = { 'Accept': CONTENT_TYPE };
+  if (data) headers['Content-Type'] = CONTENT_TYPE;
 
   const authData = JSON.parse(localStorage.getItem('authData'));
   if (authData) headers['Authorization'] = 'Bearer ' + authData.token
@@ -31,5 +33,17 @@ export function apiCall(path, method, data = null){
   };
   if (data) fetchOptions.body = JSON.stringify(data);
 
-  return fetch(url, fetchOptions).then(response => response.json());
+  try {
+    const response = await fetch(url, fetchOptions);
+    console.log('response.body:', response.body)
+    const responseBody = await response.json();
+
+    if (responseBody.error) 
+      throw Error(responseBody.error);
+    else
+      return responseBody;
+  } catch (error) {
+    throw Error(error);
+  }
+    
 }
