@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/AuthService';
-import Form from './Form';
+import Form from '../components/Form';
 
 function Login() {
   const navigate = useNavigate();

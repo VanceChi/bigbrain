@@ -1,4 +1,4 @@
-import Navbar from "./Navbar"
+import Navbar from "../components/Navbar"
 import Register from "./Register"
 import Login from "./Login"
 import Dashboard from "./Dashboard"

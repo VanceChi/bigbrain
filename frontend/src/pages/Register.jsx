@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/api';
-import Form from './Form';
+import Form from '../components/Form';
 
 function Register() {
   const navigate = useNavigate();

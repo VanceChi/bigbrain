@@ -9,6 +9,7 @@ body {
   --font-display: "Satoshi", "sans-serif";
   --breakpoint-3xl: 1920px;
 
+
   --color-bigbrain-light-pink: oklch(0.704 0.165 22.5);
   --color-bigbrain-dark-pink: oklch(0.659 0.198 20.2);
   --color-bigbrain-dark-green: oklch(0.964 0.081 123.4);

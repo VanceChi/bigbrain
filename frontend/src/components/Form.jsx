@@ -1,4 +1,5 @@
-export default function Form({ onSubmit, name, setName, email, setEmail, password, setPassword, error, buttonText, confirmPassword, setConfirmPassword }) {  return (
+export default function Form({ onSubmit, name, setName, email, setEmail, password, setPassword, error, buttonText, confirmPassword, setConfirmPassword }) {  
+  return (
     <div className="bg-bigbrain-light-mint flex justify-center items-center min-h-screen">
       <form
         onSubmit={onSubmit}

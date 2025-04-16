@@ -1,11 +1,38 @@
 import { useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/api';
 
+/**
+ * 
+ * @param {String} serveName Register, Log in, Log out
+ * @returns 
+ */
+function NavRightButton({children, handler}) {
+  
+  return (
+    <button onClick={handler} className='font-bold text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3'>{children}</button>
+  )
+}
 
+/**
+ * 
+ * @param {String} pageName Login, Register, Dashboard
+ * @returns 
+ */
 export default function Navbar({pageName}) {
   const navigate = useNavigate();
+  const services = {
+    logout: {},
+    register: {},
+    login: {}
+  };  // logout, register, login
+  const pageNavService = {  // pageNmae -> services
+    'Login': 'register',
+    'Register': 'login',
+    'Dashboard': 'logout'
+  }
 
-  const handleLogout = async () => {
+  services['logout'].name = 'Log out';
+  services['logout'].handler = async () => {
     try {
       await apiCall('/admin/auth/logout', 'POST');
       localStorage.removeItem('authData');
@@ -18,30 +45,23 @@ export default function Navbar({pageName}) {
     }
   };
   
-  const handleGoToRegister = async () => {
+  services['register'].name = 'Register';
+  services['register'].handler = async () => {
     navigate('/register');
   }
   
-  const handleGoToLogin = async () => {
+  services['login'].name = 'Log in';
+  services['login'].handler = async () => {
     navigate('/login');
   
   }
 
+  const service = services[pageNavService[pageName]];
   
-  let rightBtn;
-
-  if (pageName === 'Login')
-    rightBtn = <button onClick={handleGoToRegister} className='font-bold text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3'>Register</button>
-  else if (pageName === 'Register')
-    rightBtn = <button onClick={handleGoToLogin} className='font-bold text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3'>Log in</button>
-  else if (pageName === 'Dashboard')
-    rightBtn = <button onClick={handleLogout} className='font-bold text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3'>Log Out</button>
-  else 
-    console.error('pageName in Navbar error--pageName:', pageName)
   return (
     <div className='bg-bigbrain-light-pink shadow-[0_2px_2px_rgba(0,0,0,0.15)] place-content-between flex mb-1'>
       <p className='italic text-bigbrain-dark-green font-bold text-lg/8 inline-block p-3'>BigBrain</p>
-      {rightBtn}
+      <NavRightButton handler={service.handler}>{service.name}</NavRightButton>
     </div>
   )
 }
