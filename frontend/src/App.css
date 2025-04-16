@@ -1,4 +1,28 @@
 @import "tailwindcss";
+/* src/index.css */
+
 body {
-  background-color: #ccc;
+  background-color: oklch(0.966 0.023 145.3);
+}
+
+@theme {
+  --font-display: "Satoshi", "sans-serif";
+  --breakpoint-3xl: 1920px;
+
+  --color-bigbrain-light-pink: oklch(0.704 0.165 22.5);
+  --color-bigbrain-dark-pink: oklch(0.659 0.198 20.2);
+  --color-bigbrain-dark-green: oklch(0.964 0.081 123.4);
+  --color-bigbrain-light-green: oklch(0.876 0.052 147.7);
+  --color-bigbrain-milky-white: oklch(0.998 0.008 85.6);
+  --color-bigbrain-light-mint: oklch(0.966 0.023 145.3);
+  
+  --color-avocado-100: oklch(0.99 0 0);
+  --color-avocado-200: oklch(0.98 0.04 113.22);
+  --color-avocado-300: oklch(0.94 0.11 115.03);
+  --color-avocado-400: oklch(0.92 0.19 114.08);
+  --color-avocado-500: oklch(0.84 0.18 117.33);
+  --color-avocado-600: oklch(0.53 0.12 118.34);
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+  --color-mint-500: oklch(0.72 0.11 178);
 }
