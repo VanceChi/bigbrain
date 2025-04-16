@@ -1,7 +1,9 @@
+import axios from 'axios';
 import config from '../../backend.config.json'; // Import the config file
 
 const BACKEND_URL = `http://localhost:${config.BACKEND_PORT}`; // Use BACKEND_PORT
 const CONTENT_TYPE = "application/json";
+
 /**
  * Sends an HTTP request to the backend with standardized headers and optional JSON data.
  * 
@@ -14,36 +16,32 @@ const CONTENT_TYPE = "application/json";
  * 
  * @param {string} path - The API endpoint path (e.g., '/job/feed', '/auth/login').
  * @param {string} method - The HTTP method to use (e.g., 'GET', 'POST').
- * @param {Object} [data=null] - Optional data to send in the request body (will be JSON-stringified>
+ * @param {Object} [data=null] - Optional data to send in the request body (will be JSON-stringified)
  * @returns {Promise<Object>} A promise that resolves with the parsed JSON response.
  */
-export async function apiCall(path, method, data = null){
-  // url for fetch first arg
+export async function apiCall(path, method, data = null) {
   const url = BACKEND_URL + path;
 
   const headers = { 'Accept': CONTENT_TYPE };
   if (data) headers['Content-Type'] = CONTENT_TYPE;
 
   const authData = JSON.parse(localStorage.getItem('authData'));
-  if (authData) headers['Authorization'] = 'Bearer ' + authData.token
-
-  const fetchOptions = {
-      method: method.toUpperCase(),
-      headers
-  };
-  if (data) fetchOptions.body = JSON.stringify(data);
+  if (authData) headers['Authorization'] = 'Bearer ' + authData.token;
 
   try {
-    const response = await fetch(url, fetchOptions);
-    console.log('response.body:', response.body)
-    const responseBody = await response.json();
+    const response = await axios({
+      url,
+      method: method.toUpperCase(),
+      headers,
+      data,
+    });
 
-    if (responseBody.error) 
-      throw Error(responseBody.error);
-    else
-      return responseBody;
+    const responseBody = response.data;
+    if (responseBody.error) {
+      throw new Error(responseBody.error);
+    }
+    return responseBody;
   } catch (error) {
-    throw Error(error);
+    throw new Error(error.response?.data?.error || error.message || 'API request failed');
   }
-    
 }
