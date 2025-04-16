@@ -5,18 +5,17 @@ import Register from './components/Register'
 import Navbar from './components/Navbar'
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Page from './components/Page'
 
-
-// const data = await loginUser("hayden@unsw.edu.au", "adummypassword");
-// console.log('-------data:', data)
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Page pageName='Login' />} />
+        <Route path="/login" element={<Page pageName='Login' />} />
+        <Route path="/register" element={<Page pageName='Register' />} />
+        <Route path="/dashboard" element={<Page pageName='Dashboard' />} />
         
       </Routes>
     </Router>

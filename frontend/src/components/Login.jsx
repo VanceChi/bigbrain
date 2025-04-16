@@ -26,8 +26,6 @@ function Login() {
 
   return (
     <>      
-      <Navbar pageName='Login'/>
-      <br />
       <div className=" bg-bigbrain-light-mint flex justify-center items-center min-h-screen ">
         <form 
           onSubmit={handleLoginSubmit}
