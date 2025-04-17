@@ -4,17 +4,23 @@ import { apiCall } from '../utils/api';
 import Form from '../components/Form';
 import Navbar from '../components/Navbar';
 
+/**
+ * 1. Allow to select the question they want to edit
+ * 2. Allow to DELETE a particular question and ADD a new question, all actions must be done without a refresh.
+ * 
+ * 
+ * @returns 
+ */
 export default function EditGame() {
-  const { gameId } = useParams();
-  const navigate = useNavigate();
-  const [game, setGame] = useState(null);
-  const [error, setError] = useState('');
-  const [title, setTitle] = useState('');
-  const [thumbnail, setThumbnail] = useState('');
-  const [validationError, setValidationError] = useState('');
   const location = useLocation();
+  const {gameId} = useParams();
+  const [title, setTitle] = useState(location.state.title);
+  const [thumbnail, setThumbnail] = useState(location.state.thumbnail);
+  const [questions, setQuestions] = useState(location.state.questions);
+  // const [validationError, setValidationError] = useState('');
+  // const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  console.log('-------locatino:', location.id, location.title)
   const handleLogout = async () => {
     try {
       await apiCall('/admin/auth/logout', 'POST');
@@ -27,19 +33,19 @@ export default function EditGame() {
     }
   };
 
-  useEffect(() => {
-    const fetchGame = async () => {
-      try {
-        const response = await apiCall(`/admin/game/${gameId}`, 'GET');
-        setGame(response.game);
-        setTitle(response.game.title);
-        setThumbnail(response.game.thumbnail);
-      } catch (err) {
-        setError('Failed to load game. Please try again.');
-      }
-    };
-    fetchGame();
-  }, [gameId]);
+  // useEffect(() => {
+  //   const fetchGame = async () => {
+  //     try {
+  //       const response = await apiCall(`/admin/game/${gameId}`, 'GET');
+  //       setGame(response.game);
+  //       setTitle(response.game.title);
+  //       setThumbnail(response.game.thumbnail);
+  //     } catch (err) {
+  //       setError('Failed to load game. Please try again.');
+  //     }
+  //   };
+  //   fetchGame();
+  // }, [gameId]);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -55,25 +61,24 @@ export default function EditGame() {
     }
   };
 
-  // if (!game) return <div>Loading...</div>;
-
   return (
     <>
       <Navbar dashboardBtnShow={true} rightBtn={{ name: 'Log out', handler: handleLogout }} />
-      <div className="p-6 bg-bigbrain-light-mint min-h-screen">
-        <h2 className="text-2xl font-bold mb-4 ">Edit Game: {gameId}</h2>
-        <Form
-          onSubmit={handleSave}
-          title={title}
-          setTitle={setTitle}
-          thumbnail={thumbnail}
-          setThumbnail={setThumbnail}
-          error={error}
-          validationError={validationError}
-          buttonText="Save Changes"
-          className="p-4 bg-bigbrain-milky-white rounded shadow-md"
-        />
-        {/* Add question list and edit functionality here */}
+      <div className="p-6 bg-bigbrain-light-mint">
+        <h2 className="text-2xl font-bold mb-4 ">Edit Game: {title}</h2>
+        <div className="bg-bigbrain-light-mint flex justify-center items-center h-[60vh]">
+          {questions.map()}
+          <Form
+            onSubmit={handleSave}
+            title={title}
+            setTitle={setTitle}
+            thumbnail={thumbnail}
+            setThumbnail={setThumbnail}
+            error={error}
+            validationError={validationError}
+            buttonText="Save Changes"
+          />
+        </div>
       </div>
     </>
   );
