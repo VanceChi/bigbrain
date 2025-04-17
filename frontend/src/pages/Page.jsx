@@ -13,7 +13,9 @@ export default function Page({pageName}) {
   // }
   const [token, setToken] = useState(null);
   useEffect(() => {
-    setToken(JSON.parse(localStorage.getItem('authData')).token)
+    const authData = JSON.parse(localStorage.getItem('authData'));
+    if(authData)
+      setToken(authData.token)
   }, []);
   
   return (

@@ -26,7 +26,7 @@ function Login() {
 
   return (
     <>
-      <Navbar rightBtn={'Register'}/>
+      <Navbar rightBtn={{ name: 'Register', handler: () => navigate('/register') }}/>
       <Form
         onSubmit={handleLoginSubmit}
         email={email}
