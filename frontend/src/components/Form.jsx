@@ -1,10 +1,29 @@
-export default function Form({ onSubmit, name, setName, email, setEmail, password, setPassword, error, buttonText, confirmPassword, setConfirmPassword }) {  
+export default function Form({
+  onSubmit,
+  name,
+  setName,
+  email,
+  setEmail,
+  password,
+  setPassword,
+  confirmPassword,
+  setConfirmPassword,
+  title,
+  setTitle,
+  thumbnail,
+  setThumbnail,
+  error,
+  validationError,
+  buttonText,
+  autoComplete = "off",
+  className = "p-6 bg-bigbrain-milky-white rounded shadow-md",
+}) {
   return (
     <div className="bg-bigbrain-light-mint flex justify-center items-center min-h-screen">
       <form
         onSubmit={onSubmit}
-        className="p-6 bg-bigbrain-milky-white rounded shadow-md"
-        autoComplete="off"
+        className={className}
+        autoComplete={autoComplete}
       >
         {name !== undefined && setName && (
           <div className="mb-4">
@@ -17,42 +36,43 @@ export default function Form({ onSubmit, name, setName, email, setEmail, passwor
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Name"
-              required
               className="block w-full p-2 border rounded"
               autoComplete="off"
             />
           </div>
         )}
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-            className="block w-full p-2 border rounded"
-            autoComplete="off"
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            required
-            className="block w-full p-2 border rounded bg-bigbrain-milky-white"
-            autoComplete="off"
-          />
-        </div>
+        {email !== undefined && setEmail && (
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="block w-full p-2 border rounded"
+              autoComplete="off"
+            />
+          </div>
+        )}
+        {password !== undefined && setPassword && (
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="block w-full p-2 border rounded bg-bigbrain-milky-white"
+              autoComplete="off"
+            />
+          </div>
+        )}
         {confirmPassword !== undefined && setConfirmPassword && (
           <div className="mb-4">
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
@@ -64,10 +84,45 @@ export default function Form({ onSubmit, name, setName, email, setEmail, passwor
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm Password"
-              required
               className="block w-full p-2 border rounded bg-bigbrain-milky-white"
               autoComplete="off"
             />
+          </div>
+        )}
+        {title !== undefined && setTitle && (
+          <div className="mb-4">
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+              Game Title
+            </label>
+            <input
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter game title"
+              className="block w-full p-2 border rounded"
+            />
+          </div>
+        )}
+        {thumbnail !== undefined && setThumbnail && (
+          <div className="mb-4">
+            <label htmlFor="thumbnail" className="block text-sm font-medium text-gray-700 mb-1">
+              Thumbnail URL
+            </label>
+            <input
+              id="thumbnail"
+              type="text"
+              value={thumbnail}
+              onChange={(e) => setThumbnail(e.target.value)}
+              placeholder="Enter thumbnail URL"
+              className="block w-full p-2 border rounded"
+            />
+          </div>
+        )}
+        {validationError && (
+          <div className="flex items-center text-red-500 mb-4 text-sm font-medium p-3 rounded bg-gradient-to-r from-blue-100 to-blue-200 shadow-md">
+            <span className="text-orange-500 mr-2">!</span>
+            <p role="alert">{validationError}</p>
           </div>
         )}
         {error && (
