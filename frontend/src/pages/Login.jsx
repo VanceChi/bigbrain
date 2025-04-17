@@ -18,7 +18,7 @@ function Login() {
       setEmail('');
       setPassword('');
       setError('');
-      navigate('/dashboard');
+      navigate('/dashboard', { state: { email } });
     } catch (err) {
       setError(err.message || 'Login failed. Please check your email or password.');
     }
@@ -27,15 +27,17 @@ function Login() {
   return (
     <>
       <Navbar rightBtn={{ name: 'Register', handler: () => navigate('/register') }}/>
-      <Form
-        onSubmit={handleLoginSubmit}
-        email={email}
-        setEmail={setEmail}
-        password={password}
-        setPassword={setPassword}
-        error={error}
-        buttonText="Log in"
-      />
+      <div className="bg-bigbrain-light-mint flex justify-center items-center h-[80vh]">
+        <Form
+          onSubmit={handleLoginSubmit}
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          error={error}
+          buttonText="Log in"
+        />
+      </div>
     </>
   );
 }

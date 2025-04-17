@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-export default function GameCard({id, title, numQuestions, thumbnail, totalDuration}) {
+export default function GameCard({id, title, numQuestions, thumbnail, totalDuration, questions}) {
             // ['4234', 'Game1', '5 questions', undefined, '1 hour'];
   return (
     <div className="p-2 bg-white rounded-2xl shadow-md items-center space-x-4">
@@ -18,7 +18,7 @@ export default function GameCard({id, title, numQuestions, thumbnail, totalDurat
         <div>
           <Link 
             to={`/game/${id}`}
-            state={{id, title}}
+            state={{title, thumbnail, questions}}
             >Edit Game
           </Link>
           <br />

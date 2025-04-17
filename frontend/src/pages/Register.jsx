@@ -32,19 +32,21 @@ function Register() {
   return (
     <>
       <Navbar />
-      <Form
-        onSubmit={handleRegisterSubmit}
-        name={name}
-        setName={setName}
-        email={email}
-        setEmail={setEmail}
-        password={password}
-        setPassword={setPassword}
-        confirmPassword={confirmPassword}
-        setConfirmPassword={setConfirmPassword}
-        error={error}
-        buttonText="Register"
-      />
+      <div className="bg-bigbrain-light-mint flex justify-center items-center h-[80vh]">
+        <Form
+          onSubmit={handleRegisterSubmit}
+          name={name}
+          setName={setName}
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          confirmPassword={confirmPassword}
+          setConfirmPassword={setConfirmPassword}
+          error={error}
+          buttonText="Register"
+        />
+      </div>
     </>
   );
 }
