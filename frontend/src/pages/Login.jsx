@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/AuthService';
 import Form from '../components/Form';
+import Navbar from "../components/Navbar"
 
 function Login() {
   const navigate = useNavigate();
@@ -24,15 +25,18 @@ function Login() {
   };
 
   return (
-    <Form
-      onSubmit={handleLoginSubmit}
-      email={email}
-      setEmail={setEmail}
-      password={password}
-      setPassword={setPassword}
-      error={error}
-      buttonText="Log in"
-    />
+    <>
+      <Navbar rightBtn={'Register'}/>
+      <Form
+        onSubmit={handleLoginSubmit}
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        error={error}
+        buttonText="Log in"
+      />
+    </>
   );
 }
 
