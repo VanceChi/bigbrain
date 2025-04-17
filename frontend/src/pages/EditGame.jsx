@@ -67,17 +67,22 @@ export default function EditGame() {
       <div className="p-6 bg-bigbrain-light-mint">
         <h2 className="text-2xl font-bold mb-4 ">Edit Game: {title}</h2>
         <div className="bg-bigbrain-light-mint flex justify-center items-center h-[60vh]">
-          {questions.map()}
-          <Form
+          {questions? questions.map(() => {
+
+            }):(
+              <p>No question</p>
+            )
+          }
+          {/* <Form
             onSubmit={handleSave}
             title={title}
             setTitle={setTitle}
             thumbnail={thumbnail}
             setThumbnail={setThumbnail}
-            error={error}
-            validationError={validationError}
+            // error={error}
+            // validationError={validationError}
             buttonText="Save Changes"
-          />
+          /> */}
         </div>
       </div>
     </>
