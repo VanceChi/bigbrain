@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import { apiCall } from "../utils/api"
 import GameCard from "../components/GameCard"
 import Navbar from "../components/Navbar";
-import { useLocation } from "react-router-dom";
-
 
 export default function Dashboard() {
   const [games, setGames] = useState([]);
   const [newGameName, setNewGameName] = useState('');
   const [showCreateGame, setShowCreateGame] = useState(false);
-  const location = useLocation();
-  const [ownerEmail, setOwnerEmail] = useState(location.state.email);
+  const [ownerEmail, setOwnerEmail] = useState(localStorage.getItem('email'));
 
   useEffect(() => {
     (async () => {
