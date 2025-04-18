@@ -235,6 +235,88 @@ const QuestionDisplay = ({
   );
 };
 
+const QuizQuestion = () => {
+  const [questionType, setQuestionType] = useState('single');
+  const [questionText, setQuestionText] = useState('What is the capital of France?');
+  const [timeLimit, setTimeLimit] = useState(30);
+  const [points, setPoints] = useState(100);
+  const [mediaUrl, setMediaUrl] = useState('');
+  const [answers, setAnswers] = useState([
+    { text: 'Paris', correct: true },
+    { text: 'London', correct: false },
+    { text: 'Berlin', correct: false },
+  ]);
+  const [selectedAnswers, setSelectedAnswers] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(timeLimit);
+  const [result, setResult] = useState('');
+
+  // Reset answers and time when question type changes
+  useEffect(() => {
+    if (questionType === 'judgment') {
+      setAnswers([{ text: 'True', correct: true }]);
+    } else {
+      setAnswers([
+        { text: '', correct: true },
+        { text: '', correct: false },
+      ]);
+    }
+    setSelectedAnswers([]);
+    setSubmitted(false);
+    setTimeLeft(timeLimit);
+    setResult('');
+  }, [questionType, timeLimit]);
+
+  const handleReset = () => {
+    setSelectedAnswers([]);
+    setSubmitted(false);
+    setTimeLeft(timeLimit);
+    setResult('');
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Game Question Editor</h1>
+      <QuestionEditor
+        questionType={questionType}
+        setQuestionType={setQuestionType}
+        questionText={questionText}
+        setQuestionText={setQuestionText}
+        timeLimit={timeLimit}
+        setTimeLimit={setTimeLimit}
+        points={points}
+        setPoints={setPoints}
+        mediaUrl={mediaUrl}
+        setMediaUrl={setMediaUrl}
+        answers={answers}
+        setAnswers={setAnswers}
+      />
+      <h2 className="text-xl font-bold mb-4">Question Preview</h2>
+      <QuestionDisplay
+        questionType={questionType}
+        questionText={questionText}
+        timeLimit={timeLimit}
+        points={points}
+        mediaUrl={mediaUrl}
+        answers={answers}
+        selectedAnswers={selectedAnswers}
+        setSelectedAnswers={setSelectedAnswers}
+        submitted={submitted}
+        setSubmitted={setSubmitted}
+        timeLeft={timeLeft}
+        setTimeLeft={setTimeLeft}
+        result={result}
+        setResult={setResult}
+      />
+      <button
+        onClick={handleReset}
+        className="bg-gray-500 text-white px-4 py-2 rounded mt-4"
+      >
+        Reset
+      </button>
+    </div>
+  );
+};
 
 /**
  * 1. Allow to select the question they want to edit
