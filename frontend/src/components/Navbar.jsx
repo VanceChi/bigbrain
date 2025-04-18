@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { apiCall } from '../utils/api';
+import { logoutUser } from '../services/AuthService';
 
 function NavRightButton({ children, onClick }) {
   return (
@@ -19,13 +19,11 @@ export default function Navbar({ dashboardBtnShow, editGameBtnShow, rightBtn }) 
 
   const handleLogout = async () => {
     try {
-      await apiCall('/admin/auth/logout', 'POST');
-      localStorage.removeItem('token');
+      await logoutUser();
       navigate('/login');
     } catch (error) {
-      console.error('Logout failed:', error.message);
-      localStorage.removeItem('token');
-      navigate('/login');
+      console.error('Logout error:', error);
+      navigate('/login'); // Navigate even if API fails, as localStorage is cleared
     }
   };
 

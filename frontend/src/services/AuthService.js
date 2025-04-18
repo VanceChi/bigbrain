@@ -6,3 +6,18 @@ export async function loginUser(email, password) {
   const res = await apiCall('/admin/auth/login', 'POST', data);
   return res;
 };
+
+export async function logoutUser() {
+  console.log('logouUser start.')
+  try {
+    await apiCall('/admin/auth/logout', 'POST');
+    localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    return true;
+  } catch (error) {
+    console.error('Logout failed:', error.message);
+    localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    throw error;
+  }
+};
