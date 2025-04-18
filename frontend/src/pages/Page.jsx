@@ -2,21 +2,14 @@ import Register from "./Register"
 import Login from "./Login"
 import Dashboard from "./Dashboard"
 import EditGame from "./EditGame";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
-export default function Page({pageName}) {
-  // const pages = {
-  //   'Register': <Register />,
-  //   'Login': <Login />,
-  //   'Dashboard': <Dashboard />
-  // }
-  const [token, setToken] = useState(null);
-  useEffect(() => {
-    const authData = JSON.parse(localStorage.getItem('authData'));
-    if(authData)
-      setToken(authData.token)
-  }, []);
+function ProtectedRoute({ children }) {
+  const token = JSON.parse(localStorage.getItem('token'));
+  return token? children : <Navigate to="/login" replace />;
+}
+
+export default function Page({}) {
   
   return (
     <>
@@ -25,11 +18,18 @@ export default function Page({pageName}) {
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/game/:gameId" element={<EditGame />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+            } />
+          <Route path="/game/:gameId" element={
+            <ProtectedRoute>
+              <EditGame />
+            </ProtectedRoute>
+            } />
         </Routes>
       </Router>
-      {/* {pages[pageName] || <div>Page not found</div>} */}
     </>
   )
 }

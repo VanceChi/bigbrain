@@ -15,16 +15,16 @@ function NavRightButton({ children, onClick }) {
 export default function Navbar({ dashboardBtnShow, editGameBtnShow, rightBtn }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const authData = JSON.parse(localStorage.getItem('authData'));
+  const token = JSON.parse(localStorage.getItem('token'));
 
   const handleLogout = async () => {
     try {
       await apiCall('/admin/auth/logout', 'POST');
-      localStorage.removeItem('authData');
+      localStorage.removeItem('token');
       navigate('/login');
     } catch (error) {
       console.error('Logout failed:', error.message);
-      localStorage.removeItem('authData');
+      localStorage.removeItem('token');
       navigate('/login');
     }
   };
@@ -44,7 +44,7 @@ export default function Navbar({ dashboardBtnShow, editGameBtnShow, rightBtn }) 
 
   // Get router name
   const currentPage = location.pathname.slice(1) || 'login';
-  const effectiveRightBtn = authData
+  const effectiveRightBtn = token
     ? (currentPage === 'dashboard' || currentPage.startsWith('game/') ? defaultRightBtn.logout : rightBtn || defaultRightBtn[currentPage])
     : rightBtn || defaultRightBtn[pageRightBtnMap[currentPage]];
 

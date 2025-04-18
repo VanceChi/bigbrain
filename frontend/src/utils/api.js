@@ -11,7 +11,7 @@ const CONTENT_TYPE = "application/json";
  * sets the HTTP method, and prepares the request headers:
  *  - Always sets the 'Accept' header to the value of CONTENT_TYPE (typically "application/json").
  *  - If data is provided, sets the 'Content-Type' header to CONTENT_TYPE.
- *  - If an authorization token is stored in localStorage (under "authData"), it includes 
+ *  - If an authorization token is stored in localStorage (under "token"), it includes 
  *    an 'Authorization' header with a Bearer token.
  * 
  * @param {string} path - The API endpoint path (e.g., '/job/feed', '/auth/login').
@@ -25,8 +25,8 @@ export async function apiCall(path, method, data = null) {
   const headers = { 'Accept': CONTENT_TYPE };
   if (data) headers['Content-Type'] = CONTENT_TYPE;
 
-  const authData = JSON.parse(localStorage.getItem('authData'));
-  if (authData) headers['Authorization'] = 'Bearer ' + authData.token;
+  const token = JSON.parse(localStorage.getItem('token'));
+  if (token) headers['Authorization'] = 'Bearer ' + token;
 
   try {
     const response = await axios({

@@ -14,7 +14,7 @@ function Login() {
     e.preventDefault();
     try {
       const response = await loginUser(email, password);
-      localStorage.setItem('authData', JSON.stringify(response));
+      localStorage.setItem('token', JSON.stringify(response.token));
       setEmail('');
       setPassword('');
       setError('');
