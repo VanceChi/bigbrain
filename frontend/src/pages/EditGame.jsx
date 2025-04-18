@@ -136,6 +136,105 @@ const QuestionEditor = ({
   );
 };
 
+const QuestionDisplay = ({
+  questionType, questionText, timeLimit, points, mediaUrl, answers,
+  selectedAnswers, setSelectedAnswers, submitted, setSubmitted,
+  timeLeft, setTimeLeft, result, setResult,
+}) => {
+  useEffect(() => {
+    if (!submitted && timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setSubmitted(true);
+            setResult('Time’s up!');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [timeLeft, submitted]);
+
+  const handleSelect = (answer) => {
+    if (questionType === 'multiple') {
+      if (selectedAnswers.includes(answer)) {
+        setSelectedAnswers(selectedAnswers.filter((ans) => ans !== answer));
+      } else {
+        setSelectedAnswers([...selectedAnswers, answer]);
+      }
+    } else {
+      setSelectedAnswers([answer]);
+    }
+  };
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    const correctAnswers = answers.filter((ans) => ans.correct);
+    const isCorrect =
+      questionType === 'multiple'
+        ? selectedAnswers.length === correctAnswers.length &&
+          selectedAnswers.every((ans) => ans.correct)
+        : selectedAnswers.length === 1 && selectedAnswers[0].correct;
+
+    setResult(isCorrect ? `Correct! +${points} points` : 'Incorrect.');
+  };
+
+  const isYouTubeUrl = mediaUrl && mediaUrl.includes('youtube.com') || mediaUrl.includes('youtu.be');
+  const youtubeEmbedUrl = isYouTubeUrl
+    ? mediaUrl.replace('watch?v=', 'embed/').replace(/youtu.be\//, 'youtube.com/embed/')
+    : null;
+
+  return (
+    <div className="mb-4">
+      <h2 className="text-lg font-semibold mb-2">{questionText}</h2>
+      {mediaUrl && (
+        <div className="mb-4">
+          {isYouTubeUrl ? (
+            <iframe
+              width="100%"
+              height="315"
+              src={youtubeEmbedUrl}
+              title="YouTube video"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          ) : (
+            <img src={mediaUrl} alt="Question media" className="w-full h-auto rounded" />
+          )}
+        </div>
+      )}
+      <p className="mb-2">Time Left: {timeLeft}s | Points: {points}</p>
+      {answers.map((answer, index) => (
+        <div key={index} className="flex items-center mb-2">
+          <input
+            type={questionType === 'multiple' ? 'checkbox' : 'radio'}
+            checked={selectedAnswers.includes(answer)}
+            onChange={() => handleSelect(answer)}
+            disabled={submitted}
+            className="mr-2"
+          />
+          <span>{answer.text}</span>
+          {submitted && (
+            <span className="ml-2">{answer.correct ? '✅' : '❌'}</span>
+          )}
+        </div>
+      ))}
+      <button
+        onClick={handleSubmit}
+        disabled={submitted || selectedAnswers.length === 0}
+        className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-300 mt-4"
+      >
+        Submit
+      </button>
+      {submitted && <p className="mt-4 text-lg">{result}</p>}
+    </div>
+  );
+};
+
 
 /**
  * 1. Allow to select the question they want to edit
