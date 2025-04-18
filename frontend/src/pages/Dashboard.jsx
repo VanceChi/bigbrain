@@ -7,7 +7,7 @@ export default function Dashboard() {
   const [games, setGames] = useState([]);
   const [newGameName, setNewGameName] = useState('');
   const [showCreateGame, setShowCreateGame] = useState(false);
-  const [ownerEmail, setOwnerEmail] = useState(localStorage.getItem('email'));
+  const [ownerEmail, setOwnerEmail] = useState(JSON.parse(localStorage.getItem('email')));
 
   useEffect(() => {
     (async () => {

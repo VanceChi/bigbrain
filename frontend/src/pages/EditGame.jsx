@@ -11,7 +11,8 @@ const QuestionEditor = ({
   points, setPoints,
   mediaUrl, setMediaUrl,
   answers, setAnswers,
-  setShowAddQues
+  setShowAddQues,
+  questions, games
 }) => {
   const addAnswer = () => {
     if (answers.length < 6) {
@@ -42,23 +43,23 @@ const QuestionEditor = ({
   };
 
   const param = useParams();
+  const gameId = param.gameId;
   const addQuestion = () => {
     (async () => {
       try {
-        const res = await apiCall('/admin/games', 'GET');
-        const games = res.games;
         const updatedGameId = param.gameId;
         console.log('---', games)
-        const updatedGame = games.filter((game) => game.id == 123310203)[0];
-        const restGames = games.filter((game) => game.id != 123310203);
-        updatedGame.questions = {
+        const updatedGame = games.filter((game) => game.id == gameId)[0];
+        const restGames = games.filter((game) => game.id != gameId);
+        questions = questions?? [];
+        updatedGame.questions = [...questions, {
           questionType,
           questionText,
           timeLimit,
           points,
           mediaUrl,
           answers
-        };
+        }];
         const updatedGames = [...restGames, updatedGame];
         console.log(updatedGames)
         apiCall('/admin/games', 'PUT', {games: updatedGames});
@@ -296,7 +297,7 @@ const QuestionDisplay = ({
   );
 };
 
-const AddQuizQuestion = ({setShowAddQues}) => {
+const AddQuizQuestion = ({setShowAddQues, questions, games}) => {
   const [questionType, setQuestionType] = useState('single');
   const [questionText, setQuestionText] = useState('What is the capital of Australia?');
   const [timeLimit, setTimeLimit] = useState(30);
@@ -345,6 +346,8 @@ const AddQuizQuestion = ({setShowAddQues}) => {
         answers={answers}
         setAnswers={setAnswers}
         setShowAddQues={setShowAddQues}
+        questions={questions}
+        games={games}
       />
       <h2 className="text-xl font-bold mb-4">Question Preview</h2>
       <QuestionDisplay
@@ -375,10 +378,29 @@ const AddQuizQuestion = ({setShowAddQues}) => {
  */
 export default function EditGame() {
   const location = useLocation();
-  const [title, setTitle] = useState(location.state.title);
-  const [questions, setQuestions] = useState(location.state.questions);
+  const param = useParams();
+  const [games, setGames] = useState(null);
+  const [title, setTitle] = useState('');
+  const [questions, setQuestions] = useState([]);
   const [showAddQues, setShowAddQues] = useState(false);
   const navigate = useNavigate();
+  console.log('title,game,question:',title, games, questions)
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await apiCall('/admin/games', 'GET');
+        const games = res.games;
+        setGames(games);
+        const gameId = param.gameId;
+        const game = games.filter((game) => game.id == gameId)[0];
+        console.log('----- effect:', game) 
+        setTitle(game.name);
+        setQuestions(game.questions);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -405,19 +427,23 @@ export default function EditGame() {
         </button>
 
         {/* Input question Info */}
-        {showAddQues && <AddQuizQuestion setShowAddQues={setShowAddQues}/>}
-
-
+        {showAddQues && 
+        <AddQuizQuestion 
+          setShowAddQues={setShowAddQues}
+          questions={questions}
+          games={games}
+        />}
 
         <div className="bg-bigbrain-light-mint flex justify-center h-fit">
-          <div>
-            {questions? questions.map(() => {
-
-              }):(
-                <p style={{display:(showAddQues?'none':'block')}}>No question</p>
-              )
-            }
-          </div>
+          {/* {console.log('questions rendering:', questions)  } */}
+          {/* {questions? questions.map((question) => {
+            return (
+              <p>{JSON.stringify(question)}</p>
+            )
+            }):(
+              <p style={{display:(showAddQues?'none':'block')}}>No question</p>
+            )
+          } */}
         </div>
         
 
