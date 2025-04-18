@@ -12,7 +12,8 @@ const QuestionEditor = ({
   mediaUrl, setMediaUrl,
   answers, setAnswers,
   setShowAddQues,
-  questions, games
+  questions, setQuestions, 
+  games
 }) => {
   const addAnswer = () => {
     if (answers.length < 6) {
@@ -47,12 +48,10 @@ const QuestionEditor = ({
   const addQuestion = () => {
     (async () => {
       try {
-        const updatedGameId = param.gameId;
-        console.log('---', games)
         const updatedGame = games.filter((game) => game.id == gameId)[0];
         const restGames = games.filter((game) => game.id != gameId);
         questions = questions?? [];
-        updatedGame.questions = [...questions, {
+        const updatedQues = [...questions, {
           questionType,
           questionText,
           timeLimit,
@@ -60,6 +59,8 @@ const QuestionEditor = ({
           mediaUrl,
           answers
         }];
+        setQuestions(updatedQues)
+        updatedGame.questions = updatedQues;
         const updatedGames = [...restGames, updatedGame];
         console.log(updatedGames)
         apiCall('/admin/games', 'PUT', {games: updatedGames});
@@ -297,7 +298,7 @@ const QuestionDisplay = ({
   );
 };
 
-const AddQuizQuestion = ({setShowAddQues, questions, games}) => {
+const AddQuizQuestion = ({setShowAddQues, questions, setQuestions, games}) => {
   const [questionType, setQuestionType] = useState('single');
   const [questionText, setQuestionText] = useState('What is the capital of Australia?');
   const [timeLimit, setTimeLimit] = useState(30);
@@ -347,6 +348,7 @@ const AddQuizQuestion = ({setShowAddQues, questions, games}) => {
         setAnswers={setAnswers}
         setShowAddQues={setShowAddQues}
         questions={questions}
+        setQuestions={setQuestions}
         games={games}
       />
       <h2 className="text-xl font-bold mb-4">Question Preview</h2>
@@ -431,19 +433,22 @@ export default function EditGame() {
         <AddQuizQuestion 
           setShowAddQues={setShowAddQues}
           questions={questions}
+          setQuestions={setQuestions}
           games={games}
         />}
 
-        <div className="bg-bigbrain-light-mint flex justify-center h-fit">
+        <div className="bg-bigbrain-light-mint justify-center h-fit">
           {/* {console.log('questions rendering:', questions)  } */}
-          {/* {questions? questions.map((question) => {
+          {questions? questions.map((question, index) => {
             return (
-              <p>{JSON.stringify(question)}</p>
+              <div key={index}>
+                <p>{JSON.stringify(question.questionText)}</p>
+              </div>
             )
-            }):(
-              <p style={{display:(showAddQues?'none':'block')}}>No question</p>
-            )
-          } */}
+          }):(
+            <p style={{display:(showAddQues?'none':'block')}}>No question</p>
+          )
+          }
         </div>
         
 
