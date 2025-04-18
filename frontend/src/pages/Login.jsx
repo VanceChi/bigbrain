@@ -15,6 +15,7 @@ function Login() {
     try {
       const response = await loginUser(email, password);
       localStorage.setItem('token', JSON.stringify(response.token));
+      localStorage.setItem('email', JSON.stringify(email));
       setEmail('');
       setPassword('');
       setError('');

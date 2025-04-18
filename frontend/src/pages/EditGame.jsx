@@ -11,6 +11,7 @@ const QuestionEditor = ({
   points, setPoints,
   mediaUrl, setMediaUrl,
   answers, setAnswers,
+  setShowAddQues
 }) => {
   const addAnswer = () => {
     if (answers.length < 6) {
@@ -40,9 +41,49 @@ const QuestionEditor = ({
     }
   };
 
+  const param = useParams();
+  const addQuestion = () => {
+    (async () => {
+      try {
+        const res = await apiCall('/admin/games', 'GET');
+        const games = res.games;
+        const updatedGameId = param.gameId;
+        console.log('---', games)
+        const updatedGame = games.filter((game) => game.id == 123310203)[0];
+        const restGames = games.filter((game) => game.id != 123310203);
+        updatedGame.questions = {
+          questionType,
+          questionText,
+          timeLimit,
+          points,
+          mediaUrl,
+          answers
+        };
+        const updatedGames = [...restGames, updatedGame];
+        console.log(updatedGames)
+        apiCall('/admin/games', 'PUT', {games: updatedGames});
+        setShowAddQues(false);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }
+
+  
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const res = await apiCall('/admin/games', 'GET');
+  //       console.log('---', res.games)
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   })();
+  // }, []);
+
+
   return (
     <div className="mb-4">
-      {console.log('a')}
       <div className="mb-4">
         <label className="block mb-1">Question Type:</label>
         <select
@@ -98,7 +139,7 @@ const QuestionEditor = ({
         />
       </div>
       <div className="mb-4">
-        <label className="block mb-1">Answers (2-6):</label>
+        <label className="block mb-1">Answers (2-6) Tick correct answer:</label>
         {answers.map((answer, index) => (
           <div key={index} className="flex items-center mb-2">
             <input
@@ -117,7 +158,7 @@ const QuestionEditor = ({
             />
             <button
               onClick={() => removeAnswer(index)}
-              className="bg-red-500 text-white px-2 py-1 rounded"
+              className="bg-bigbrain-dark-pink text-white px-2 py-1 rounded  hover:cursor-pointer"
               disabled={answers.length <= 2}
             >
               Remove
@@ -126,10 +167,16 @@ const QuestionEditor = ({
         ))}
         <button
           onClick={addAnswer}
-          className="bg-green-500 text-white px-4 py-2 rounded mt-2"
+          className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded mt-2  hover:cursor-pointer"
           disabled={answers.length >= 6}
         >
           Add Answer
+        </button>
+        <button 
+          onClick={addQuestion}
+          className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded mt-2  hover:cursor-pointer ml-1"
+        > 
+          Add Question
         </button>
       </div>
     </div>
@@ -187,6 +234,14 @@ const QuestionDisplay = ({
     ? mediaUrl.replace('watch?v=', 'embed/').replace(/youtu.be\//, 'youtube.com/embed/')
     : null;
 
+  
+  const handleReset = () => {
+    setSelectedAnswers([]);
+    setSubmitted(false);
+    setTimeLeft(timeLimit);
+    setResult('');
+  };
+
   return (
     <div className="mb-4">
       <h2 className="text-lg font-semibold mb-2">{questionText}</h2>
@@ -198,7 +253,6 @@ const QuestionDisplay = ({
               height="315"
               src={youtubeEmbedUrl}
               title="YouTube video"
-              frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             ></iframe>
@@ -226,23 +280,30 @@ const QuestionDisplay = ({
       <button
         onClick={handleSubmit}
         disabled={submitted || selectedAnswers.length === 0}
-        className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-300 mt-4"
+        className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded disabled:bg-bigbrain-light-pink mt-4 hover:cursor-pointer"
       >
-        Submit
+        Submit Answer
+      </button>
+      
+      <button
+        onClick={handleReset}
+        className="bg-gray-500 text-white px-4 py-2 rounded ml-1"
+      >
+        Reset Answer
       </button>
       {submitted && <p className="mt-4 text-lg">{result}</p>}
     </div>
   );
 };
 
-const QuizQuestion = () => {
+const AddQuizQuestion = ({setShowAddQues}) => {
   const [questionType, setQuestionType] = useState('single');
-  const [questionText, setQuestionText] = useState('What is the capital of France?');
+  const [questionText, setQuestionText] = useState('What is the capital of Australia?');
   const [timeLimit, setTimeLimit] = useState(30);
   const [points, setPoints] = useState(100);
   const [mediaUrl, setMediaUrl] = useState('');
   const [answers, setAnswers] = useState([
-    { text: 'Paris', correct: true },
+    { text: 'Canberra', correct: true },
     { text: 'London', correct: false },
     { text: 'Berlin', correct: false },
   ]);
@@ -267,13 +328,6 @@ const QuizQuestion = () => {
     setResult('');
   }, [questionType, timeLimit]);
 
-  const handleReset = () => {
-    setSelectedAnswers([]);
-    setSubmitted(false);
-    setTimeLeft(timeLimit);
-    setResult('');
-  };
-
   return (
     <div className="max-w-2xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Game Question Editor</h1>
@@ -290,6 +344,7 @@ const QuizQuestion = () => {
         setMediaUrl={setMediaUrl}
         answers={answers}
         setAnswers={setAnswers}
+        setShowAddQues={setShowAddQues}
       />
       <h2 className="text-xl font-bold mb-4">Question Preview</h2>
       <QuestionDisplay
@@ -308,12 +363,6 @@ const QuizQuestion = () => {
         result={result}
         setResult={setResult}
       />
-      <button
-        onClick={handleReset}
-        className="bg-gray-500 text-white px-4 py-2 rounded mt-4"
-      >
-        Reset
-      </button>
     </div>
   );
 };
@@ -356,9 +405,7 @@ export default function EditGame() {
         </button>
 
         {/* Input question Info */}
-        {console.log('1', showAddQues)}
-        {showAddQues && <QuizQuestion />}
-        {console.log('2',)}
+        {showAddQues && <AddQuizQuestion setShowAddQues={setShowAddQues}/>}
 
 
 
