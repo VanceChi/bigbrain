@@ -399,7 +399,7 @@ export default function EditGame() {
       setGames(games);
       setGame(game);
     } catch (err) {
-      console.err(err);
+      console.err('addGame error:', err);
     }
   }
   /**
@@ -414,7 +414,7 @@ export default function EditGame() {
       await addGame(newGame);
       setQuestions(questions);
     } catch (err) {
-      console.err(err);
+      console.err('updateQuestions error:' + err);
     }
   }
 
@@ -437,21 +437,22 @@ export default function EditGame() {
       await updateQuestions(newQuestions);
       setShowAddQues(false);
     } catch (err) {
-      console.error(err);
+      console.error('addQuestion error:' + err);
     }
   };
 
-  const delQuestion = async (id) => {
-    const newQuestions = questions.filter(question => question.id != id);
+  const delQuesHandler = async (id) => {
+    try {
+      const newQuestions = questions.filter(question => question.id != id);
+      await updateQuestions(newQuestions);
+    } catch (err) {
+      console.error('delQuestion error:' +  err)
+    }
     
   }
 
-  const delQuesHandler = () => {
-    
-  }
-
-  const editQuestion = (updatedQues) => {
-
+  const editQuesHandler = (quesId) => {
+    navigate(`/game/${game.id}/question/${quesId}`);
   }
 
   return (
@@ -475,7 +476,7 @@ export default function EditGame() {
         {/* All questions now */}
         <div className="bg-bigbrain-light-mint justify-center h-fit">
           <h2>Questions:</h2>
-          {Array.isArray(questions)? questions.map((question, index) => {
+          {Array.isArray(questions)? questions.map((question) => {
             return (
               <div key={question.id} className='border m-1'>
                 <div>
@@ -484,11 +485,11 @@ export default function EditGame() {
                 <div className='flex place-content-between'>
                   <button 
                     className='border w-1/2'
-                    onClick={delQuesHandler}
+                    onClick={() => delQuesHandler(question.id)}
                   >Delete</button>
                   <button 
                     className='border w-1/2'
-                    // onClick={editQuesHandler}
+                    onClick={() => editQuesHandler(question.id)}
                   >Edit</button>
                 </div>
               </div>
