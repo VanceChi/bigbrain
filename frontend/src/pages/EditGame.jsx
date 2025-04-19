@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { apiCall } from '../utils/api';
+import { deepcopy } from '../utils/deepcopy';
 import Navbar from '../components/Navbar';
 
 const genQuesID = () => {
@@ -350,9 +351,10 @@ const AddQuizQuestionCard = ({addQuestion}) => {
 
 /**
  * 1. Allow to select the question they want to edit
- * 2. Allow to DELETE a particular question and ADD a new question, all actions must be done without a refresh.
+ * 2. Allow to ADD a new question
+ * 3. Allow to DELETE a particular question
  * 
- * @returns 
+ * @returns UI of editting a single game.
  */
 export default function EditGame() {
   // pass down games, game, questions to children componet 
@@ -384,7 +386,7 @@ export default function EditGame() {
 
 
   /**
-   * Given games, from Closure (EditGame) 
+   *  Add game to games. Given games, from Closure (EditGame) 
    *  If games contain the game, update with new one (del -> add).
    *  If not, add game.
    * 
@@ -396,6 +398,21 @@ export default function EditGame() {
       await apiCall('/admin/games', 'PUT', {games: updatedGames});
       setGames(games);
       setGame(game);
+    } catch (err) {
+      console.err(err);
+    }
+  }
+  /**
+   *  Update questions of game. Given game, from Closure (EditGame) 
+   * 
+   */
+  const updateQuestions = async (questions) => {
+    try {
+      const newGame = deepcopy(game);
+      newGame.questions = questions;
+
+      await addGame(newGame);
+      setQuestions(questions);
     } catch (err) {
       console.err(err);
     }
@@ -417,15 +434,25 @@ export default function EditGame() {
 
     try {
       const newQuestions = [...questions, question];
-      const newGame = JSON.parse(JSON.stringify(game));
-      newGame.questions = newQuestions;
-      await addGame(newGame);
-      setQuestions(newQuestions);
+      await updateQuestions(newQuestions);
       setShowAddQues(false);
     } catch (err) {
       console.error(err);
     }
   };
+
+  const delQuestion = async (id) => {
+    const newQuestions = questions.filter(question => question.id != id);
+    
+  }
+
+  const delQuesHandler = () => {
+    
+  }
+
+  const editQuestion = (updatedQues) => {
+
+  }
 
   return (
     <>
@@ -450,14 +477,14 @@ export default function EditGame() {
           <h2>Questions:</h2>
           {Array.isArray(questions)? questions.map((question, index) => {
             return (
-              <div key={index} className='border m-1'>
+              <div key={question.id} className='border m-1'>
                 <div>
                   <p>{JSON.stringify(question.questionText)}</p>
                 </div>
                 <div className='flex place-content-between'>
                   <button 
                     className='border w-1/2'
-                    // onClick={delQuesHandler}
+                    onClick={delQuesHandler}
                   >Delete</button>
                   <button 
                     className='border w-1/2'
