@@ -42,6 +42,7 @@ export async function apiCall(path, method, data = null) {
     }
     return responseBody;
   } catch (error) {
+    alert('Failed!');
     throw new Error(error.response?.data?.error || error.message || 'API request failed');
   }
 }

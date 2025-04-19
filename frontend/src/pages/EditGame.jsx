@@ -59,11 +59,10 @@ const QuestionEditor = ({
           mediaUrl,
           answers
         }];
-        setQuestions(updatedQues)
         updatedGame.questions = updatedQues;
         const updatedGames = [...restGames, updatedGame];
-        console.log(updatedGames)
-        apiCall('/admin/games', 'PUT', {games: updatedGames});
+        await apiCall('/admin/games', 'PUT', {games: updatedGames});
+        setQuestions(updatedQues)
         setShowAddQues(false);
       } catch (err) {
         console.error(err);
@@ -374,7 +373,6 @@ export default function EditGame() {
   const [questions, setQuestions] = useState([]);
   const [showAddQues, setShowAddQues] = useState(false);
   const navigate = useNavigate();
-  console.log('title,game,question:',title, games, questions)
 
   useEffect(() => {
     (async () => {
@@ -384,7 +382,6 @@ export default function EditGame() {
         setGames(games);
         const gameId = param.gameId;
         const game = games.filter((game) => game.id == gameId)[0];
-        console.log('----- effect:', game) 
         setTitle(game.name);
         setQuestions(game.questions);
       } catch (err) {
@@ -393,6 +390,10 @@ export default function EditGame() {
     })();
   }, [])
 
+  /**
+   * 
+   * @param {*} updatedQuestions 
+   */
   const updateGamesWithQuestions = async (updatedQuestions) => {
     try {
       const updatedGame = { ...game, questions: updatedQuestions };
