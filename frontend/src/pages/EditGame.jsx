@@ -3,6 +3,10 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { apiCall } from '../utils/api';
 import Navbar from '../components/Navbar';
 
+const genQuesID = () => {
+  const quesId = +new Date();
+  return quesId;
+}
 
 const QuestionEditor = ({
   questionType, setQuestionType,
@@ -11,9 +15,7 @@ const QuestionEditor = ({
   points, setPoints,
   mediaUrl, setMediaUrl,
   answers, setAnswers,
-  setShowAddQues,
-  questions, setQuestions, 
-  games
+  addQuestion
 }) => {
   const addAnswer = () => {
     if (answers.length < 6) {
@@ -43,32 +45,23 @@ const QuestionEditor = ({
     }
   };
 
-  const param = useParams();
-  const gameId = param.gameId;
-  const addQuestion = () => {
-    (async () => {
-      try {
-        const updatedGame = games.filter((game) => game.id == gameId)[0];
-        const restGames = games.filter((game) => game.id != gameId);
-        questions = questions?? [];
-        const updatedQues = [...questions, {
-          questionType,
-          questionText,
-          timeLimit,
-          points,
-          mediaUrl,
-          answers
-        }];
-        updatedGame.questions = updatedQues;
-        const updatedGames = [...restGames, updatedGame];
-        await apiCall('/admin/games', 'PUT', {games: updatedGames});
-        setQuestions(updatedQues)
-        setShowAddQues(false);
-      } catch (err) {
-        console.error(err);
-      }
-    })();
+  const handleAddQuestion = () => {
+    const id = genQuesID();
+    try {
+      addQuestion({
+        id,
+        questionType,
+        questionText,
+        timeLimit,
+        points,
+        mediaUrl,
+        answers
+     })
+   } catch (err) {
+     console.error(err);
+   }
   }
+
 
   return (
     <div className="mb-4">
@@ -161,7 +154,7 @@ const QuestionEditor = ({
           Add Answer
         </button>
         <button 
-          onClick={addQuestion}
+          onClick={handleAddQuestion}
           className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded mt-2  hover:cursor-pointer ml-1"
         > 
           Add Question
@@ -284,7 +277,7 @@ const QuestionDisplay = ({
   );
 };
 
-const AddQuizQuestion = ({setShowAddQues, questions, setQuestions, games}) => {
+const AddQuizQuestionCard = ({addQuestion}) => {
   const [questionType, setQuestionType] = useState('single');
   const [questionText, setQuestionText] = useState('What is the capital of Australia?');
   const [timeLimit, setTimeLimit] = useState(30);
@@ -332,10 +325,7 @@ const AddQuizQuestion = ({setShowAddQues, questions, setQuestions, games}) => {
         setMediaUrl={setMediaUrl}
         answers={answers}
         setAnswers={setAnswers}
-        setShowAddQues={setShowAddQues}
-        questions={questions}
-        setQuestions={setQuestions}
-        games={games}
+        addQuestion={addQuestion}
       />
       <h2 className="text-xl font-bold mb-4">Question Preview</h2>
       <QuestionDisplay
@@ -368,7 +358,8 @@ export default function EditGame() {
   // pass down games, game, questions to children componet 
   const location = useLocation();
   const param = useParams();
-  const [games, setGames] = useState(null);
+  const [games, setGames] = useState([]);
+  const [game, setGame] = useState(null);
   const [title, setTitle] = useState('');
   const [questions, setQuestions] = useState([]);
   const [showAddQues, setShowAddQues] = useState(false);
@@ -382,28 +373,56 @@ export default function EditGame() {
         setGames(games);
         const gameId = param.gameId;
         const game = games.filter((game) => game.id == gameId)[0];
+        setGame(game);
         setTitle(game.name);
-        setQuestions(game.questions);
+        setQuestions(game.questions??[]);
       } catch (err) {
         console.error(err);
       }
     })();
   }, [])
 
+
   /**
+   * Given games, from Closure (EditGame) 
+   *  If games contain the game, update with new one (del -> add).
+   *  If not, add game.
    * 
-   * @param {*} updatedQuestions 
    */
-  const updateGamesWithQuestions = async (updatedQuestions) => {
+  const addGame = async (game) => {
     try {
-      const updatedGame = { ...game, questions: updatedQuestions };
-      const updatedGames = games.map(g => (g.id === gameId ? updatedGame : g));
-      await apiCall('/admin/games', 'PUT', { games: updatedGames });
-      setGames(updatedGames);
-      setQuestions(updatedQuestions);
-      setGame(updatedGame);
+      const restGames = games.filter((g) => g.id != game.id);
+      const updatedGames = [...restGames, game];
+      await apiCall('/admin/games', 'PUT', {games: updatedGames});
+      setGames(games);
+      setGame(game);
     } catch (err) {
-      setError('Failed to update questions. Please try again.');
+      console.err(err);
+    }
+  }
+
+  /**
+   *  Given game from Closure (EditGame) 
+   *  If the game contain that quesiton, update with new one (del -> add).
+   *  If not, add question.
+   * 
+   * @param {Object {}} question { id:... , ... }
+   */
+  const addQuestion = async (question) => {
+    // input check
+    if ((typeof question !== 'object') || question.id === undefined) {
+      console.error('quesiton added unvalid.');
+      return;
+    }
+
+    try {
+      const newQuestions = [...questions, question];
+      const newGame = JSON.parse(JSON.stringify(game));
+      newGame.questions = newQuestions;
+      await addGame(newGame);
+      setQuestions(newQuestions);
+      setShowAddQues(false);
+    } catch (err) {
       console.error(err);
     }
   };
@@ -422,17 +441,14 @@ export default function EditGame() {
 
         {/* Input question Info */}
         {showAddQues && 
-        <AddQuizQuestion 
-          setShowAddQues={setShowAddQues}
-          questions={questions}
-          setQuestions={setQuestions}
-          games={games}
+        <AddQuizQuestionCard 
+          addQuestion={addQuestion}
         />}
 
         {/* All questions now */}
         <div className="bg-bigbrain-light-mint justify-center h-fit">
           <h2>Questions:</h2>
-          {questions? questions.map((question, index) => {
+          {Array.isArray(questions)? questions.map((question, index) => {
             return (
               <div key={index} className='border m-1'>
                 <div>
