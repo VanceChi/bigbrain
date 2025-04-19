@@ -34,7 +34,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <Navbar dashboardBtnShow='true' editGameBtnShow='true' />
+      <Navbar />
       <div className="flex">
         <button 
           className=" bg-bigbrain-light-pink font-bold text-sm/4 text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3 mb-2 rounded-3xl" 

@@ -375,6 +375,7 @@ export default function EditGame() {
   const [showAddQues, setShowAddQues] = useState(false);
   const navigate = useNavigate();
   console.log('title,game,question:',title, games, questions)
+
   useEffect(() => {
     (async () => {
       try {
@@ -392,21 +393,23 @@ export default function EditGame() {
     })();
   }, [])
 
-  const handleLogout = async () => {
+  const updateGamesWithQuestions = async (updatedQuestions) => {
     try {
-      await apiCall('/admin/auth/logout', 'POST');
-      localStorage.removeItem('token');
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout failed:', error.message);
-      localStorage.removeItem('token');
-      navigate('/login');
+      const updatedGame = { ...game, questions: updatedQuestions };
+      const updatedGames = games.map(g => (g.id === gameId ? updatedGame : g));
+      await apiCall('/admin/games', 'PUT', { games: updatedGames });
+      setGames(updatedGames);
+      setQuestions(updatedQuestions);
+      setGame(updatedGame);
+    } catch (err) {
+      setError('Failed to update questions. Please try again.');
+      console.error(err);
     }
   };
 
   return (
     <>
-      <Navbar dashboardBtnShow={true} rightBtn={{ name: 'Log out', handler: handleLogout }} />
+      <Navbar />
       <div className="p-5 bg-bigbrain-light-mint min-h-[80vh]">
         <h2 className="text-2xl font-bold mb-4 ">Edit Game: {title}</h2>
         

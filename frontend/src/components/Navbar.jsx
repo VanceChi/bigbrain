@@ -1,64 +1,90 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { logoutUser } from '../services/AuthService';
 
-function NavRightButton({ children, onClick }) {
+function NavButton({ children, onClick }) {
   return (
     <button
       onClick={onClick}
       className="font-bold text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-4"
+      aria-label={children}
     >
       {children}
     </button>
   );
 }
 
-export default function Navbar({ dashboardBtnShow, editGameBtnShow, rightBtn }) {
-  const navigate = useNavigate();
+
+/**
+ * 
+ * @param {*} rightBtn if token, set it to log out anyway. 
+ *                     else if not specify, set it to log 
+ * @returns 
+ */
+export default function Navbar() {
   const location = useLocation();
+  const router = location.pathname;
   const token = JSON.parse(localStorage.getItem('token'));
+  
+  const navigate = useNavigate();
+  
+  function DashBoardBtn() {
+    return (
+      <NavButton onClick={() => navigate('/dashboard')}>
+        Dashboard
+      </NavButton>
+    )
+  }
 
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-      navigate('/login'); // Navigate even if API fails, as localStorage is cleared
-    }
-  };
+  function LogoutBtn() {
+    const handleLogout = async () => {
+      try {
+        await logoutUser();
+        navigate('/login');
+      } catch (error) {
+        console.error('Logout error:', error);
+        navigate('/login');
+      }
+    };
 
-  // page: rightBtn
-  const defaultRightBtn = {
-    login: { name: 'Log in', handler: () => navigate('/login') },
-    register: { name: 'Register', handler: () => navigate('/register') },
-    logout: { name: 'Log out', handler: handleLogout },
-  };
+    return (
+      <NavButton onClick={handleLogout}>
+        Log out
+      </NavButton>
+    )
+  }
 
-  const pageRightBtnMap = {
-    register: 'login',
-    login: 'register',
-    dashboard: 'logout'
-  };
 
-  // Get router name
-  const currentPage = location.pathname.slice(1) || 'login';
-  const effectiveRightBtn = token
-    ? (currentPage === 'dashboard' || currentPage.startsWith('game/') ? defaultRightBtn.logout : rightBtn || defaultRightBtn[currentPage])
-    : rightBtn || defaultRightBtn[pageRightBtnMap[currentPage]];
+  function LoginBtn() {
+    return (
+      <NavButton onClick={() => navigate('/login')}>
+        Log in
+      </NavButton>
+    )
+  }
+
+
+  function RegisterBtn() {
+    return (
+      <NavButton onClick={() => navigate('/register')}>
+        Register
+      </NavButton>
+    )
+  }
 
   return (
     <div className="bg-bigbrain-light-pink shadow-[0_2px_2px_rgba(0,0,0,0.15)] place-content-between flex mb-1">
-      <div>
+      <div className="flex place-content-between">
         <p className="italic text-bigbrain-dark-green font-bold text-lg/8 inline-block p-3">BigBrain</p>
-        {dashboardBtnShow && (
-          <Link to="/dashboard">
-            <NavRightButton>Dashboard</NavRightButton>
-          </Link>
+
+        {router === '/dashboard' && (
+          <DashBoardBtn />
         )}
-        </div>
-      {effectiveRightBtn && (
-        <NavRightButton onClick={effectiveRightBtn.handler}>{effectiveRightBtn.name}</NavRightButton>
-      )}
+      </div>
+
+        {token? ( <LogoutBtn /> ) : 
+        ( router === '/login' && <RegisterBtn /> ) ||
+        ( router === '/register' && <LoginBtn /> )}
+
     </div>
   );
 }

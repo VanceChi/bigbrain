@@ -27,7 +27,7 @@ function Login() {
 
   return (
     <>
-      <Navbar rightBtn={{ name: 'Register', handler: () => navigate('/register') }}/>
+      <Navbar />
       <div className="bg-bigbrain-light-mint flex justify-center items-center h-[80vh]">
         <Form
           onSubmit={handleLoginSubmit}
