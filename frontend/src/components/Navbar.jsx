@@ -76,7 +76,7 @@ export default function Navbar() {
       <div className="flex place-content-between">
         <p className="italic text-bigbrain-dark-green font-bold text-lg/8 inline-block p-3">BigBrain</p>
 
-        {router === '/dashboard' && (
+        {!['/login', '/register'].includes(router) && (
           <DashBoardBtn />
         )}
       </div>
