@@ -71,19 +71,6 @@ const QuestionEditor = ({
     })();
   }
 
-  
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const res = await apiCall('/admin/games', 'GET');
-  //       console.log('---', res.games)
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   })();
-  // }, []);
-
-
   return (
     <div className="mb-4">
       <div className="mb-4">
@@ -379,6 +366,7 @@ const AddQuizQuestion = ({setShowAddQues, questions, setQuestions, games}) => {
  * @returns 
  */
 export default function EditGame() {
+  // pass down games, game, questions to children componet 
   const location = useLocation();
   const param = useParams();
   const [games, setGames] = useState(null);
@@ -437,12 +425,25 @@ export default function EditGame() {
           games={games}
         />}
 
+        {/* All questions now */}
         <div className="bg-bigbrain-light-mint justify-center h-fit">
-          {/* {console.log('questions rendering:', questions)  } */}
+          <h2>Questions:</h2>
           {questions? questions.map((question, index) => {
             return (
-              <div key={index}>
-                <p>{JSON.stringify(question.questionText)}</p>
+              <div key={index} className='border m-1'>
+                <div>
+                  <p>{JSON.stringify(question.questionText)}</p>
+                </div>
+                <div className='flex place-content-between'>
+                  <button 
+                    className='border w-1/2'
+                    // onClick={delQuesHandler}
+                  >Delete</button>
+                  <button 
+                    className='border w-1/2'
+                    // onClick={editQuesHandler}
+                  >Edit</button>
+                </div>
               </div>
             )
           }):(
