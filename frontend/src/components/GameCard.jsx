@@ -1,12 +1,50 @@
 import { Link } from 'react-router-dom';
+import { apiCall } from '../utils/api';
+import { useEffect, useState } from 'react';
 
-export default function GameCard({id, title, numQuestions, thumbnail, totalDuration, questions}) {
-            // ['4234', 'Game1', '5 questions', undefined, '1 hour'];
+const handleStartGame = async (gameId, setGameStarted, setSessionId) => {
+  console.log('start gameId: ' + gameId)
+  const res = await apiCall(`/admin/game/${gameId}/mutate`, 'POST', {
+    "mutationType": "START"
+  })
+  setSessionId(res.data.sessionId);
+  console.log('start game res: ', res)
+  setGameStarted(true);
+}
+
+const handleEndGame = async (gameId, setGameStarted) => {
+  console.log('start game: ' + gameId)
+  const res = await apiCall(`/admin/game/${gameId}/mutate`, 'POST', {
+    "mutationType": "END"
+  })
+  console.log('end game res: ', res)
+  setGameStarted(false);
+}
+
+export default function GameCard({gameId, title, numQuestions, thumbnail, totalDuration, questions}) {
+  const [gameStarted, setGameStarted] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+
+  useEffect(() => {
+    console.log('sessionId:', sessionId);
+    const fetchSessionStatus = async () => {
+      const res = await apiCall(`/admin`)
+      
+    }
+    fetchSessionStatus();
+  }, [sessionId])
+
   return (
     <div className="p-2 bg-white rounded-2xl shadow-md items-center space-x-4">
       <div className='flex items-center'>
-        <p>Active?</p> &nbsp;&nbsp;&nbsp;
-        <p className='text-sm'>Copy Link</p>
+        {gameStarted? (
+          <>
+            <button onClick={() => handleEndGame(gameId, setGameStarted)}>End Game</button> &nbsp;&nbsp;&nbsp;
+            <p className='text-sm'>Copy Link</p>
+          </>
+        ) : (
+          <button onClick={() => handleStartGame(gameId, setGameStarted, setSessionId)}>Start Game</button>
+        )}
       </div>
       <h4 className="text-lg font-bold">{title}</h4>
       <div className='p-2 bg-white flex items-center space-x-4 text-sm'>
@@ -17,12 +55,12 @@ export default function GameCard({id, title, numQuestions, thumbnail, totalDurat
         </div>
         <div>
           <Link 
-            to={`/game/${id}`}
+            to={`/game/${gameId}`}
             state={{title, thumbnail, questions}}
             >Edit Game
           </Link>
           <br />
-          <button>Start Game</button>
+          <br />
         </div>
       </div>
     </div>
