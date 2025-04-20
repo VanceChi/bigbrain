@@ -35,6 +35,12 @@ export async function apiCall(path, method, data = null) {
       headers,
       data,
     });
+    const x = {
+      url,
+      method: method.toUpperCase(),
+      headers,
+      data,
+    };
 
     const responseBody = response.data;
     if (responseBody.error) {

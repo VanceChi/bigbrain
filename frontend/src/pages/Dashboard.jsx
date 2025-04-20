@@ -38,7 +38,7 @@ export default function Dashboard() {
       <div className="flex">
         <button 
           className=" bg-bigbrain-light-pink font-bold text-sm/4 text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3 mb-2 rounded-3xl" 
-          onClick={() => createGame(ownerEmail, games, setGames, newGameName, setNewGameName)}
+          onClick={() => createGame()}
         >+ Game
         </button>
         {showCreateGame && (<>
@@ -56,21 +56,19 @@ export default function Dashboard() {
         </>)}
       </div>
       <div className="m-3">
-        {games.map((game, index) => {
-          return(
-            <div key={index}>
-              <GameCard 
-                id={game.id}
-                title={game.title || game.name}
-                numQuestions={game.questions?.length || 0}
-                thumbnail={game.thumbnail}
-                totalDuration={game.questions?.reduce((sum, q) => sum + (q.duration || 0), 0) || 0}
-                questions={game.questions}
-              />
-              <br />
-            </div>
-          )
-        })}
+        {games.map((game, index) => (
+          <div key={index}>
+            <GameCard 
+              id={game.id}
+              title={game.title || game.name}
+              numQuestions={game.questions?.length || 0}
+              thumbnail={game.thumbnail}
+              totalDuration={game.questions?.reduce((sum, q) => sum + (q.duration || 0), 0) || 0}
+              questions={game.questions}
+            />
+            <br />
+          </div>
+        ))}
       </div>
     </div>
     

@@ -1,4 +1,5 @@
-import { apiCall } from "../utils/api";
+import { apiCall } from "./api";
+
 /**
  * Get all games in an array.
  * 
@@ -18,13 +19,15 @@ export async function queryGames() {
  * Get game by gameId.
  * 
  * @param {String | Number} gameId The game must be created by the admin.
+ * @param {Array | undefined} games 
  * @returns {Object | undefined} one game object.
  */
-export async function queryGame(gameId) {
+export async function queryGame(gameId, games) {
   try {
-    const games = await queryGames();
-    const game = games.filter((game) => game.id == gameId)[0];
-    return game;
+    if(games === undefined){
+      games = await queryGames();
+    }
+    return games.find((game) => game.id == gameId);
   } catch(error) {
     throw new Error(error);
   }
@@ -34,11 +37,15 @@ export async function queryGame(gameId) {
  * Get the questions by gameId.
  * 
  * @param {String | Number} gameId 
- * @returns {Arrary} All questions of that game.
+ * @param {Object | undefined} game 
+ * @param {Array | undefined} games 
+ * @returns {Arrary} All questions of that game. [] if null
  */
-export async function queryQuestions(gameId) {
+export async function queryQuestions(gameId, game, games) {
   try {
-    const game = await queryGame(gameId);
+    if (game === undefined){
+      game = await queryGame(gameId, games);
+    }
     const questions = game.questions;
     return questions ?? [];
   } catch(error) {
@@ -51,12 +58,18 @@ export async function queryQuestions(gameId) {
  * 
  * @param {String | Number} gameId 
  * @param {String | Number} questionId 
+ * @param {Array | undefined} questions 
+ * @param {Object | undefined} game 
+ * @param {Array} games 
  * @returns {Object | undefined} one certain question of that game.
  */
-export async function queryQuestion(gameId, questionId) {
+export async function queryQuestion(gameId, questionId, questions, game, games) {
   try {
-    const questions = queryQuestions(gameId);
-    const question = questions.filter((question) => {question.id == questionId});
+    if (questions === undefined){
+      questions = await queryQuestions(gameId, game, games);
+    }
+    
+    const question = questions.find((question) => question.id == questionId);
     return question;
   } catch(error) {
     throw new Error(error);

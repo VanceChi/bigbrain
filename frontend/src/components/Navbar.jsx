@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { logoutUser } from '../services/AuthService';
+import { logoutUser } from '../services/authService';
 
 function NavButton({ children, onClick }) {
   return (

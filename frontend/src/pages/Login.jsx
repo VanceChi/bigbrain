@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../services/AuthService';
+import { loginUser } from '../services/authService';
 import Form from '../components/Form';
 import Navbar from "../components/Navbar"
 
