@@ -80,11 +80,12 @@ export async function checkSession(gameId, activeSessions, setActiveSessions) {
  * @returns {Array} active session[of that game].
  */
 export async function cleanSessions(activeSessions, setActiveSessions, gameId) {
-  let sessionsToClean = null;
-  let sessionsNotClean = null;
+  let sessionsToClean = [];
+  let sessionsNotClean = [];
   if (gameId){
     sessionsToClean = activeSessions.filter(session => session.gameId == gameId);
     sessionsNotClean = activeSessions.filter(session => session.gameId != gameId); 
+    // debugger
   } else {
     sessionsToClean = activeSessions;
     sessionsNotClean = [];
