@@ -22,7 +22,7 @@ export async function queryGames() {
  * @param {Array | undefined} games 
  * @returns {Object | undefined} one game object.
  */
-export async function queryGame(gameId, games) {
+export async function queryGamebyId(gameId, games) {
   try {
     if(games === undefined){
       games = await queryGames();
@@ -30,6 +30,16 @@ export async function queryGame(gameId, games) {
     return games.find((game) => game.id == gameId);
   } catch(error) {
     throw new Error(error);
+  }
+}
+
+export async function queryGamebySessionId(sessionId) {
+  const activeSessions = JSON.parse(localStorage.getItem('activeSessions'));
+  const session = activeSessions.find(session => session.activeSessionId == sessionId);
+  if (session === undefined) return undefined;
+  else {
+    const gameId = session.gameId;
+    return await queryGamebyId(gameId);
   }
 }
 
@@ -44,7 +54,7 @@ export async function queryGame(gameId, games) {
 export async function queryQuestions(gameId, game, games) {
   try {
     if (game === undefined){
-      game = await queryGame(gameId, games);
+      game = await queryGamebyId(gameId, games);
     }
     const questions = game.questions;
     return questions ?? [];
