@@ -1,19 +1,24 @@
-import { useEffect, useState } from "react";
+// Dashboard.jsx
+import { useEffect, useState, useContext } from "react";
 import { apiCall } from "../utils/api"
 import GameCard from "../components/GameCard"
 import Navbar from "../components/Navbar";
+import { queryGames } from "../utils/query";
+import { SessionContext } from "../context/Sessions";
+
 
 export default function Dashboard() {
   const [games, setGames] = useState([]);
   const [newGameName, setNewGameName] = useState('');
   const [showCreateGame, setShowCreateGame] = useState(false);
-  const [ownerEmail, setOwnerEmail] = useState(JSON.parse(localStorage.getItem('email')));
+  const [ownerEmail] = useState(JSON.parse(localStorage.getItem('email')) || '');
+  // console.log('', useContext(SessionContext));
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await apiCall('/admin/games', 'GET');
-        setGames(res.games);
+        const games = await queryGames();
+        setGames(games);
       } catch (err) {
         console.error(err);
       }
@@ -58,8 +63,9 @@ export default function Dashboard() {
       <div className="m-3">
         {games.map((game, index) => (
           <div key={index}>
+            {/* {console.log(game)} */}
             <GameCard 
-              id={game.id}
+              gameId={game.id}
               title={game.title || game.name}
               numQuestions={game.questions?.length || 0}
               thumbnail={game.thumbnail}

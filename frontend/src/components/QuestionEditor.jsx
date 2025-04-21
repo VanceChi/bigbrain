@@ -42,7 +42,6 @@ const QuestionEditor = ({
   };
 
   const handleSaveQuestion = () => {
-    // debugger
     const id = genQuesID();
     try {
       saveQuestion({
@@ -325,7 +324,7 @@ export default function EditQuizQuestionCard({gameId, questionId, showAddQues, s
       const games = await queryGames();
       const game = await queryGame(gameId, games);
       questions = await queryQuestions(gameId, game);
-      setGame(games);
+      setGames(games);
       setGame(game);
       
       if (showAddQues === undefined) {

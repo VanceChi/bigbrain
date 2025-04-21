@@ -3,11 +3,18 @@ import { apiCall } from '../utils/api';
 import { useContext, useEffect, useState } from 'react';
 import { SessionContext } from '../context/Sessions';
 import { startSession, endSession, cleanSessions } from '../utils/session';
+import { queryQuestions } from '../utils/query';
 
 // It must be quesitons to start.
 const handleStartGame = async (gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId) => {
   console.log('start gameId: ' + gameId)
 
+  // check if questions exist
+  const questions = await queryQuestions(gameId);
+  if (questions.length === 0){
+    alert('Can not start game without questions!');
+    return
+  }
   // start session, return session id.
   const activeSessionId = await startSession(gameId, activeSessions, setActiveSessions);
 
