@@ -1,6 +1,6 @@
 // session.js
 import { apiCall } from "./api";
-
+import { act, useContext } from "react";
 /**
  * Only one session of a game can be active at one time.
  * 
@@ -9,7 +9,6 @@ import { apiCall } from "./api";
  *   {...} 
  * ]
  */
-
 
 /**
  * Start Session of the game.
@@ -31,6 +30,31 @@ export const startSession = async (gameId, activeSessions, setActiveSessions) =>
 };
 
 /**
+ * Check session state of session id or game id (Only input one.)
+ * 
+ * @param {*} sessionId 
+ * @param {*} gameId 
+ * @param {*} activeSessions 
+ * @param {*} setActiveSessions 
+ * @returns 
+ */
+export const checkSessionState = async (sessionId, gameId, activeSessions, setActiveSessions) => {
+  const sessions = await cleanSessions(activeSessions, setActiveSessions);
+  let session = null;
+
+  if (sessionId){
+    session = sessions.find(session => session.activeSessionId == sessionId);
+  }
+  if (gameId) {
+    session = sessions.find(session => session.gameId == gameId);
+  }
+  
+  if (session) return true;
+  else return false;
+}
+
+
+/**
  * Send end request. Delete all sessions(remains) of that game in localStorage.
  * gameId sessionId must be passed at least one.
  * 
@@ -40,8 +64,6 @@ export const startSession = async (gameId, activeSessions, setActiveSessions) =>
  * @param {*} setActiveSessions set function from SessionContext
  * @returns {*} respond from backend.
  */
-
-
 export const endSession = async (gameId, sessionId, activeSessions, setActiveSessions) => {
   if (gameId === undefined){
     const session = activeSessions.find(session => session.activeSessionId == sessionId);
@@ -60,26 +82,9 @@ export const endSession = async (gameId, sessionId, activeSessions, setActiveSes
 }
 
 /**
- * If gameId not given: return active sessions.
- * If gameId given: return active session of that game.
- * @returns {Array}
- */
-export async function checkSession(gameId, activeSessions, setActiveSessions) {
-  // filter out unactive sessions
-  const updatedSessions = await cleanSessions(activeSessions, setActiveSessions);
-
-  if (gameId) {
-    const gameSession = updatedSessions.filter(session => session.gameId == gameId);
-    return gameSession; // [one session] or []
-  }
-
-  return updatedSessions;
-}
-
-/**
  * Filter out unactive sessions in localStorage.
  * 
- * @param {*} activeSessions 
+ * @param {Array} activeSessions 
  * @param {*} setActiveSessions 
  * @param {Number|String|undefined} gameId if undefined, clean all sessions. If defined, clean sessions about that game.
  * @returns {Array} active session[of that game].
