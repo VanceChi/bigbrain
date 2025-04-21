@@ -31,25 +31,30 @@ export const startSession = async (gameId, activeSessions, setActiveSessions) =>
 };
 
 /**
- * Send end request.
- * Delete all sessions(remains) of that game in localStorage.
+ * Send end request. Delete all sessions(remains) of that game in localStorage.
+ * gameId sessionId must be passed at least one.
  * 
- * @param {*} sessionId 
+ * @param {Number | String | undefined} gameId 
+ * @param {Number | String | undefined} sessionId 
  * @param {*} activeSessions from SessionContext
  * @param {*} setActiveSessions set function from SessionContext
  * @returns {*} respond from backend.
  */
 
 
-export const endSession = async (gameId, activeSessions, setActiveSessions) => {
-  const res = await apiCall(`/admin/game/${gameId}/mutate`, 'POST', {
+export const endSession = async (gameId, sessionId, activeSessions, setActiveSessions) => {
+  if (gameId === undefined){
+    const session = activeSessions.find(session => session.activeSessionId == sessionId);
+    gameId = session.gameId;
+  }
+  res = await apiCall(`/admin/game/${gameId}/mutate`, 'POST', {
     "mutationType": "END"
   })
 
   // double check backend the session status. If unactive, delete sessions in localstorage.
   setTimeout(() => {
     cleanSessions(activeSessions, setActiveSessions, gameId);
-  }, 100);
+  }, 0);
 
   return res;
 }
