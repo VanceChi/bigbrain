@@ -6,6 +6,7 @@ import EditQuestion from "./EditQuestion";
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { SessionContext } from '../context/Sessions';
 import { useState } from 'react';
+import Session from "./Session";
 
 function ProtectedRoute({ children }) {
   const token = JSON.parse(localStorage.getItem('token'));
@@ -61,7 +62,12 @@ export default function Page({}) {
               <ProtectedRoute>
                 <EditQuestion />
               </ProtectedRoute>
-              } />
+            } />
+            <Route path="/session/:sessionId" element={
+              <ProtectedRoute>
+                <Session />
+              </ProtectedRoute>
+            } />
           </Routes>
         </Router>
       </SessionProvider>

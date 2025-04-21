@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { genQuesID } from "../utils/genId";
-import { queryGames, queryGame, queryQuestion, queryQuestions } from "../utils/query";
+import { queryGames, queryGamebyId, queryQuestion, queryQuestions } from "../utils/query";
 import { deepcopy } from "../utils/deepcopy";
 import { apiCall } from '../utils/api';
 
@@ -281,7 +281,7 @@ const QuestionDisplay = ({
  */
 export default function EditQuizQuestionCard({gameId, questionId, showAddQues, setShowAddQues, questions, setQuestions}) {
   const [games, setGames] = useState([]);
-  const [game, setGame] = useState(null);
+  const [game, setGame] = useState({});
   // const [question, setQuestion] = useState(null);
   const [questionType, setQuestionType] = useState('single');
   const [questionText, setQuestionText] = useState('');
@@ -322,7 +322,7 @@ export default function EditQuizQuestionCard({gameId, questionId, showAddQues, s
     }
     async function initEditor(gameId, questionId) {
       const games = await queryGames();
-      const game = await queryGame(gameId, games);
+      const game = await queryGamebyId(gameId, games);
       questions = await queryQuestions(gameId, game);
       setGames(games);
       setGame(game);

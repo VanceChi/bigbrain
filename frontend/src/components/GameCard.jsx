@@ -24,9 +24,8 @@ const handleStartGame = async (gameId, setGameStarted, activeSessions, setActive
 
 
 const handleEndGame = async (gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId, setCopied) => {
-  
   // end session, clear all session
-  const res = await endSession(gameId, activeSessions, setActiveSessions);
+  const res = await endSession(gameId, undefined, activeSessions, setActiveSessions);
   console.log('end game res: ', res)
 
   // reset game card state
@@ -41,38 +40,13 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
   const {activeSessions, setActiveSessions} = useContext(SessionContext);
   const [Copied, setCopied] = useState(false);
   
-  // /**
-  //  * Delete current session in localStorage.
-  //  */
-  // const delSessionLocal = () => {
-  //   const updatedSession = activeSessions.filter((session)=>session.activeSessionId != sessionId)
-  //   setActiveSessions(updatedSession);
-  //   localStorage.setItem('activeSessions', JSON.stringify(updatedSession));
-  // }
 
   useEffect(() => {
-    // const fetchGameSessionStatus = async () => {
-    //   const session = activeSessions.find(session=>session.gameId==gameId);
-    //   if (session){
-    //     const sessionId = session.activeSessionId;
-    //     const res = await apiCall(`/admin/session/${sessionId}/status`, 'GET');
-    //     const active = res.results.active;
-    //     console.log('active:', active)
-    //     // debugger
-    //     if (active){
-    //       return true;
-    //     }else{
-    //       delSessionLocal();
-    //       return false;
-    //     }
-    //   } else {
-    //     return false;
-    //   }
-    // }
     const initSessionStatus = async () => {
-      const activedSession = await cleanSessions(activeSessions, setActiveSessions, gameId);
-      // debugger
-      if (activedSession.length != 0){  // active
+      let activedSession = await cleanSessions(activeSessions, setActiveSessions, gameId);
+      activedSession = activedSession[0];
+
+      if (activedSession){  // active
         setGameStarted(true);
         setSessionId(activedSession.activeSessionId);
       } else {       // unactive
@@ -80,7 +54,6 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
         setSessionId(null);
       }
     }
-    
     initSessionStatus();
   }, [])
   
@@ -98,12 +71,18 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
 
   return (
     <div className="p-2 bg-white rounded-2xl shadow-md items-center space-x-4">
-      <button onClick={() => cleanSessions(activeSessions, setActiveSessions)}>Clean Session</button>
+      {/* <button onClick={() => cleanSessions(activeSessions, setActiveSessions)}>Clean Session</button> */}
       <div className='flex items-center'>
         {gameStarted? (
           <>
-            <button onClick={() => handleEndGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId, setCopied)}>End Game</button> &nbsp;&nbsp;&nbsp;
-            <button className='text-sm' onClick={handleCopyLink}>{Copied?'Copied':'Copy Link'}</button>
+            <button 
+              onClick={() => handleEndGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId, setCopied)}>End Game
+            </button> &nbsp;&nbsp;&nbsp;
+            <Link to={`/session/${sessionId}`}>Go to session.</Link>&nbsp;&nbsp;&nbsp;
+
+            <button className='text-sm' onClick={handleCopyLink}>{Copied?'Copied':'Click to Copy Link:'}
+            </button>
+            <p>{sessionId}</p>
           </>
         ) : (
           <button onClick={() => handleStartGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId)}>Start Game</button>

@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { apiCall } from '../utils/api';
 import Navbar from '../components/Navbar';
 import { BackButton } from "../components/Button"
-import { queryGame } from '../utils/query';
+import { queryGamebyId } from '../utils/query';
 import EditQuizQuestionCard from "../components/QuestionEditor";
 import { updateQuestions } from "../utils/update"
 
@@ -20,7 +20,7 @@ export default function EditGame() {
   const location = useLocation();
   const { gameId } = useParams();
   const [games, setGames] = useState([]);
-  const [game, setGame] = useState(null);
+  const [game, setGame] = useState({});
   const [title, setTitle] = useState('');
   const [questions, setQuestions] = useState([]);
   const [showAddQues, setShowAddQues] = useState(false);
@@ -38,7 +38,7 @@ export default function EditGame() {
         const games = res.games;
         setGames(games);
         // const game = games.filter((game) => game.id == gameId)[0];
-        const game = await queryGame(gameId)
+        const game = await queryGamebyId(gameId)
         setGame(game);
         setTitle(game.name);
         setQuestions(game.questions??[]);

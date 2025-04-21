@@ -47,7 +47,7 @@ export const endSession = async (gameId, sessionId, activeSessions, setActiveSes
     const session = activeSessions.find(session => session.activeSessionId == sessionId);
     gameId = session.gameId;
   }
-  res = await apiCall(`/admin/game/${gameId}/mutate`, 'POST', {
+  const res = await apiCall(`/admin/game/${gameId}/mutate`, 'POST', {
     "mutationType": "END"
   })
 
@@ -81,7 +81,7 @@ export async function checkSession(gameId, activeSessions, setActiveSessions) {
  * 
  * @param {*} activeSessions 
  * @param {*} setActiveSessions 
- * @param {*} gameId if undefined, clean all sessions. If defined, clean sessions about that game.
+ * @param {Number|String|undefined} gameId if undefined, clean all sessions. If defined, clean sessions about that game.
  * @returns {Array} active session[of that game].
  */
 export async function cleanSessions(activeSessions, setActiveSessions, gameId) {

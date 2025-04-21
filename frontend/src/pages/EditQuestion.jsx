@@ -1,7 +1,7 @@
 import Navbar from "../components/Navbar"
 import { BackButton } from "../components/Button"
 import { useParams } from "react-router-dom"
-import { queryGame, queryQuestions, queryQuestion } from "../utils/query";
+import { queryQuestions } from "../utils/query";
 import { useEffect, useState } from "react";
 import EditQuizQuestionCard from "../components/QuestionEditor";
 
