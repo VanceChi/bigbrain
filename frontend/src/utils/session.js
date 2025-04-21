@@ -1,6 +1,5 @@
 // session.js
 import { apiCall } from "./api";
-import { act, useContext } from "react";
 /**
  * Only one session of a game can be active at one time.
  * 

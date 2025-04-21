@@ -1,44 +1,66 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import Navbar from "../components/Navbar";
-import { cleanSessions, endSession } from "../utils/session";
+import { checkSessionState, endSession } from "../utils/session";
 import { useContext, useEffect, useState } from "react";
 import { SessionContext } from "../context/Sessions";
-import { queryGamebySessionId } from "../utils/query";
+import { BackButton } from "../components/Button";
+import { apiCall } from "../utils/api";
 
 export default function Session() {
   const {activeSessions, setActiveSessions} = useContext(SessionContext);
   const { sessionId } = useParams();
-  const navigate = useNavigate();
-  const [game, setGame] = useState({});
-  
+  const [active, setActive] = useState(false);
+  const {state} = useLocation();  // keys: title
+  const [results, setResults] = useState([]);
 
   useEffect(() => {
     // get game of this session
     const init = async () => {
-      const game = await queryGamebySessionId(sessionId);
-      // if session not exist in localStorage, go back
-      if (game === undefined){
-        cleanSessions(activeSessions, setActiveSessions);
-        alert('Session not exist.')
-        navigate(-1);
-      }
-      setGame(game);
+      const isActive = await checkSessionState(sessionId, undefined, activeSessions, setActiveSessions);
+      setActive(isActive);
     } 
     init();
   }, [])
+
+  // Since cant restart session. The effect here means active -> unactive
+  // Shows result.
+  useEffect(() => {
+    const loadResult = async () => {
+      const res = await apiCall(`/admin/session/${sessionId}/results`, 'GET'); //{results: Array(0)}
+      setResults(res.results);
+    }
+    
+    loadResult();
+    
+  }, [active])
   
   const handleEndSession = () => {
     endSession(undefined, sessionId, activeSessions, setActiveSessions);
-    navigate(-1);
   }
   return (
     <>
       <Navbar />
-      <p>Session of {game.name}: {sessionId}</p>
+      <BackButton />
+      {active? (
+        <p>Session active</p>
+      ) : (
+        <p>Session unactive</p>
+      )}
+      <p>Session of {state.title}: {sessionId}</p>
       <button className="border">Advance Question</button>
       <button onClick={handleEndSession} className="border">End Session</button>
       <div className="border">
-        Display results.
+        {(results.length === 0) ? (
+          <p>No results.</p>
+        ) : (
+          <p>Display results.</p>
+        ) }
+
+        {results.length !== 0 &&
+        results.map(result => (
+          <p>{JSON.stringify(result)}</p>
+        ))}
+        
       </div>
     </>
     

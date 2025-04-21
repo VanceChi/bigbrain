@@ -5,42 +5,17 @@ import { SessionContext } from '../context/Sessions';
 import { startSession, endSession, cleanSessions } from '../utils/session';
 import { queryQuestions } from '../utils/query';
 
-// It must be quesitons to start.
-const handleStartGame = async (gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId) => {
-  console.log('start gameId: ' + gameId)
-
-  // check if questions exist
-  const questions = await queryQuestions(gameId);
-  if (questions.length === 0){
-    alert('Can not start game without questions!');
-    return
-  }
-  // start session, return session id.
-  const activeSessionId = await startSession(gameId, activeSessions, setActiveSessions);
-
-  setSessionId(activeSessionId);
-  setGameStarted(true);
-}
 
 
-const handleEndGame = async (gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId, setCopied) => {
-  // end session, clear all session
-  const res = await endSession(gameId, undefined, activeSessions, setActiveSessions);
-  console.log('end game res: ', res)
-
-  // reset game card state
-  setCopied(false)
-  setSessionId(null);
-  setGameStarted(false);
-}
 
 export default function GameCard({gameId, title, numQuestions, thumbnail, totalDuration, questions}) {
   const [gameStarted, setGameStarted] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const {activeSessions, setActiveSessions} = useContext(SessionContext);
   const [Copied, setCopied] = useState(false);
+  const [showResultPop, setShowResultPop] = useState(false);
+  const [infoPassedToSession, setInfoPassedToSession] = useState({});
   
-
   useEffect(() => {
     const initSessionStatus = async () => {
       let activedSession = await cleanSessions(activeSessions, setActiveSessions, gameId);
@@ -53,9 +28,15 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
         setGameStarted(false);
         setSessionId(null);
       }
+      setInfoPassedToSession({title});
     }
     initSessionStatus();
   }, [])
+
+  useEffect(() => {
+    if (gameStarted === false){
+    }
+  }, [gameStarted])
   
   const handleCopyLink = async () => {
     try {
@@ -69,6 +50,35 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
     }
   };
 
+  // It must be quesitons to start.
+  const handleStartGame = async (gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId) => {
+    console.log('start gameId: ' + gameId)
+
+    // check if questions exist
+    const questions = await queryQuestions(gameId);
+    if (questions.length === 0){
+      alert('Can not start game without questions!');
+      return ;
+    }
+    // start session, return session id.
+    const activeSessionId = await startSession(gameId, activeSessions, setActiveSessions);
+
+    setSessionId(activeSessionId);
+    setGameStarted(true);
+  }
+    
+  const handleEndGame = async () => {
+    // end session, clear all session
+    const res = await endSession(gameId, undefined, activeSessions, setActiveSessions);
+    console.log('end game res: ', res)
+
+    // reset game card state
+    setCopied(false)
+    setSessionId(null);
+    setGameStarted(false);
+    setShowResultPop(true);
+  }
+
   return (
     <div className="p-2 bg-white rounded-2xl shadow-md items-center space-x-4">
       {/* <button onClick={() => cleanSessions(activeSessions, setActiveSessions)}>Clean Session</button> */}
@@ -78,14 +88,19 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
             <button 
               onClick={() => handleEndGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId, setCopied)}>End Game
             </button> &nbsp;&nbsp;&nbsp;
-            <Link to={`/session/${sessionId}`}>Go to session.</Link>&nbsp;&nbsp;&nbsp;
+            <Link to={`/session/${sessionId}`} state={infoPassedToSession}>Go to session.</Link>&nbsp;&nbsp;&nbsp;
 
             <button className='text-sm' onClick={handleCopyLink}>{Copied?'Copied':'Click to Copy Link:'}
             </button>
             <p>{sessionId}</p>
           </>
         ) : (
-          <button onClick={() => handleStartGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId)}>Start Game</button>
+          <>
+            <button onClick={() => handleStartGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId)}>Start Game</button>
+            {showResultPop && (
+              <Link to={`/session/:${sessionId}`} state={infoPassedToSession}>Would you like to view the results?</Link>
+            )}
+          </>
         )}
       </div>
       <h4 className="text-lg font-bold">{title}</h4>
