@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { apiCall } from '../utils/api';
 import { useContext, useEffect, useState } from 'react';
 import { SessionContext } from '../context/Sessions';
-import { startSession, endSession, cleanSessions } from '../utils/session';
+import { startSession, endSession, cleanSessions, checkSessionState } from '../utils/session';
 import { queryQuestions } from '../utils/query';
 
 
@@ -64,6 +64,7 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
     const activeSessionId = await startSession(gameId, activeSessions, setActiveSessions);
 
     setSessionId(activeSessionId);
+    console.log('activeSessionId:', activeSessionId)
     setGameStarted(true);
   }
     
@@ -73,10 +74,13 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
     console.log('end game res: ', res)
 
     // reset game card state
-    setCopied(false)
-    setSessionId(null);
-    setGameStarted(false);
-    setShowResultPop(true);
+    const isActive = await checkSessionState(sessionId, undefined, activeSessions, setActiveSessions);
+    if (isActive === false){
+      setCopied(false)
+      setSessionId(null);
+      setGameStarted(false);
+      setShowResultPop(true);
+    }
   }
 
   return (
@@ -86,7 +90,7 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
         {gameStarted? (
           <>
             <button 
-              onClick={() => handleEndGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId, setCopied)}>End Game
+              onClick={() => handleEndGame()}>End Game
             </button> &nbsp;&nbsp;&nbsp;
             <Link to={`/session/${sessionId}`} state={infoPassedToSession}>Go to session.</Link>&nbsp;&nbsp;&nbsp;
 
