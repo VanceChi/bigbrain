@@ -342,3 +342,119 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
     initEditor(gameId, questionId);
     
   }, []);
+
+  // Reset answers and time when question type changes
+  useEffect(() => {
+    if (questionType === 'judgment') {
+      setAnswers([{ text: 'True', correct: true }]);
+    } else {
+      setAnswers([
+        { text: '', correct: true },
+        { text: '', correct: false },
+      ]);
+    }
+    setSelectedAnswers([]);
+    setSubmitted(false);
+    setResult('');
+  }, [questionType]);
+  
+
+  /**
+   *  Given game, questions from Closure (EditQuizQuestionCard) 
+   *  If the game contain that quesiton, update with new one (del -> add).
+   *  If not, add question.
+   * 
+   * @param {Object {}} question { id:... , ... }
+   */
+  const saveQuestion = async (question) => {
+    // input check
+    if ((typeof question !== 'object') || question.id === undefined) {
+      console.error('quesiton added unvalid.');
+      return;
+    }
+    try {
+      const newQuestions = [...questions, question];
+      await updateQuestions(newQuestions);
+      if(questionId === undefined)
+        setShowAddQues(false);
+    } catch (err) {
+      console.error('saveQuestion error:' + err);
+    }
+  };
+
+  /**
+   *  Update questions of game. Given game, from Closure (EditGame) 
+   * 
+   */
+  const updateQuestions = async (questions) => {
+    try {
+      const newGame = deepcopy(game);
+      newGame.questions = questions;
+      await addGame(newGame);
+      setQuestions(questions);
+    } catch (err) {
+      console.error('updateQuestions error:' + err);
+    }
+  }
+
+  /**
+   *  Add game to games. Given games, from Closure (EditQuizQuestionCard) 
+   *  If games contain the game, update with new one (del -> add).
+   *  If not, add game.
+   * 
+   */
+  const addGame = async (game) => {
+    try {
+      const restGames = games.filter((g) => g.id != game.id);
+      const updatedGames = [...restGames, game];
+      await apiCall('/admin/games', 'PUT', {games: updatedGames});
+      console.log('Question saved.')
+      setGames(games);
+      setGame(game);
+    } catch (err) {
+      console.error('addGame error:', err);
+    }
+  }
+
+  return (
+    <>
+      {showAddQues && (
+        <div className="max-w-2xl mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Game Question Editor</h1>
+        <QuestionEditor
+          questionType={questionType}
+          setQuestionType={setQuestionType}
+          questionText={questionText}
+          setQuestionText={setQuestionText}
+          timeLimit={timeLimit}
+          setTimeLimit={setTimeLimit}
+          points={points}
+          setPoints={setPoints}
+          mediaUrl={mediaUrl}
+          setMediaUrl={setMediaUrl}
+          answers={answers}
+          setAnswers={setAnswers}
+          saveQuestion={saveQuestion}
+        />
+        <h2 className="text-xl font-bold mb-4">Question Preview</h2>
+        <QuestionDisplay
+          questionType={questionType}
+          questionText={questionText}
+          timeLimit={timeLimit}
+          points={points}
+          mediaUrl={mediaUrl}
+          answers={answers}
+          selectedAnswers={selectedAnswers}
+          setSelectedAnswers={setSelectedAnswers}
+          submitted={submitted}
+          setSubmitted={setSubmitted}
+          timeLeft={timeLeft}
+          setTimeLeft={setTimeLeft}
+          result={result}
+          setResult={setResult}
+        />
+        </div>
+      )}
+    </>
+  );
+};
