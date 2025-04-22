@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { BackButton } from "../components/Button";
 import { checkSessionState } from "../utils/session";
+import { apiCall } from "../utils/api";
 
 export default function PlayJoin() {
   const { sessionId } = useParams();
@@ -19,17 +20,37 @@ export default function PlayJoin() {
   // }, [])
 
   const handleSubmitSessionId = async () => {
-    const isActive = await checkSessionState(inputSessionId);
-
-    if (isActive){
-      navigate(`/play/join/${inputSessionId}`)
-    } else {
-      alert('Session unactive.');
-    }
+    navigate(`/play/join/${inputSessionId}`)
   }
 
-  const handleSubmitName = () => {
-    console.log(name)
+  const handleSubmitName = async () => {
+    console.log('Name Submitted. Name, sessionId:', name, sessionId);
+    let isActive = await checkSessionState(sessionId);
+    console.log('After submit name, session state:', isActive)
+    if (isActive) { // session active, join session.
+      try {
+        const res = await apiCall(`/play/join/${sessionId}`, 'POST', {name});  // res.playerId
+        const playerId = res.playerId;
+        navigate(`/play/${playerId}`, { state: { sessionId } });
+      } catch (error) {
+        console.error('Player join session error:', error);
+      }
+    } else { // session inactive, waiting
+      console.log('waiting.')
+      
+      while (!isActive){
+        // keep polling  
+        setTimeout(async () => {
+          isActive = await checkSessionState(sessionId);
+          console.log('polling result:', isActive);
+        }, 100)
+        
+      }
+    }
+
+    
+
+
   }
 
   return (

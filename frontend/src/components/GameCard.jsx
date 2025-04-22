@@ -28,7 +28,7 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
         setGameStarted(false);
         setSessionId(null);
       }
-      setInfoPassedToSession({title});
+      setInfoPassedToSession({title, gameId, questions});
     }
     initSessionStatus();
   }, [])

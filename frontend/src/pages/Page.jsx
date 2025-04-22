@@ -8,6 +8,7 @@ import { SessionContext } from '../context/Sessions';
 import { useState } from 'react';
 import Session from "./Session";
 import PlayJoin from "./PlayJoin";
+import PlayGame from "./PlayGame";
 
 function ProtectedRoute({ children }) {
   const token = JSON.parse(localStorage.getItem('token'));
@@ -69,12 +70,9 @@ export default function Page({}) {
                 <Session />
               </ProtectedRoute>
             } />
-            <Route path="/play/join/" element={
-              <PlayJoin />
-            } />
-            <Route path="/play/join/:sessionId" element={
-              <PlayJoin />
-            } />
+            <Route path="/play/join/" element={ <PlayJoin /> } />
+            <Route path="/play/join/:sessionId" element={ <PlayJoin /> } />
+            <Route path="/play/:playerId" element={ <PlayGame /> } />
           </Routes>
         </Router>
       </SessionProvider>

@@ -342,10 +342,6 @@ export default function EditQuizQuestionCard({gameId, questionId, showAddQues, s
     
   }, []);
 
-  useEffect(() => {
-    console.log('questions changedd:', questions)
-  }, [questions])
-
   // Reset answers and time when question type changes
   useEffect(() => {
     if (questionType === 'judgment') {
@@ -370,7 +366,6 @@ export default function EditQuizQuestionCard({gameId, questionId, showAddQues, s
    * @param {Object {}} question { id:... , ... }
    */
   const saveQuestion = async (question) => {
-    console.log('save question.', questions)
     // input check
     if ((typeof question !== 'object') || question.id === undefined) {
       console.error('quesiton added unvalid.');
@@ -412,7 +407,7 @@ export default function EditQuizQuestionCard({gameId, questionId, showAddQues, s
       const restGames = games.filter((g) => g.id != game.id);
       const updatedGames = [...restGames, game];
       await apiCall('/admin/games', 'PUT', {games: updatedGames});
-      alert('Question Saved!')
+      console.log('Question saved.')
       setGames(games);
       setGame(game);
     } catch (err) {
