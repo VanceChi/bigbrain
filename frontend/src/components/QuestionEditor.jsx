@@ -379,7 +379,6 @@ export default function EditQuizQuestionCard({gameId, questionId, showAddQues, s
     try {
       const newQuestions = [...questions, question];
       await updateQuestions(newQuestions);
-      console.log(showAddQues)
       if(questionId === undefined)
         setShowAddQues(false);
     } catch (err) {

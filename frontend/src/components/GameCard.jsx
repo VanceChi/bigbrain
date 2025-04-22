@@ -64,17 +64,16 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
     const activeSessionId = await startSession(gameId, activeSessions, setActiveSessions);
 
     setSessionId(activeSessionId);
-    console.log('activeSessionId:', activeSessionId)
     setGameStarted(true);
   }
     
   const handleEndGame = async () => {
     // end session, clear all session
     const res = await endSession(gameId, undefined, activeSessions, setActiveSessions);
-    console.log('end game res: ', res)
+    console.log('Game ended, res: ', res)
 
     // reset game card state
-    const isActive = await checkSessionState(sessionId, undefined, activeSessions, setActiveSessions);
+    const isActive = await checkSessionState(sessionId);
     if (isActive === false){
       setCopied(false)
       setSessionId(null);

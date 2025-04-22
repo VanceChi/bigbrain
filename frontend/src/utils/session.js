@@ -9,6 +9,16 @@ import { apiCall } from "./api";
  * ]
  */
 
+
+/**
+ * Get active sessions from localStorage.
+ * 
+ * @returns {Array} activeSessions in localStorage
+ */
+function getActiveSessions() {
+  return JSON.parse(localStorage.getItem('activeSessions'));
+}
+
 /**
  * Start Session of the game.
  * 
@@ -31,25 +41,39 @@ export const startSession = async (gameId, activeSessions, setActiveSessions) =>
 /**
  * Check session state of session id or game id (Only input one.)
  * 
- * @param {*} sessionId 
- * @param {*} gameId 
- * @param {*} activeSessions 
- * @param {*} setActiveSessions 
- * @returns 
+ * @param {String|Number} sessionId
+ * @param {String|Number} gameId 
+ * @returns {Boolean}
  */
-export const checkSessionState = async (sessionId, gameId, activeSessions, setActiveSessions) => {
-  const sessions = await cleanSessions(activeSessions, setActiveSessions);
-  let session = null;
-
+export const checkSessionState = async (sessionId, gameId) => {
+  if (sessionId && gameId){
+    console.error('Can not pass both sessionId and gameId');
+    return;
+  }
+  // only sessionId
   if (sessionId){
-    session = sessions.find(session => session.activeSessionId == sessionId);
+    try {
+      const res = await apiCall(`/admin/session/${sessionId}/status`, 'GET');
+      return res.results.active;
+    } catch (error) {
+      console.error('checkSessionState error:', error);
+    }
   }
-  if (gameId) {
-    session = sessions.find(session => session.gameId == gameId);
+
+  // only gameId: 
+  // If gameId not in activeSessions, return false
+  const activeSessionsLocal = getActiveSessions();
+  let session = activeSessionsLocal.find(session => session.gameId == gameId);
+  if (session) { // If gameId in activeSessions, check activeSessionId.
+    try {
+      const res = await apiCall(`/admin/session/${session.activeSessionId}/status`, 'GET');
+      return res.resuls.active;
+    } catch (error) {
+      console.error('checkSessionState error:', error);
+    }
+  } else {
+    return false;
   }
-  
-  if (session) return true;
-  else return false;
 }
 
 
@@ -94,7 +118,6 @@ export async function cleanSessions(activeSessions, setActiveSessions, gameId) {
   if (gameId){
     sessionsToClean = activeSessions.filter(session => session.gameId == gameId);
     sessionsNotClean = activeSessions.filter(session => session.gameId != gameId); 
-    // debugger
   } else {
     sessionsToClean = activeSessions;
     sessionsNotClean = [];
@@ -107,7 +130,6 @@ export async function cleanSessions(activeSessions, setActiveSessions, gameId) {
   }
   const newSessions = [...cleanedSessions, ...sessionsNotClean];
   setActiveSessions(newSessions);
-  
   localStorage.setItem('activeSessions', JSON.stringify(newSessions));
 
   return cleanedSessions;

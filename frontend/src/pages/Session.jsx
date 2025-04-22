@@ -16,7 +16,7 @@ export default function Session() {
   useEffect(() => {
     // get game of this session
     const init = async () => {
-      const isActive = await checkSessionState(sessionId, undefined, activeSessions, setActiveSessions);
+      const isActive = await checkSessionState(sessionId);
       setActive(isActive);
     } 
     init();

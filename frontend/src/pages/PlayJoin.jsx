@@ -4,12 +4,11 @@ import { useContext, useEffect, useState } from "react";
 import { BackButton } from "../components/Button";
 import { checkSessionState } from "../utils/session";
 import { SessionContext } from "../context/Sessions";
-import { apiCall } from "../utils/api";
 
 export default function PlayJoin() {
   const { sessionId } = useParams();
   const navigate =  useNavigate();
-  const [inputSessionId, setInputSessionId] = useState(null);
+  const [inputSessionId, setInputSessionId] = useState('');
   const [name, setName] = useState('');
   const {activeSessions, setActiveSessions} = useContext(SessionContext);
 
@@ -24,8 +23,7 @@ export default function PlayJoin() {
   const handleSubmitSessionId = async () => {
     // const res = await apiCall(`/admin/session/${inputSessionId}/status`, 'GET');
     // const isActive = res.results.active;
-    console.log('activeSessions 1:', activeSessions)
-    const isActive = await checkSessionState(inputSessionId, undefined, activeSessions, setActiveSessions);
+    const isActive = await checkSessionState(inputSessionId);
 
     if (isActive){
       setInputSessionId('');
