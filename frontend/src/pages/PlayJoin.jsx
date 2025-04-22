@@ -11,14 +11,24 @@ export default function PlayJoin() {
   const [inputSessionId, setInputSessionId] = useState('');
   const [name, setName] = useState('');
   const [active, setActive] = useState(false);
+  const [sessionIdError, setSessionIdError] = useState(false);
 
-  // useEffect(() => {
-  //   if (sessionId) { // Enter Name
-
-  //   } else {  // Enter Session id first.
-
-  //   }
-  // }, [])
+  useEffect(() => {
+    (async () => {
+      if (sessionId) { // Enter Name
+        try {
+          const isActive = await checkSessionState(sessionId);
+          setSessionIdError(false);  // sessionId valid.
+          setActive(isActive);
+        } catch (error) {
+          console.log('--------', error);
+          setSessionIdError(true);
+        }
+      } else {  // Enter Session id first.
+        
+      }
+    }) ();
+  }, [])
 
   const handleSubmitSessionId = async () => {
     navigate(`/play/join/${inputSessionId}`)
@@ -63,13 +73,19 @@ export default function PlayJoin() {
       <Navbar />
       <BackButton /> <br />
       <p>Join The Game</p>
-      {sessionId?(
+      { (sessionId && checkSessionState(sessionId) && !sessionIdError) ? (
         <>
           <input type="text" value={name} placeholder="Enter Name" onChange={e => setName(e.target.value)}/>
           <button onClick={handleSubmitName}>Submit Name</button>
         </>
       ) : (
         <>
+          {/* Session Id Error Display */}
+          <div aria-label="Error information container" role="alert">
+            <p>{sessionIdError && 'Session Id error!'}</p>
+            <p>{!sessionIdError && active===false && 'Session inactive.'}</p>
+          </div>
+
           <input type="text" value={inputSessionId} placeholder="Enter Session id" onChange={e => setInputSessionId(e.target.value)}/>
           <button onClick={handleSubmitSessionId}>Submit Session id</button>
         </>
