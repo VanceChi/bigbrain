@@ -159,13 +159,21 @@ const QuestionEditor = ({
   );
 };
 
+/**
+ * 
+ * @param {String} mode 'preview' 'observe' 'answer'
+ * preview: Show everything.
+ * observe: Hide submit answer && reset answer
+ * answer: Hide reset answer
+ * @returns 
+ */
 export const QuestionDisplay = ({
   questionType, questionText, timeLimit, points, mediaUrl, answers,
   selectedAnswers, setSelectedAnswers, 
   submitted, setSubmitted,
   result, setResult,
+  mode
 }) => {
-
   const [timeLeft, setTimeLeft] = useState(timeLimit);
   useEffect(() => {
     setTimeLeft(timeLimit);
@@ -212,7 +220,7 @@ export const QuestionDisplay = ({
     setResult(isCorrect ? `Correct! +${points} points` : 'Incorrect.');
   };
 
-  const isYouTubeUrl = mediaUrl && mediaUrl.includes('youtube.com') || mediaUrl.includes('youtu.be');
+  const isYouTubeUrl = mediaUrl && mediaUrl?.includes('youtube.com') || mediaUrl?.includes('youtu.be');
   const youtubeEmbedUrl = isYouTubeUrl
     ? mediaUrl.replace('watch?v=', 'embed/').replace(/youtu.be\//, 'youtube.com/embed/')
     : null;
@@ -260,20 +268,20 @@ export const QuestionDisplay = ({
           )}
         </div>
       ))}
-      <button
+      {mode!=='observe' && (<button
         onClick={handleSubmit}
         disabled={submitted || selectedAnswers.length === 0}
         className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded disabled:bg-bigbrain-light-pink mt-4 hover:cursor-pointer"
       >
         Submit Answer
-      </button>
+      </button>)}
       
-      <button
+      {mode==='preview' && (<button
         onClick={handleReset}
         className="bg-gray-500 text-white px-4 py-2 rounded ml-1"
       >
         Reset Answering
-      </button>
+      </button>)}
       {submitted && <p className="mt-4 text-lg">{result}</p>}
     </div>
   );
@@ -289,7 +297,6 @@ export const QuestionDisplay = ({
 export default function EditQuestionCard({gameId, questionId, showAddQues, setShowAddQues, questions, setQuestions}) {
   const [games, setGames] = useState([]);
   const [game, setGame] = useState({});
-  // const [question, setQuestion] = useState(null);
   const [questionType, setQuestionType] = useState('single');
   const [questionText, setQuestionText] = useState('');
   const [timeLimit, setTimeLimit] = useState(30);
@@ -303,7 +310,6 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
   // initEditor for Edit question / New question
   useEffect(() => {
     async function loadQuestion() {
-      console.log('loadQuestion')
       const q = await queryQuestion(gameId, questionId);
       setQuestionType(q.questionType);
       setQuestionText(q.questionText);
@@ -366,16 +372,23 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
    * @param {Object {}} question { id:... , ... }
    */
   const saveQuestion = async (question) => {
+    
     // input check
     if ((typeof question !== 'object') || question.id === undefined) {
       console.error('quesiton added unvalid.');
       return;
     }
     try {
-      const newQuestions = [...questions, question];
+      let newQuestions = [];
+      if(questionId === undefined){  // Add question
+        newQuestions = [...questions, question];
+      } else {  // Update question
+        const restQues = questions.filter(q => q.id != questionId);
+        question.id = questionId;
+        newQuestions = [...restQues, question];
+      }
       await updateQuestions(newQuestions);
-      if(questionId === undefined)
-        setShowAddQues(false);
+      if(questionId === undefined) setShowAddQues(false);
     } catch (err) {
       console.error('saveQuestion error:' + err);
     }
@@ -435,7 +448,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
         />
         <h2 className="text-xl font-bold mb-4">Question Display</h2>
         <QuestionDisplay
-          handleDisplay={handleDisplay}
+          // handleDisplay={handleDisplay}
           questionType={questionType}
           questionText={questionText}
           timeLimit={timeLimit}
@@ -446,6 +459,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
           submitted={submitted} setSubmitted={setSubmitted}
           // timeLeft={timeLeft} setTimeLeft={setTimeLeft}
           result={result} setResult={setResult}
+          mode={'preview'}
         />
         </div>
       )}

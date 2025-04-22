@@ -10,6 +10,7 @@ export default function PlayJoin() {
   const navigate =  useNavigate();
   const [inputSessionId, setInputSessionId] = useState('');
   const [name, setName] = useState('');
+  const [active, setActive] = useState(false);
 
   // useEffect(() => {
   //   if (sessionId) { // Enter Name
@@ -47,9 +48,13 @@ export default function PlayJoin() {
         
       }
     }
+  }
 
-    
-
+  /**
+   * If Active, play the game.
+   * If inactive, waiting.
+   */
+  const listenState = () => {
 
   }
 
@@ -57,7 +62,7 @@ export default function PlayJoin() {
     <>
       <Navbar />
       <BackButton /> <br />
-      <p>Play join</p>
+      <p>Join The Game</p>
       {sessionId?(
         <>
           <input type="text" value={name} placeholder="Enter Name" onChange={e => setName(e.target.value)}/>
@@ -69,6 +74,9 @@ export default function PlayJoin() {
           <button onClick={handleSubmitSessionId}>Submit Session id</button>
         </>
       )}
+      {
+
+      }
 
       
     </>

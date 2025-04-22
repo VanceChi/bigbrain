@@ -79,7 +79,7 @@ export const checkSessionState = async (sessionId, gameId) => {
 
 /**
  * Send end request. Delete all sessions(remains) of that game in localStorage.
- * gameId sessionId must be passed at least one.
+ * ONLY pass one of gameId sessionId.
  * 
  * @param {Number | String | undefined} gameId 
  * @param {Number | String | undefined} sessionId 
@@ -90,6 +90,10 @@ export const checkSessionState = async (sessionId, gameId) => {
 export const endSession = async (gameId, sessionId, activeSessions, setActiveSessions) => {
   if (gameId === undefined){
     const session = activeSessions.find(session => session.activeSessionId == sessionId);
+    if (session === undefined) {
+      console.log('Session already Ended.');
+      return;
+    }
     gameId = session.gameId;
   }
   const res = await apiCall(`/admin/game/${gameId}/mutate`, 'POST', {
