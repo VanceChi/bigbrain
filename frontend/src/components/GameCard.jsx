@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { SessionContext } from '../context/Sessions';
 import { startSession, endSession, cleanSessions, checkSessionState } from '../utils/session';
-import { queryQuestions } from '../utils/query';
+import { queryQuestions, querySessionId } from '../utils/query';
 
 
 
@@ -16,13 +16,15 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
   const [infoPassedToSession, setInfoPassedToSession] = useState({});
   
   useEffect(() => {
+    cleanSessions(activeSessions, setActiveSessions, gameId);
+    // check game started or not
     const initSessionStatus = async () => {
-      let activedSession = await cleanSessions(activeSessions, setActiveSessions, gameId);
-      activedSession = activedSession[0];
-
-      if (activedSession){  // active
+      const isActive = await checkSessionState(undefined, gameId);
+      console.log(gameId, isActive);
+      // debugger
+      if (isActive){  // active
         setGameStarted(true);
-        setSessionId(activedSession.activeSessionId);
+        setSessionId(querySessionId(gameId));
       } else {       // unactive
         setGameStarted(false);
         setSessionId(null);

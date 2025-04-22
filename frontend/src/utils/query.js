@@ -33,7 +33,25 @@ export async function queryGamebyId(gameId, games) {
   }
 }
 
-export function queryGameIdbySessionId (sessionId) {
+/**
+ * Query active session id of game.
+ * 
+ * @param {String|Number} gameId 
+ * @returns {String|undefined} 
+ */
+export function querySessionId(gameId) {
+  const activeSessions = JSON.parse(localStorage.getItem('activeSessions'));
+  const session = activeSessions.find(session => session.gameId == gameId);
+  return session.activeSessionId;
+}
+
+/**
+ * Query gameId of active session.
+ * 
+ * @param {String|Number} gameId 
+ * @returns {String|undefined} 
+ */
+export function queryGameId (sessionId) {
   const activeSessions = JSON.parse(localStorage.getItem('activeSessions'));
   const session = activeSessions.find(session => session.activeSessionId == sessionId);
   if (session === undefined) return undefined;
@@ -44,7 +62,7 @@ export function queryGameIdbySessionId (sessionId) {
 }
 
 export async function queryGamebySessionId(sessionId) {
-  const gameId = await queryGameIdbySessionId(sessionId);
+  const gameId = await queryGameId(sessionId);
   return await queryGamebyId(gameId);
 }
 

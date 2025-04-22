@@ -17,6 +17,8 @@ export default function PlayJoin() {
     (async () => {
       if (sessionId) { // Enter Name
         try {
+          const res = await apiCall(`/admin/session/${sessionId}/status`, 'GET');
+          console.log(res)
           const isActive = await checkSessionState(sessionId);
           setSessionIdError(false);  // sessionId valid.
           setActive(isActive);
@@ -47,25 +49,17 @@ export default function PlayJoin() {
         console.error('Player join session error:', error);
       }
     } else { // session inactive, waiting
+      setActive(false);
       console.log('waiting.')
-      
-      while (!isActive){
-        // keep polling  
-        setTimeout(async () => {
-          isActive = await checkSessionState(sessionId);
-          console.log('polling result:', isActive);
-        }, 100)
+      // while (!isActive){
+      //   // keep polling  
+      //   setTimeout(async () => {
+      //     isActive = await checkSessionState(sessionId);
+      //     console.log('polling result:', isActive);
+      //   }, 100)
         
-      }
+      // }
     }
-  }
-
-  /**
-   * If Active, play the game.
-   * If inactive, waiting.
-   */
-  const listenState = () => {
-
   }
 
   return (

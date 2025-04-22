@@ -112,7 +112,7 @@ export default function Session() {
             answers={question.answers}
             selectedAnswers={[]}
             setSubmitted={() => console.log('Finished.')}
-            setSelectedAnswers={()=>console.log('You can not answer')}
+            setSelectedAnswers={()=>console.log('You can not answer here.')}
             setResult={()=>console.log('setResult.')}
             mode={'observe'}
           />

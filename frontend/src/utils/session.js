@@ -67,7 +67,8 @@ export const checkSessionState = async (sessionId, gameId) => {
   if (session) { // If gameId in activeSessions, check activeSessionId.
     try {
       const res = await apiCall(`/admin/session/${session.activeSessionId}/status`, 'GET');
-      return res.resuls.active;
+      // debugger
+      return res.results.active;
     } catch (error) {
       console.error('checkSessionState error:', error);
     }
@@ -101,9 +102,7 @@ export const endSession = async (gameId, sessionId, activeSessions, setActiveSes
   })
 
   // double check backend the session status. If unactive, delete sessions in localstorage.
-  setTimeout(() => {
-    cleanSessions(activeSessions, setActiveSessions, gameId);
-  }, 0);
+  cleanSessions(activeSessions, setActiveSessions, gameId);
 
   return res;
 }

@@ -18,7 +18,7 @@ export default function PlayGame() {
   // if inactive
   useEffect(() => {
     if (active === false){
-
+      console.log('loading...')
     }
   }, [loadingT])
 
