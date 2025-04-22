@@ -4,7 +4,7 @@ import { apiCall } from '../utils/api';
 import Navbar from '../components/Navbar';
 import { BackButton } from "../components/Button"
 import { queryGamebyId } from '../utils/query';
-import EditQuizQuestionCard from "../components/QuestionEditor";
+import EditQuestionCard from "../components/EditQuestionCard";
 import { updateQuestions } from "../utils/update"
 
 
@@ -83,7 +83,7 @@ export default function EditGame() {
 
         {/* Input question Info */}
         {showAddQues && 
-        <EditQuizQuestionCard 
+        <EditQuestionCard 
           gameId={gameId}
           showAddQues={showAddQues}
           setShowAddQues={setShowAddQues}

@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { apiCall } from '../utils/api';
 import { useContext, useEffect, useState } from 'react';
 import { SessionContext } from '../context/Sessions';
 import { startSession, endSession, cleanSessions, checkSessionState } from '../utils/session';

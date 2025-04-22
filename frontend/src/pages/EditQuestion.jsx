@@ -3,7 +3,7 @@ import { BackButton } from "../components/Button"
 import { useParams } from "react-router-dom"
 import { queryQuestions } from "../utils/query";
 import { useEffect, useState } from "react";
-import EditQuizQuestionCard from "../components/QuestionEditor";
+import EditQuestionCard from "../components/EditQuestionCard";
 
 export default function EditQuestion () {
   const { gameId, questionId } = useParams();
@@ -26,7 +26,7 @@ export default function EditQuestion () {
     <>
       <Navbar />
       <BackButton />
-      <EditQuizQuestionCard  
+      <EditQuestionCard  
         gameId={gameId}
         questionId={questionId}
         showAddQues={true}
