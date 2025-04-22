@@ -8,6 +8,7 @@ const QuestionEditor = ({
   questionType, setQuestionType,
   questionText, setQuestionText,
   timeLimit, setTimeLimit,
+  setTimeLeft,
   points, setPoints,
   mediaUrl, setMediaUrl,
   answers, setAnswers,
@@ -88,7 +89,7 @@ const QuestionEditor = ({
           <input
             type="number"
             value={timeLimit}
-            onChange={(e) => setTimeLimit(Number(e.target.value))}
+            onChange={(e) => {setTimeLimit(Number(e.target.value));setTimeLeft(Number(e.target.value))}}
             className="p-2 border rounded w-full"
             min="1"
           />
@@ -286,7 +287,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
   // const [question, setQuestion] = useState(null);
   const [questionType, setQuestionType] = useState('single');
   const [questionText, setQuestionText] = useState('');
-  const [timeLimit, setTimeLimit] = useState();
+  const [timeLimit, setTimeLimit] = useState(30);
   const [points, setPoints] = useState();
   const [mediaUrl, setMediaUrl] = useState('');
   const [answers, setAnswers] = useState([]);
@@ -311,7 +312,6 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
       setResult('');
     }
     function resetEditor() {
-      console.log('resetEditor')
       setQuestionText('What is the capital of Australia?');
       setAnswers([
         { text: 'Canberra', correct: true },
@@ -422,18 +422,13 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
         <div className="max-w-2xl mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Game Question Editor</h1>
         <QuestionEditor
-          questionType={questionType}
-          setQuestionType={setQuestionType}
-          questionText={questionText}
-          setQuestionText={setQuestionText}
-          timeLimit={timeLimit}
-          setTimeLimit={setTimeLimit}
-          points={points}
-          setPoints={setPoints}
-          mediaUrl={mediaUrl}
-          setMediaUrl={setMediaUrl}
-          answers={answers}
-          setAnswers={setAnswers}
+          questionType={questionType} setQuestionType={setQuestionType}
+          questionText={questionText} setQuestionText={setQuestionText}
+          timeLimit={timeLimit} setTimeLimit={setTimeLimit}
+          setTimeLeft={setTimeLeft}
+          points={points} setPoints={setPoints}
+          mediaUrl={mediaUrl} setMediaUrl={setMediaUrl}
+          answers={answers} setAnswers={setAnswers}
           saveQuestion={saveQuestion}
         />
         <h2 className="text-xl font-bold mb-4">Question Preview</h2>
@@ -444,14 +439,10 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
           points={points}
           mediaUrl={mediaUrl}
           answers={answers}
-          selectedAnswers={selectedAnswers}
-          setSelectedAnswers={setSelectedAnswers}
-          submitted={submitted}
-          setSubmitted={setSubmitted}
-          timeLeft={timeLeft}
-          setTimeLeft={setTimeLeft}
-          result={result}
-          setResult={setResult}
+          selectedAnswers={selectedAnswers} setSelectedAnswers={setSelectedAnswers}
+          submitted={submitted} setSubmitted={setSubmitted}
+          timeLeft={timeLeft} setTimeLeft={setTimeLeft}
+          result={result} setResult={setResult}
         />
         </div>
       )}
