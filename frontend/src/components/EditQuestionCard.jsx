@@ -8,11 +8,10 @@ const QuestionEditor = ({
   questionType, setQuestionType,
   questionText, setQuestionText,
   timeLimit, setTimeLimit,
-  setTimeLeft,
   points, setPoints,
   mediaUrl, setMediaUrl,
   answers, setAnswers,
-  saveQuestion
+  saveQuestion,
 }) => {
   const addAnswer = () => {
     if (answers.length < 6) {
@@ -89,7 +88,7 @@ const QuestionEditor = ({
           <input
             type="number"
             value={timeLimit}
-            onChange={(e) => {setTimeLimit(Number(e.target.value));setTimeLeft(Number(e.target.value))}}
+            onChange={(e) => {setTimeLimit(Number(e.target.value))}}
             className="p-2 border rounded w-full"
             min="1"
           />
@@ -162,9 +161,15 @@ const QuestionEditor = ({
 
 export const QuestionDisplay = ({
   questionType, questionText, timeLimit, points, mediaUrl, answers,
-  selectedAnswers, setSelectedAnswers, submitted, setSubmitted,
-  timeLeft, setTimeLeft, result, setResult,
+  selectedAnswers, setSelectedAnswers, 
+  submitted, setSubmitted,
+  result, setResult,
 }) => {
+
+  const [timeLeft, setTimeLeft] = useState(timeLimit);
+  useEffect(() => {
+    setTimeLeft(timeLimit);
+  }, [timeLimit])
 
   useEffect(() => {
     if (!submitted && timeLeft > 0) {
@@ -288,14 +293,14 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
   const [questionType, setQuestionType] = useState('single');
   const [questionText, setQuestionText] = useState('');
   const [timeLimit, setTimeLimit] = useState(30);
-  const [points, setPoints] = useState();
+  const [points, setPoints] = useState(100);
   const [mediaUrl, setMediaUrl] = useState('');
   const [answers, setAnswers] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(timeLimit);
   const [result, setResult] = useState('');
 
+  // initEditor for Edit question / New question
   useEffect(() => {
     async function loadQuestion() {
       console.log('loadQuestion')
@@ -308,7 +313,6 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
       setAnswers(q.answers);
       setSelectedAnswers(q.answers.filter((answer)=>answer.correct===true));
       setSubmitted(false);
-      setTimeLeft(q.timeLimit);
       setResult('');
     }
     function resetEditor() {
@@ -318,29 +322,24 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
         { text: 'London', correct: false },
         { text: 'Berlin', correct: false },
       ]);
-      setTimeLimit(30);
-      setPoints(100);
     }
+
     async function initEditor(gameId, questionId) {
       const games = await queryGames();
       const game = await queryGamebyId(gameId, games);
       questions = await queryQuestions(gameId, game);
       setGames(games);
       setGame(game);
-      
-      if (showAddQues === undefined) {
+      if (showAddQues === undefined)
         showAddQues = true;
-      }
 
-      if (questionId)
+      if (questionId) 
         loadQuestion();
-      else {
+      else 
         resetEditor();
-      }
     }
     
     initEditor(gameId, questionId);
-    
   }, []);
 
   // Reset answers and time when question type changes
@@ -416,6 +415,10 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
     }
   }
 
+  const handleDisplay = () => {
+    // save question -> display start
+  }
+
   return (
     <>
       {showAddQues && (
@@ -425,14 +428,14 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
           questionType={questionType} setQuestionType={setQuestionType}
           questionText={questionText} setQuestionText={setQuestionText}
           timeLimit={timeLimit} setTimeLimit={setTimeLimit}
-          setTimeLeft={setTimeLeft}
           points={points} setPoints={setPoints}
           mediaUrl={mediaUrl} setMediaUrl={setMediaUrl}
           answers={answers} setAnswers={setAnswers}
           saveQuestion={saveQuestion}
         />
-        <h2 className="text-xl font-bold mb-4">Question Preview</h2>
+        <h2 className="text-xl font-bold mb-4">Question Display</h2>
         <QuestionDisplay
+          handleDisplay={handleDisplay}
           questionType={questionType}
           questionText={questionText}
           timeLimit={timeLimit}
@@ -441,7 +444,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
           answers={answers}
           selectedAnswers={selectedAnswers} setSelectedAnswers={setSelectedAnswers}
           submitted={submitted} setSubmitted={setSubmitted}
-          timeLeft={timeLeft} setTimeLeft={setTimeLeft}
+          // timeLeft={timeLeft} setTimeLeft={setTimeLeft}
           result={result} setResult={setResult}
         />
         </div>
