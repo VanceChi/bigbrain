@@ -18,7 +18,6 @@ export default function PlayJoin() {
       if (sessionId) { // Enter Name
         try {
           const res = await apiCall(`/admin/session/${sessionId}/status`, 'GET');
-          console.log(res)
           const isActive = await checkSessionState(sessionId);
           setSessionIdError(false);  // sessionId valid.
           setActive(isActive);
