@@ -41,7 +41,7 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
   const handleCopyLink = async () => {
     try {
       // Construct the link to copy (e.g., a URL for the game session)
-      const link = `${window.location.origin}/game/${gameId}/session/${sessionId}`;
+      const link = `${window.location.origin}/play/join/${sessionId}`;
       await navigator.clipboard.writeText(link);
       setCopied(true);
     } catch (error) {

@@ -1,5 +1,5 @@
 // Dashboard.jsx
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { apiCall } from "../utils/api"
 import GameCard from "../components/GameCard"
 import Navbar from "../components/Navbar";

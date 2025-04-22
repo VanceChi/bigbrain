@@ -15,7 +15,7 @@ import { apiCall } from "./api";
  * 
  * @returns {Array} activeSessions in localStorage
  */
-function getActiveSessions() {
+export function getActiveSessions() {
   return JSON.parse(localStorage.getItem('activeSessions'));
 }
 
