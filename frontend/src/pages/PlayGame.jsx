@@ -1,80 +1,143 @@
-import { useLocation, useParams } from "react-router-dom"
-import Navbar from "../components/Navbar"
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
-import { checkSessionState } from "../utils/session";
 import { BackButton } from "../components/Button";
 import { apiCall } from "../utils/api";
+import { QuestionDisplay } from "../components/EditQuestionCard";
 
 export default function PlayGame() {
   const { state } = useLocation();
   const { playerId } = useParams();
-  const [sessionId] = useState(state.sessionId);
-  const [active, setActive] = useState(true);
-  const [started, setStarted] = useState(false);
+  let [sessionId] = useState(state?.sessionId);
+  const [gameState, setGameState] = useState(0); // 0: waiting, 1: ongoing, 2: over
   const [loadingT, setLoadingT] = useState(0);
+  const [question, setQuestion] = useState(null);
+  const [selectedAnswers, setSelectedAnswers] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [result, setResult] = useState('');
+  const [timeLeft, setTimeLeft] = useState(null);
+  const navigate = useNavigate();
 
-  const gameStarted = async () => {
+  const checkGameStatus = async () => {
+    console.log('checkGameStatus')
     try {
-      const { started } = await apiCall(`/play/${playerId}/status`, 'GET');
-      console.log('started', started);
-      setStarted(started);
-      setActive(true);
-    } catch (error) {
-      console.log('error', error);
-      setActive(false);
+      const { started } = await apiCall(`/play/${playerId}/status`, 'GET'); // started: Boolean
+      if ( !started ) {  // not started
+        setGameState(0);
+      } else {  // started
+        setGameState(1);
+        // Fetch current question
+        const { question } = await apiCall(`/play/${playerId}/question`, 'GET');
+        setQuestion(question);
+        setTimeLeft(question.timeLimit);
+        setSelectedAnswers([]);
+        setSubmitted(false);
+        setResult('');
+      }
+    } catch (err) {  // game ended (session ended)
+      console.error(err)
+      setGameState(2); 
     }
-  }
-  
+  };
+
   useEffect(() => {
     const init = async () => {
-      console.log('init.')
-      gameStarted();
-      const isActive = await checkSessionState(sessionId);
-      console.log('-----', isActive)
-      setActive(isActive);  
-    }
-    
+      await checkGameStatus();
+    };
     init();
-  }, [])
+  }, [playerId]);
 
-  const fetch = () => {
-    const timeoutId = setTimeout(() => {
-      console.log(loadingT, 'loading...')
-      setLoadingT(loadingT => loadingT + 1);
-      gameStarted();
-      checkSessionState(sessionId)
-        .then(isActive => setActive(isActive));
-    }, 100)
-
-    return timeoutId;
-  }
-
-  // if inactive
   useEffect(() => {
-    console.log(started, active);
-    if (!started && active){
-        const timeoutId = fetch();
-        return () => clearTimeout(timeoutId);
+    const intervalId = setInterval(() => {
+      if (gameState === 0) {
+        console.log(loadingT, 'loading...');
+        setLoadingT((t) => t + 1);
+        checkGameStatus();
+      } else if (gameState === 1) {
+        checkGameStatus(); // Continue polling to detect position changes or session end
+      }
+    }, 500); // Poll every half second
+
+    return () => clearTimeout(intervalId);
+  }, [loadingT, gameState]);
+
+  useEffect(() => {
+    if (gameState === 1 && timeLeft > 0 && !submitted) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setSubmitted(true);
+            fetchAnswerResult();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
     }
-  }, [loadingT])
+  }, [timeLeft, submitted, gameState]);
+
+  const fetchAnswerResult = async () => {
+    try {
+      const res = await apiCall(`/play/${playerId}/answer`, 'GET');
+      setResult(res.correct ? 'Correct!' : 'Incorrect');
+    } catch (err) {
+      console.error('Failed to fetch answer result:', err);
+      setResult('Error fetching result');
+    }
+  };
+
+  const handleAnswer = async (answer) => {
+    const newAnswers = question.questionType === 'multiple'
+      ? selectedAnswers.includes(answer)
+        ? selectedAnswers.filter(a => a !== answer)
+        : [...selectedAnswers, answer]
+      : [answer];
+    
+    setSelectedAnswers(newAnswers);
+    try {
+      await apiCall(`/play/${playerId}/answer`, 'PUT', { answer: newAnswers });
+    } catch (err) {
+      console.error('Failed to submit answer:', err);
+    }
+  };
 
   return (
     <>
       <Navbar />
-      <BackButton />
-      <p>Play Game</p>
-      {active ? (
-        <p>session active</p>
-      ) : (
-        <p>session inactive</p>
-      )}
+      {sessionId && <BackButton onClick={() => {
+        navigate(`/play/join`);
+      }}/>}
+      <div className="p-4">
+        {gameState === 0 && (
+          <p className="text-xl">Please wait for the game to start</p>
+        )}
 
-      {started ? (
-        <p>game started</p>
-      ) : (
-        <p>game not started</p>
-      )}
+        {gameState === 1 && question && (
+          <QuestionDisplay
+            questionType={question.questionType ?? 'single'}
+            questionText={question.questionText ?? 'No Question'}
+            timeLimit={question.timeLimit ?? 30}
+            points={question.points ?? 100}
+            mediaUrl={question.mediaUrl ?? ''}
+            answers={question.answers ?? []}
+            selectedAnswers={selectedAnswers}
+            setSelectedAnswers={setSelectedAnswers}
+            submitted={submitted}
+            setSubmitted={setSubmitted}
+            timeLeft={timeLeft}
+            setTimeLeft={setTimeLeft}
+            result={result}
+            setResult={setResult}
+            mode="answer"
+          />
+        )}
+
+        {gameState === 2 && (
+          <p className="text-xl">Game over</p>
+        )}
+      </div>
     </>
-    
-  )
+  );
 }
