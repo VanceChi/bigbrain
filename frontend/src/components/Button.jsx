@@ -1,8 +1,11 @@
 import { useNavigate } from "react-router-dom";
 
-export function BackButton() {
+
+export function BackButton({onClick}) {
   const navigate = useNavigate();
+  if (!onClick)
+    onClick = () => navigate(-1);
   return (
-    <button className="border" onClick={() => navigate(-1)}>back</button>
+    <button className="border" onClick={onClick}>back</button>
   )
 }

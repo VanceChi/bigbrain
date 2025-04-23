@@ -160,9 +160,10 @@ const QuestionEditor = ({
 };
 
 /**
+ * Answering display. Consist of three modes.
  * 
  * @param {String} mode 'preview' 'observe' 'answer'
- * preview: Show everything.
+ * preview: Show everything.w
  * observe: Hide submit answer && reset answer
  * answer: Hide reset answer
  * @returns 
@@ -253,7 +254,7 @@ export const QuestionDisplay = ({
         </div>
       )}
       <p className="mb-2">Time Left: {timeLeft}s | Points: {points}</p>
-      {answers.map((answer, index) => (
+      {answers?.map((answer, index) => (
         <div key={index} className="flex items-center mb-2">
           <input
             type={questionType === 'multiple' ? 'checkbox' : 'radio'}
@@ -270,7 +271,7 @@ export const QuestionDisplay = ({
       ))}
       {mode!=='observe' && (<button
         onClick={handleSubmit}
-        disabled={submitted || selectedAnswers.length === 0}
+        disabled={submitted || selectedAnswers?.length === 0}
         className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded disabled:bg-bigbrain-light-pink mt-4 hover:cursor-pointer"
       >
         Submit Answer

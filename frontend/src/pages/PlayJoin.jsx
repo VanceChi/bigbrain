@@ -50,14 +50,6 @@ export default function PlayJoin() {
     } else { // session inactive, waiting
       setActive(false);
       console.log('waiting.')
-      // while (!isActive){
-      //   // keep polling  
-      //   setTimeout(async () => {
-      //     isActive = await checkSessionState(sessionId);
-      //     console.log('polling result:', isActive);
-      //   }, 100)
-        
-      // }
     }
   }
 

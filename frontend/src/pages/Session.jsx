@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import Navbar from "../components/Navbar";
 import { checkSessionState, endSession } from "../utils/session";
 import { useContext, useEffect, useState } from "react";
@@ -17,6 +17,7 @@ export default function Session() {
   const [position, setPosition] = useState(-1);  // -1: not start yet
   const [question, setQuestion] = useState({}); 
   const [nofQuestion, setNofQuestion] = useState(0); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const init = async () => {
@@ -78,7 +79,7 @@ export default function Session() {
   return (
     <>
       <Navbar />
-      <BackButton />
+      <BackButton onClick={() => navigate('/dashboard')}/>
       {active? (
         <>
           <p>Session active</p>

@@ -89,12 +89,12 @@ export async function queryQuestions(gameId, game, games) {
 /**
  * Get the question by gameId and questionId.
  * 
- * @param {String | Number} gameId 
- * @param {String | Number} questionId 
- * @param {Array | undefined} questions 
- * @param {Object | undefined} game 
+ * @param {String|Number} gameId 
+ * @param {String|Number} questionId 
+ * @param {Array|undefined} questions 
+ * @param {Object|undefined} game 
  * @param {Array} games 
- * @returns {Object | undefined} one certain question of that game.
+ * @returns {Object|undefined} one certain question of that game.
  */
 export async function queryQuestion(gameId, questionId, questions, game, games) {
   try {
