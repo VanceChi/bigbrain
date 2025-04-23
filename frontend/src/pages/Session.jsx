@@ -107,7 +107,7 @@ export default function Session() {
           <QuestionDisplay 
             questionType={question.questionType}
             questionText={question.questionText}
-            timeLimit={question.timeLimit}
+            duration={question.duration}
             points={question.points}
             mediaUrl={question.mediaUrl}
             answers={question.answers}

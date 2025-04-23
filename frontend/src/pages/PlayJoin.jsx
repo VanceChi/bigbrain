@@ -8,77 +8,53 @@ import { apiCall } from "../utils/api";
 export default function PlayJoin() {
   const { sessionId } = useParams();
   const navigate =  useNavigate();
-  const [inputSessionId, setInputSessionId] = useState('');
+  const [inputSessionId, setInputSessionId] = useState(sessionId ? String(sessionId) : '');  
+  const [sessionIdSubmitted, setSessionIdSubmitted] = useState(sessionId!==undefined);
   const [name, setName] = useState('');
-  const [active, setActive] = useState(false);
   const [sessionIdError, setSessionIdError] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      if (sessionId) { // Enter Name
-        try {
-          const res = await apiCall(`/admin/session/${sessionId}/status`, 'GET');
-          const isActive = await checkSessionState(sessionId);
-          setSessionIdError(false);  // sessionId valid.
-          setActive(isActive);
-        } catch (error) {
-          console.log('--------', error);
-          setSessionIdError(true);
-        }
-      } else {  // Enter Session id first.
-        
-      }
-    }) ();
-  }, [])
-
+  
   const handleSubmitSessionId = async () => {
-    navigate(`/play/join/${inputSessionId}`)
-  }
-
-  const handleSubmitName = async () => {
-    console.log('Name Submitted. Name, sessionId:', name, sessionId);
-    let isActive = await checkSessionState(sessionId);
-    console.log('After submit name, session state:', isActive)
-    if (isActive) { // session active, join session.
-      try {
-        const res = await apiCall(`/play/join/${sessionId}`, 'POST', {name});  // res.playerId
-        const playerId = res.playerId;
-        navigate(`/play/${playerId}`, { state: { sessionId } });
-      } catch (error) {
-        console.error('Player join session error:', error);
-      }
-    } else { // session inactive, waiting
-      setActive(false);
-      console.log('waiting.')
+    if(inputSessionId) {
+      setSessionIdSubmitted(true);
+      navigate(`/play/join/${inputSessionId}`)
     }
   }
 
+  const handleSubmitName = async () => {
+    try {
+      const { playerId } = await apiCall(`/play/join/${sessionId}`, 'POST', {name});
+      navigate(`/play/${playerId}`, { state: { sessionId } });
+    } catch (error) {
+      console.error('Player join session error:', error);
+      setSessionIdError(true);
+    }
+    console.log('waiting.')
+    }
+    
   return (
     <>
-      <Navbar />
+      <Navbar onClick={()=>navigate('/play/join')}/>
       <BackButton /> <br />
       <p>Join The Game</p>
-      { (sessionId && checkSessionState(sessionId) && !sessionIdError) ? (
+      { sessionIdSubmitted ? (
         <>
           <input type="text" value={name} placeholder="Enter Name" onChange={e => setName(e.target.value)}/>
           <button onClick={handleSubmitName}>Submit Name</button>
         </>
       ) : (
         <>
-          {/* Session Id Error Display */}
-          <div aria-label="Error information container" role="alert">
-            <p>{sessionIdError && 'Session Id error!'}</p>
-            <p>{!sessionIdError && active===false && 'Session inactive.'}</p>
-          </div>
-
           <input type="text" value={inputSessionId} placeholder="Enter Session id" onChange={e => setInputSessionId(e.target.value)}/>
           <button onClick={handleSubmitSessionId}>Submit Session id</button>
         </>
       )}
-      {
 
-      }
-
+      {/* Session Id Error Display */}
+      {sessionIdError && (
+        <div aria-label="Error information container" role="alert">
+          {console.log('sessionIdError',sessionIdError)}
+          <p>Session Id error!</p>
+        </div>
+      )}
       
     </>
   )

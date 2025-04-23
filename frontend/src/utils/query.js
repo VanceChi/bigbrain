@@ -7,8 +7,7 @@ import { apiCall } from "./api";
  */
 export async function queryGames() {
   try {
-    const res = await apiCall('/admin/games', 'GET');
-    const games = res.games;
+    const { games } = await apiCall('/admin/games', 'GET');
     return games;
   } catch(error) {
     throw new Error(error);
@@ -40,6 +39,9 @@ export async function queryGamebyId(gameId, games) {
  * @returns {String|undefined} 
  */
 export function querySessionId(gameId) {
+  if(gameId===undefined){
+    throw Error('gameId undefined.');
+  }
   const activeSessions = JSON.parse(localStorage.getItem('activeSessions'));
   const session = activeSessions.find(session => session.gameId == gameId);
   return session.activeSessionId;

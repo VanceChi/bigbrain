@@ -29,8 +29,8 @@ export default function PlayGame() {
         // Fetch current question
         const { question } = await apiCall(`/play/${playerId}/question`, 'GET');
         setQuestion(question);
-        setTimeLeft(question.timeLimit);
-        setSelectedAnswers([]);
+        setTimeLeft(question.duration);
+        // setSelectedAnswers([]);
         setSubmitted(false);
         setResult('');
       }
@@ -50,7 +50,7 @@ export default function PlayGame() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (gameState === 0) {
-        console.log(loadingT, 'loading...');
+        // console.log(loadingT, 'loading...');
         setLoadingT((t) => t + 1);
         checkGameStatus();
       } else if (gameState === 1) {
@@ -98,15 +98,19 @@ export default function PlayGame() {
    * @param {*} answer 
    */
   const handleSelectAnswer = async (answer) => {
+    console.log('handleSelectAnswer()')
     setSelectedAnswers(answer);
     try {
       const sentAnswer = answer.map(a=>a.text);
-      // debugger
       await submitAnswer(sentAnswer);
     } catch (err) {
       console.error('Failed to submit answer:', err);
     }
   };
+
+  useEffect(() => {
+    console.log('selectedAnswers changed: ', selectedAnswers);
+  }, [selectedAnswers])
 
   return (
     <>
@@ -123,7 +127,7 @@ export default function PlayGame() {
           <QuestionDisplay
             questionType={question.questionType ?? 'single'}
             questionText={question.questionText ?? 'No Question'}
-            timeLimit={question.timeLimit ?? 30}
+            duration={question.duration ?? 30}
             points={question.points ?? 100}
             mediaUrl={question.mediaUrl ?? ''}
             answers={question.answers ?? []}

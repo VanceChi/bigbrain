@@ -71,10 +71,8 @@ export default function EditGame() {
     <>
       <Navbar  />
       <BackButton />
-      
       <div className="p-5 bg-bigbrain-light-mint min-h-[80vh]">
         <h2 className="text-2xl font-bold mb-4 ">Edit Game: {title}</h2>
-        
         <button 
             className=" bg-bigbrain-light-pink font-bold text-sm/4 text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3 mb-2 rounded-3xl" 
             onClick={() => setShowAddQues(showAddQues => !showAddQues)}
@@ -118,7 +116,6 @@ export default function EditGame() {
             )
           }
         </div>
-
       </div>
     </>
   );

@@ -4,29 +4,34 @@ import { apiCall } from "../utils/api"
 import GameCard from "../components/GameCard"
 import Navbar from "../components/Navbar";
 import { queryGames } from "../utils/query";
+import { genId } from "../utils/genId";
 
 
 export default function Dashboard() {
   const [games, setGames] = useState([]);
   const [newGameName, setNewGameName] = useState('');
   const [showCreateGame, setShowCreateGame] = useState(false);
-  const [ownerEmail] = useState(JSON.parse(localStorage.getItem('email')) || '');
+  const [ownerEmail] = useState(JSON.parse(localStorage.getItem('email')));
+
+  
+  const initDashboard = async () => {
+    try {
+      const games = await queryGames();
+      setGames(games);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   useEffect(() => {
-    (async () => {
-      try {
-        const games = await queryGames();
-        setGames(games);
-      } catch (err) {
-        console.error(err);
-      }
-    })();
+
+    initDashboard();
   }, []);
 
 
   const updateGames = () => {
     console.log('updateGames', ownerEmail)
-    const newGames = [...games, {name: newGameName, owner: ownerEmail}];
+    const newGames = [...games, {id:genId(), name: newGameName, owner: ownerEmail}];
     setGames(newGames)
     apiCall('/admin/games', 'PUT', {games: newGames});
   }
@@ -62,7 +67,6 @@ export default function Dashboard() {
         <div className="m-3">
           {games.map((game, index) => (
             <div key={index}>
-              {/* {console.log(game)} */}
               <GameCard 
                 gameId={game.id}
                 title={game.title || game.name}

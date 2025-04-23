@@ -11,13 +11,11 @@ export async function logoutUser() {
   console.log('logouUser start.')
   try {
     await apiCall('/admin/auth/logout', 'POST');
-    localStorage.removeItem('token');
-    localStorage.removeItem('email');
+    localStorage.clear();
     return true;
   } catch (error) {
     console.error('Logout failed:', error.message);
-    localStorage.removeItem('token');
-    localStorage.removeItem('email');
+    localStorage.clear();
     throw error;
   }
 };

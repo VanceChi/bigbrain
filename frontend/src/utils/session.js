@@ -116,9 +116,10 @@ export const endSession = async (gameId, sessionId, activeSessions, setActiveSes
  * @returns {Array} active session[of that game].
  */
 export async function cleanSessions(activeSessions, setActiveSessions, gameId) {
+  // Divide all active sessions -> toClean + notToClean
   let sessionsToClean = [];
   let sessionsNotClean = [];
-  if (gameId){
+  if (gameId){  // if passed gameId, only clean sessions with that gameId
     sessionsToClean = activeSessions.filter(session => session.gameId == gameId);
     sessionsNotClean = activeSessions.filter(session => session.gameId != gameId); 
   } else {

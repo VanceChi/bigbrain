@@ -9,29 +9,28 @@ import { queryQuestions, querySessionId } from '../utils/query';
 
 export default function GameCard({gameId, title, numQuestions, thumbnail, totalDuration, questions}) {
   const [gameStarted, setGameStarted] = useState(false);
-  const [sessionId, setSessionId] = useState(null);
+  const [sessionId, setSessionId] = useState('');
   const {activeSessions, setActiveSessions} = useContext(SessionContext);
   const [Copied, setCopied] = useState(false);
   const [showResultPop, setShowResultPop] = useState(false);
   const [infoPassedToSession, setInfoPassedToSession] = useState({});
   
-  useEffect(() => {
+  // check game started or not
+  const initGameCard = async () => {
     cleanSessions(activeSessions, setActiveSessions, gameId);
-    // check game started or not
-    const initSessionStatus = async () => {
-      const isActive = await checkSessionState(undefined, gameId);
-      console.log(gameId, isActive);
-      // debugger
-      if (isActive){  // active
-        setGameStarted(true);
-        setSessionId(querySessionId(gameId));
-      } else {       // unactive
-        setGameStarted(false);
-        setSessionId(null);
-      }
-      setInfoPassedToSession({title, gameId, questions});
+    const isActive = await checkSessionState(undefined, gameId);
+    if (isActive){  // active
+      setGameStarted(true);
+      setSessionId(querySessionId(gameId));
+    } else {       // unactive
+      setGameStarted(false);
+      setSessionId(null);
     }
-    initSessionStatus();
+    setInfoPassedToSession({title, gameId, questions});
+  }
+
+  useEffect(() => {
+    initGameCard();
   }, [])
 
   useEffect(() => {

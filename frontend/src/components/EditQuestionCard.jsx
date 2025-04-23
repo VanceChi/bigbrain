@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { genQuesID } from "../utils/genId";
+import { genId } from "../utils/genId";
 import { queryGames, queryGamebyId, queryQuestion, queryQuestions } from "../utils/query";
 import { deepcopy } from "../utils/deepcopy";
 import { apiCall } from '../utils/api';
@@ -7,7 +7,7 @@ import { apiCall } from '../utils/api';
 const QuestionEditor = ({
   questionType, setQuestionType,
   questionText, setQuestionText,
-  timeLimit, setTimeLimit,
+  duration, setDuration,
   points, setPoints,
   mediaUrl, setMediaUrl,
   answers, setAnswers,
@@ -42,7 +42,12 @@ const QuestionEditor = ({
   };
 
   const handleSaveQuestion = () => {
-    const id = genQuesID();
+    // detect inputs value null, prompt
+    if (!questionText || !answers) {
+      console.log('please Enter all.');
+      return;
+    }
+    const id = genId();
     try {
       const correctAnswers = answers.filter(a=>a.correct===true).map(a=>a.text);
       saveQuestion({
@@ -52,6 +57,7 @@ const QuestionEditor = ({
         points,
         mediaUrl,
         answers,
+        duration,
         correctAnswers
      })
    } catch (err) {
@@ -88,8 +94,8 @@ const QuestionEditor = ({
           <label className="block mb-1">Time Limit (seconds):</label>
           <input
             type="number"
-            value={timeLimit}
-            onChange={(e) => {setTimeLimit(Number(e.target.value))}}
+            value={duration}
+            onChange={(e) => {setDuration(Number(e.target.value))}}
             className="p-2 border rounded w-full"
             min="1"
           />
@@ -170,17 +176,17 @@ const QuestionEditor = ({
  * @returns 
  */
 export const QuestionDisplay = ({
-  questionType, questionText, timeLimit, points, mediaUrl, answers,
+  questionType, questionText, duration, points, mediaUrl, answers,
   selectedAnswers, setSelectedAnswers, 
   submitted, setSubmitted,
   result, setResult,
   mode
 }) => {
   // set time limit
-  const [timeLeft, setTimeLeft] = useState(timeLimit);
+  const [timeLeft, setTimeLeft] = useState(duration);
   useEffect(() => {
-    setTimeLeft(timeLimit);
-  }, [timeLimit])
+    setTimeLeft(duration);
+  }, [duration])
 
   useEffect(() => {
     if (!submitted && timeLeft > 0) {  // able to answer
@@ -192,8 +198,6 @@ export const QuestionDisplay = ({
             setResult('Time\'s up!');
             return 0;
           } 
-
-          console.log(`set interval --`,timer)
 
           return prev - 1;  // count down
         });
@@ -208,6 +212,7 @@ export const QuestionDisplay = ({
                               "correct": true }
    */
   const handleSelect = (answer) => {
+    console.log('handleSelect()')
     if (questionType === 'multiple') {
       if (selectedAnswers.includes(answer)) {
         setSelectedAnswers(selectedAnswers.filter((ans) => ans !== answer));
@@ -240,7 +245,7 @@ export const QuestionDisplay = ({
   const handleReset = () => {
     setSelectedAnswers([]);
     setSubmitted(false);
-    setTimeLeft(timeLimit);
+    setTimeLeft(duration);
     setResult('');
   };
 
@@ -268,7 +273,7 @@ export const QuestionDisplay = ({
         <div key={index} className="flex items-center mb-2">
           <input
             type={questionType === 'multiple' ? 'checkbox' : 'radio'}
-            checked={selectedAnswers.includes(answer)}
+            checked={selectedAnswers.map(a=>a.text).includes(answer.text)}
             onChange={() => handleSelect(answer)}
             disabled={submitted}
             className="mr-2"
@@ -310,21 +315,21 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
   const [game, setGame] = useState({});
   const [questionType, setQuestionType] = useState('single');
   const [questionText, setQuestionText] = useState('');
-  const [timeLimit, setTimeLimit] = useState(30);
+  const [duration, setDuration] = useState(30);
   const [points, setPoints] = useState(100);
   const [mediaUrl, setMediaUrl] = useState('');
   const [answers, setAnswers] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState('');
-
+  
   // initEditor for Edit question / New question
   useEffect(() => {
     async function loadQuestion() {
       const q = await queryQuestion(gameId, questionId);
       setQuestionType(q.questionType);
       setQuestionText(q.questionText);
-      setTimeLimit(q.timeLimit);
+      setDuration(q.duration);
       setPoints(q.points);
       setMediaUrl(q.mediaUrl);
       setAnswers(q.answers);
@@ -454,7 +459,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
         <QuestionEditor
           questionType={questionType} setQuestionType={setQuestionType}
           questionText={questionText} setQuestionText={setQuestionText}
-          timeLimit={timeLimit} setTimeLimit={setTimeLimit}
+          duration={duration} setDuration={setDuration}
           points={points} setPoints={setPoints}
           mediaUrl={mediaUrl} setMediaUrl={setMediaUrl}
           answers={answers} setAnswers={setAnswers}
@@ -464,7 +469,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
         <QuestionDisplay
           questionType={questionType}
           questionText={questionText}
-          timeLimit={timeLimit}
+          duration={duration}
           points={points}
           mediaUrl={mediaUrl}
           answers={answers}
