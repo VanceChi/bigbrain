@@ -44,14 +44,15 @@ const QuestionEditor = ({
   const handleSaveQuestion = () => {
     const id = genQuesID();
     try {
+      const correctAnswers = answers.filter(a=>a.correct===true).map(a=>a.text);
       saveQuestion({
         id,
         questionType,
         questionText,
-        timeLimit,
         points,
         mediaUrl,
-        answers
+        answers,
+        correctAnswers
      })
    } catch (err) {
      console.error(err);
@@ -191,12 +192,15 @@ export const QuestionDisplay = ({
             setResult('Time\'s up!');
             return 0;
           } 
+
+          console.log(`set interval --`,timer)
+
           return prev - 1;  // count down
         });
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [timeLeft, submitted]);
+  }, [submitted]);
 
   /**
    * 
@@ -329,6 +333,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
       setResult('');
     }
     function resetEditor() {
+      console.log('resetEditor.')
       setQuestionText('What is the capital of Australia?');
       setAnswers([
         { text: 'Canberra', correct: true },
@@ -382,7 +387,6 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
    * @param {Object {}} question { id:... , ... }
    */
   const saveQuestion = async (question) => {
-    
     // input check
     if ((typeof question !== 'object') || question.id === undefined) {
       console.error('quesiton added unvalid.');
@@ -390,9 +394,13 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
     }
     try {
       let newQuestions = [];
-      if(questionId === undefined){  // Add question
+      if(questionId === undefined){  
+        
+        // Add question
         newQuestions = [...questions, question];
-      } else {  // Update question
+      } else {  
+
+        // Update question
         const restQues = questions.filter(q => q.id != questionId);
         question.id = questionId;
         newQuestions = [...restQues, question];

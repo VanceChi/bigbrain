@@ -88,10 +88,21 @@ export default function PlayGame() {
     }
   };
 
+  const submitAnswer = async answers => {
+    await apiCall(`/play/${playerId}/answer`, 'PUT', { answers });
+  }
+
+  /**
+   * Whenever operation done, handle it.
+   * 
+   * @param {*} answer 
+   */
   const handleSelectAnswer = async (answer) => {
     setSelectedAnswers(answer);
     try {
-      await apiCall(`/play/${playerId}/answer`, 'PUT', { answer });
+      const sentAnswer = answer.map(a=>a.text);
+      // debugger
+      await submitAnswer(sentAnswer);
     } catch (err) {
       console.error('Failed to submit answer:', err);
     }
