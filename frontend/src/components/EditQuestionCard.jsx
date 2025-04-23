@@ -175,28 +175,34 @@ export const QuestionDisplay = ({
   result, setResult,
   mode
 }) => {
+  // set time limit
   const [timeLeft, setTimeLeft] = useState(timeLimit);
   useEffect(() => {
     setTimeLeft(timeLimit);
   }, [timeLimit])
 
   useEffect(() => {
-    if (!submitted && timeLeft > 0) {
+    if (!submitted && timeLeft > 0) {  // able to answer
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
-          if (prev <= 1) {
+          if (prev <= 1) {  // times up
             clearInterval(timer);
             setSubmitted(true);
             setResult('Time\'s up!');
             return 0;
-          }
-          return prev - 1;
+          } 
+          return prev - 1;  // count down
         });
       }, 1000);
       return () => clearInterval(timer);
     }
   }, [timeLeft, submitted]);
 
+  /**
+   * 
+   * @param {Object} answer { "text": "Ottawa",
+                              "correct": true }
+   */
   const handleSelect = (answer) => {
     if (questionType === 'multiple') {
       if (selectedAnswers.includes(answer)) {
@@ -352,7 +358,10 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
   // Reset answers and time when question type changes
   useEffect(() => {
     if (questionType === 'judgment') {
-      setAnswers([{ text: 'True', correct: true }]);
+      setAnswers([
+        { text: 'True', correct: true },
+        { text: 'False', correct: false }
+      ]);
     } else {
       setAnswers([
         { text: '', correct: true },
@@ -429,10 +438,6 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
     }
   }
 
-  const handleDisplay = () => {
-    // save question -> display start
-  }
-
   return (
     <>
       {showAddQues && (
@@ -449,7 +454,6 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
         />
         <h2 className="text-xl font-bold mb-4">Question Display</h2>
         <QuestionDisplay
-          // handleDisplay={handleDisplay}
           questionType={questionType}
           questionText={questionText}
           timeLimit={timeLimit}
@@ -458,7 +462,6 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
           answers={answers}
           selectedAnswers={selectedAnswers} setSelectedAnswers={setSelectedAnswers}
           submitted={submitted} setSubmitted={setSubmitted}
-          // timeLeft={timeLeft} setTimeLeft={setTimeLeft}
           result={result} setResult={setResult}
           mode={'preview'}
         />

@@ -88,16 +88,10 @@ export default function PlayGame() {
     }
   };
 
-  const handleAnswer = async (answer) => {
-    const newAnswers = question.questionType === 'multiple'
-      ? selectedAnswers.includes(answer)
-        ? selectedAnswers.filter(a => a !== answer)
-        : [...selectedAnswers, answer]
-      : [answer];
-    
-    setSelectedAnswers(newAnswers);
+  const handleSelectAnswer = async (answer) => {
+    setSelectedAnswers(answer);
     try {
-      await apiCall(`/play/${playerId}/answer`, 'PUT', { answer: newAnswers });
+      await apiCall(`/play/${playerId}/answer`, 'PUT', { answer });
     } catch (err) {
       console.error('Failed to submit answer:', err);
     }
@@ -123,7 +117,7 @@ export default function PlayGame() {
             mediaUrl={question.mediaUrl ?? ''}
             answers={question.answers ?? []}
             selectedAnswers={selectedAnswers}
-            setSelectedAnswers={setSelectedAnswers}
+            setSelectedAnswers={handleSelectAnswer}
             submitted={submitted}
             setSubmitted={setSubmitted}
             timeLeft={timeLeft}
