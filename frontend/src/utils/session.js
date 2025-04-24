@@ -115,7 +115,7 @@ export const endSession = async (gameId, sessionId, activeSessions, setActiveSes
  * @param {Number|String|undefined} gameId if undefined, clean all sessions. If defined, clean sessions about that game.
  * @returns {Array} active session[of that game].
  */
-export async function cleanSessions(activeSessions, setActiveSessions, gameId) {
+export async function cleanSessions (activeSessions, setActiveSessions, gameId) {
   // Divide all active sessions -> toClean + notToClean
   let sessionsToClean = [];
   let sessionsNotClean = [];
@@ -129,8 +129,12 @@ export async function cleanSessions(activeSessions, setActiveSessions, gameId) {
 
   const cleanedSessions = [];
   for (const session of sessionsToClean) {
-    const res = await apiCall(`/admin/session/${session.activeSessionId}/status`, 'GET');
-    if (res.results.active === true) cleanedSessions.push(session);
+    try {
+      const res = await apiCall(`/admin/session/${session.activeSessionId}/status`, 'GET');
+      if (res.results.active === true) cleanedSessions.push(session);
+    } catch (err) {
+      console.log('clean session, check session state error:', err);
+    }
   }
   const newSessions = [...cleanedSessions, ...sessionsNotClean];
   setActiveSessions(newSessions);

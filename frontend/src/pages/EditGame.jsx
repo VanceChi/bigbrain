@@ -7,7 +7,6 @@ import { queryGamebyId } from '../utils/query';
 import EditQuestionCard from "../components/EditQuestionCard";
 import { updateQuestions } from "../utils/update"
 
-
 /**
  * 1. Allow to select the question they want to edit
  * 2. Allow to ADD a new question

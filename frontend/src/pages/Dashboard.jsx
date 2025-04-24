@@ -1,10 +1,13 @@
 // Dashboard.jsx
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { apiCall } from "../utils/api"
 import GameCard from "../components/GameCard"
 import Navbar from "../components/Navbar";
 import { queryGames } from "../utils/query";
 import { genId } from "../utils/genId";
+import { cleanSessions } from "../utils/session";
+import { SessionContext } from "../context/Sessions";
+
 
 
 export default function Dashboard() {
@@ -12,10 +15,12 @@ export default function Dashboard() {
   const [newGameName, setNewGameName] = useState('');
   const [showCreateGame, setShowCreateGame] = useState(false);
   const [ownerEmail] = useState(JSON.parse(localStorage.getItem('email')));
+  const {activeSessions, setActiveSessions} = useContext(SessionContext);
 
   
   const initDashboard = async () => {
     try {
+      cleanSessions(activeSessions, setActiveSessions);
       const games = await queryGames();
       setGames(games);
     } catch (err) {
