@@ -56,11 +56,13 @@ export async function  playGetQuestion (playerId) {
  */
 export async function playGetStatus(playerId) {
   try {
-    // res:
-    // session ended: {"error": "Session ID is not an active session"}
-    // invalid playerId: {"error":"Player ID does not refer to valid player id"}
-    // session active: game not started: {"started":false}
-    // session active: game started: {"started":true}
+    /**
+       res:
+     - session ended: {"error": "Session ID is not an active session"}
+     - invalid playerId: {"error":"Player ID does not refer to valid player id"}
+     - session active: game not started: {"started":false}
+     - session active: game started: {"started":true}
+     */
     const res = await apiCall(`/play/${playerId}/status`, 'GET');
     return Number(res.started);
   } catch (error) {

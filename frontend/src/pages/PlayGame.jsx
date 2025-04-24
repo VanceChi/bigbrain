@@ -46,9 +46,9 @@ export default function PlayGame() {
         setQuestionId(question.id);
         setQuestion(question);
         setQuesResult('');
+        setTimeLeft(question.duration);
         setSubmitted(false);
       }
-      setTimeLeft(question.duration);
     
     // 3. Session just ended.
     } else if (gameState === -1) {
@@ -67,18 +67,13 @@ export default function PlayGame() {
       if (gameState === -1){
         return clearInterval(intervalId);
       }
-      // if (gameState === 0) {
-      //   setLoadingT(t => t + 1);
-      // } else if (gameState === 1) {
-      //   // Continue polling to detect position changes or session end
-      //   // questionId here be updated.
-      // }
     }, 500); // Poll every half second
 
     return () => clearInterval(intervalId);
-  }, [questionId, gameState]);  // Refresh cache after question id update.
+  }, [questionId, gameState, timeLeft]);  // Refresh cache
 
   useEffect(() => {
+    console.log('timeLeft--' ,timeLeft)
     if (gameState === 1 && timeLeft > 0 && !submitted) {
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
