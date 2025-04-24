@@ -26,17 +26,12 @@ export default function EditGame() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('showAddQues changed')
-  }, [showAddQues])
-
-  useEffect(() => {
     (async () => {
       try {
         // get all questions
         const res = await apiCall('/admin/games', 'GET');
         const games = res.games;
         setGames(games);
-        // const game = games.filter((game) => game.id == gameId)[0];
         const game = await queryGamebyId(gameId)
         setGame(game);
         setTitle(game.name);
@@ -53,9 +48,7 @@ export default function EditGame() {
       const newQuestions = questions.filter(question => question.id != id);
       const newGame = await updateQuestions(newQuestions, game);
       setQuestions(newQuestions);
-      console.log('delete game')
       setGame(newGame);
-      // debugger
     } catch (err) {
       console.error('delQuestion error:' +  err)
     }

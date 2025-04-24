@@ -70,7 +70,7 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
   const handleEndGame = async () => {
     // end session, clear all session
     const res = await endSession(gameId, undefined, activeSessions, setActiveSessions);
-    console.log('Game ended, res: ', res)
+    console.log('Game ended.')
 
     // reset game card state
     const isActive = await checkSessionState(sessionId);

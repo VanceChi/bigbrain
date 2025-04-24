@@ -67,7 +67,6 @@ export async function playGetStatus(playerId) {
     return Number(res.started);
   } catch (error) {
     const message = error.message;
-    console.log('message', message)
     if (message === 'Session ID is not an active session'){
       return -1;
     } else if(message === 'Player ID does not refer to valid player id'){

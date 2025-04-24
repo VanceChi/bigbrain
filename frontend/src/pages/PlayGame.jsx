@@ -19,12 +19,14 @@ export default function PlayGame() {
       1: Game ongoing.
    */
   const [question, setQuestion] = useState(null);
+  const [questions, setQuestions] = useState([]);
   const [questionId, setQuestionId] = useState('');
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [quesResult, setQuesResult] = useState('');
   const [timeLeft, setTimeLeft] = useState(null);
   const [gameResult, setGameResult] = useState([]);
+  const [pointsGot, setPointsGot] = useState([]);
   const navigate = useNavigate();
 
   /**
@@ -45,6 +47,7 @@ export default function PlayGame() {
       if (question.id !== questionId) {
         setQuestionId(question.id);
         setQuestion(question);
+        setQuestions(q => [...q, question]);
         setQuesResult('');
         setTimeLeft(question.duration);
         setSubmitted(false);
@@ -52,8 +55,19 @@ export default function PlayGame() {
     
     // 3. Session just ended.
     } else if (gameState === -1) {
-      const result = await playGetResult(playerId);
-      setGameResult(result);
+      const gameResult = await playGetResult(playerId);
+      setGameResult(gameResult);
+      // generate pointsGot: Arrary [[questionText, points], ...], points: '**/**'
+      const pointsGot = [];
+      for (let i=0; i<questions.length; i++){
+        const q = questions[i];
+        const r = gameResult[i];
+        let ansTime = new Date(r.answeredAt) - new Date(r.questionStartedAt);
+        ansTime = Math.round(ansTime/100)/10;
+        ansTime = ansTime==0?'no answer':ansTime;
+        pointsGot.push([q.questionText, [q.points*r.correct, q.points], ansTime])
+      }
+      setPointsGot(pointsGot);
 
     // Error: invalid playerId
     } else if (gameState === -2) {    
@@ -73,7 +87,6 @@ export default function PlayGame() {
   }, [questionId, gameState, timeLeft]);  // Refresh cache
 
   useEffect(() => {
-    console.log('timeLeft--' ,timeLeft)
     if (gameState === 1 && timeLeft > 0 && !submitted) {
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
@@ -88,7 +101,7 @@ export default function PlayGame() {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [timeLeft, submitted, gameState]);
+  }, [timeLeft, submitted, gameState, questions, gameResult]);
 
   const fetchAnswerResult = async () => {
     try {
@@ -135,8 +148,10 @@ export default function PlayGame() {
       }}/>}
       <div className="p-4">
         {/*  Waiting. Game not started, session active. */}
-        {gameState === 0 && (  
-          <p className="text-xl">Please wait for the game to start</p>
+        {gameState === 0 && (
+          <div>
+            <p className="text-xl">Please wait for the game to start</p>
+          </div>
         )}
 
         {/* Game ongoing. */}
@@ -164,9 +179,29 @@ export default function PlayGame() {
         {gameState === -1 && (
           <div aria-label="game-results">
             <p className="text-xl">Game over</p>
-            <p>{JSON.stringify(gameResult)}</p>
+            <div aria-label="question-points-aquired">
+              <table className="table-auto">
+                <thead>
+                  <tr>
+                    <th>Question</th>
+                    <th>Score</th>
+                    <th>Seconds</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pointsGot.map((r, index) => (
+                    <tr key={index}>
+                      <td className="border p-2">{r[0]}</td>
+                      <td className="border p-2">{r[1][0]+'/'+r[1][1]}</td>
+                      <td className="border p-2">{r[2]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {console.log(pointsGot[0], typeof pointsGot[0])}
+              <p>Total points: {pointsGot.map(r=>r[1][0]).reduce((a, b) => a + b, 0)}</p>
+            </div>
           </div>
-          
         )}
       </div>
     </>

@@ -10,8 +10,6 @@ import { queryQuestions } from "../utils/query";
 import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
 
-
-
 export default function Session() {
   const {activeSessions, setActiveSessions} = useContext(SessionContext);
   const { sessionId } = useParams();
@@ -23,14 +21,12 @@ export default function Session() {
   // -1: not start yet
   const [question, setQuestion] = useState({}); 
   const [nofQuestions, setNofQuestions] = useState(0); 
-  const [nOfPlayers, setNOfPlayers] = useState(0); 
   const [showResult, setShowResult] = useState(false); 
-  const [resResults, setResResults] = useState(''); 
-  const [ansResults, setAnsResults] = useState([]); 
   const [scoreTable, setScoreTable] = useState([]); 
   const [correctRateTable, setCorrectRateTable] = useState([]); 
   const [ansTime, setAnsTime] = useState([]); 
   const navigate = useNavigate();
+
   const correctRateSetting = {
     xAxis: [
       {
@@ -104,13 +100,9 @@ export default function Session() {
       }
       ansResults.push(qArr);
     }
-    setNOfPlayers(nOfPlayers);
-    setAnsResults(ansResults);
 
     // calculate scoreTable
     let scoreTable=[];  // [[name, score], ...]
-    const scoreArr = [];  // index: player
-    const playerName = [];  // index: player
     for (let p=0; p<nOfPlayers; p++){
       let score = 0;
       for (let q=0; q<nofQuestions; q++){
@@ -120,7 +112,6 @@ export default function Session() {
     }
     
     scoreTable.sort((s1, s2) => s2[1]-s1[1]);
-    console.log(scoreTable)
     setScoreTable(scoreTable);
 
     // correct rate
@@ -154,10 +145,8 @@ export default function Session() {
   }
   
   const loadResult = async () => {
-    // console.log('loadResult()')
     const res = await apiCall(`/admin/session/${sessionId}/results`, 'GET'); //{results: Array(0)}
     const resResults = res.results;
-    setResResults(resResults);
     setPosition(nofQuestions);
     // generate customize answering results
     await genAnswerResult(resResults);
@@ -180,18 +169,16 @@ export default function Session() {
   
   const handleEndSession = async () => {
     try {
-      const res = await endSession(undefined, sessionId, activeSessions, setActiveSessions);
-      console.log('Endsession res:', res);
+      await endSession(undefined, sessionId, activeSessions, setActiveSessions);
       setActive(false);
       setShowResult(true);
     } catch (error) {
       console.log(error);
     }
-    
   }
 
   const hanleAdvanceQuestion = async () => {
-    const res = await apiCall(`/admin/game/${gameId}/mutate`, 'POST', { "mutationType": "ADVANCE" });
+    await apiCall(`/admin/game/${gameId}/mutate`, 'POST', { "mutationType": "ADVANCE" });
     getStatus();
   }
 
@@ -235,24 +222,23 @@ export default function Session() {
         {showResult && Object.keys(correctRateTable).length !==0 && (
           <div>
             <div aria-label="score-container">
-            <p>Score Table</p>
-            <table className="table-auto">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Score</th>
-                </tr>
-              </thead>
-              <tbody>
-                {scoreTable.slice(0, 5).map((score, index) => (
-                  <tr key={index}>
-                    <td className="border">{score[0]}</td>
-                    <td className="border">{score[1]}</td>
+              <p>Score Table</p>
+              <table className="table-auto">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Score</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-
+                </thead>
+                <tbody>
+                  {scoreTable.slice(0, 5).map((score, index) => (
+                    <tr key={index}>
+                      <td className="border">{score[0]}</td>
+                      <td className="border">{score[1]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             <div className="mt-6">
               <p>Correct Rate</p>

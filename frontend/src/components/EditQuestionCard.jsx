@@ -44,7 +44,7 @@ const QuestionEditor = ({
   const handleSaveQuestion = () => {
     // detect inputs value null, prompt
     if (!questionText || !answers) {
-      console.log('please Enter all.');
+      alert('please Enter all.');
       return;
     }
     const id = genId();
@@ -338,7 +338,6 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
       setResult('');
     }
     function resetEditor() {
-      console.log('resetEditor.')
       setQuestionText('What is the capital of Australia?');
       setAnswers([
         { text: 'Canberra', correct: true },

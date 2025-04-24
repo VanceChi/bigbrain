@@ -8,10 +8,6 @@ export default function Form({
   setPassword,
   confirmPassword,
   setConfirmPassword,
-  title,
-  setTitle,
-  thumbnail,
-  setThumbnail,
   error,
   validationError,
   buttonText,
@@ -85,36 +81,6 @@ export default function Form({
             placeholder="Confirm Password"
             className="block w-full p-2 border rounded bg-bigbrain-milky-white"
             autoComplete="off"
-          />
-        </div>
-      )}
-      {title !== undefined && setTitle && (
-        <div className="mb-4">
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-            Game Title
-          </label>
-          <input
-            id="title"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter game title"
-            className="block w-full p-2 border rounded"
-          />
-        </div>
-      )}
-      {thumbnail !== undefined && setThumbnail && (
-        <div className="mb-4">
-          <label htmlFor="thumbnail" className="block text-sm font-medium text-gray-700 mb-1">
-            Thumbnail URL
-          </label>
-          <input
-            id="thumbnail"
-            type="text"
-            value={thumbnail}
-            onChange={(e) => setThumbnail(e.target.value)}
-            placeholder="Enter thumbnail URL"
-            className="block w-full p-2 border rounded"
           />
         </div>
       )}

@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BackButton } from "../components/Button";
 import { apiCall } from "../utils/api";
 
@@ -50,7 +50,6 @@ export default function PlayJoin() {
       {/* Session Id Error Display */}
       {sessionIdError && (
         <div aria-label="Error information container" role="alert">
-          {console.log('sessionIdError',sessionIdError)}
           <p>Session Id invalid!</p>
         </div>
       )}

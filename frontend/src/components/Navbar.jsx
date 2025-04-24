@@ -75,13 +75,12 @@ export default function Navbar() {
     <div className="bg-bigbrain-light-pink shadow-[0_2px_2px_rgba(0,0,0,0.15)] place-content-between flex mb-1">
       <div className="flex place-content-between">
         <p className="italic text-bigbrain-dark-green font-bold text-lg/8 inline-block p-3">BigBrain</p>
-
-        {! ['/login', '/register'].includes(router) && (
+        {! ['/login', '/register'].includes(router) && !router.includes('/play') && (
           <DashBoardBtn />
         )}
       </div>
 
-        {token? ( <LogoutBtn /> ) : 
+        {token? ( !router.includes('/play') && <LogoutBtn /> ) : 
         ( router === '/login' && <RegisterBtn /> ) ||
         ( router === '/register' && <LoginBtn /> )}
 
