@@ -4,6 +4,7 @@ import { SessionContext } from '../context/Sessions';
 import { startSession, endSession, cleanSessions, checkSessionState } from '../utils/session';
 import { queryQuestions, querySessionId } from '../utils/query';
 import { EditBtn } from '../components/SVGBtn';
+import { PlayBtn } from '../components/SVGBtn';
 
 
 
@@ -85,13 +86,12 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
 
   return (
     <div className="p-2 bg-white rounded-2xl shadow-md items-center space-x-4">
-      {/* <button onClick={() => cleanSessions(activeSessions, setActiveSessions)}>Clean Session</button> */}
       <div className='flex items-center'>
         {gameStarted? (
           <>
             <button 
               onClick={() => handleEndGame()}>End Game
-            </button> &nbsp;&nbsp;&nbsp;
+            </button>
             <Link to={`/session/${sessionId}`} state={infoPassedToSession}>Go to session.</Link>&nbsp;&nbsp;&nbsp;
 
             <button className='text-sm' onClick={handleCopyLink}>{Copied?'Copied':'Click to Copy Link:'}
