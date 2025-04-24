@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { apiCall } from '../utils/api';
 import Navbar from '../components/Navbar';
 import { BackButton } from "../components/Button"
+import { BackBtn } from '../components/SVGBtn';
 import { queryGamebyId } from '../utils/query';
 import EditQuestionCard from "../components/EditQuestionCard";
 import { updateQuestions } from "../utils/update"
@@ -62,13 +63,13 @@ export default function EditGame() {
   return (
     <>
       <Navbar  />
-      <BackButton />
+      <BackBtn />
       <div className="p-5 bg-bigbrain-light-mint min-h-[80vh]">
         <h2 className="text-2xl font-bold mb-4 ">Edit Game: {title}</h2>
         <button 
             className=" bg-bigbrain-light-pink font-bold text-sm/4 text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3 mb-2 rounded-3xl" 
             onClick={() => setShowAddQues(showAddQues => !showAddQues)}
-          >+ Question
+          >+ Question 
         </button>
 
         {/* Input question Info */}

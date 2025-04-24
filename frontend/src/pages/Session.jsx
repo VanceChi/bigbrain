@@ -242,6 +242,7 @@ export default function Session() {
             </div>
             <div className="mt-6">
               <p>Correct Rate</p>
+              {console.log('correctRateTable', correctRateTable)}
               <BarChart
                 yAxis={[
                   {

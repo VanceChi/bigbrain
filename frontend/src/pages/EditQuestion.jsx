@@ -1,9 +1,9 @@
 import Navbar from "../components/Navbar"
-import { BackButton } from "../components/Button"
 import { useParams } from "react-router-dom"
 import { queryQuestions } from "../utils/query";
 import { useEffect, useState } from "react";
 import EditQuestionCard from "../components/EditQuestionCard";
+import { BackBtn } from "../components/SVGBtn";
 
 export default function EditQuestion () {
   const { gameId, questionId } = useParams();
@@ -25,7 +25,7 @@ export default function EditQuestion () {
   return (
     <>
       <Navbar />
-      <BackButton />
+      <BackBtn />
       <EditQuestionCard  
         gameId={gameId}
         questionId={questionId}

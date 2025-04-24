@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { SessionContext } from '../context/Sessions';
 import { startSession, endSession, cleanSessions, checkSessionState } from '../utils/session';
 import { queryQuestions, querySessionId } from '../utils/query';
+import { EditBtn } from '../components/SVGBtn';
 
 
 
@@ -14,7 +15,7 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
   const [Copied, setCopied] = useState(false);
   const [showResultPop, setShowResultPop] = useState(false);
   const [infoPassedToSession, setInfoPassedToSession] = useState({});
-  
+  const navigate = useNavigate();
   // check game started or not
   const initGameCard = async () => {
     cleanSessions(activeSessions, setActiveSessions, gameId);
@@ -106,21 +107,29 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
           </>
         )}
       </div>
-      <h4 className="text-lg font-bold">{title}</h4>
-      <div className='p-2 bg-white flex items-center space-x-4 text-sm'>
+      <div className='flex justify-center'>
+        <h4 className="text-lg font-bold">{title}</h4>
+      </div>
+      <div className='p-2 bg-white flex items-center place-content-between text-[2vw] '>
         <img src={thumbnail} alt={`${title} thumbnail`} className="w-16 h-16 rounded" />
+        <table className="table-fixed w-[45%]">
+          <tbody className="text-sm text-gray-600">
+            <tr>
+              <td className='m-2'>Questions:</td> 
+              <td>{numQuestions}</td>
+            </tr>
+            <tr>
+              <td>Duration:</td>
+              <td>{totalDuration} s</td>
+            </tr>
+          </tbody>
+        </table>
         <div>
-          <p className="text-sm text-gray-600">{numQuestions} questions</p>
-          <p className="text-sm text-gray-600">Total Duration: {totalDuration} seconds</p>
-        </div>
-        <div>
-          <Link 
-            to={`/game/${gameId}`}
-            state={{title, thumbnail, questions}}
-            >Edit Game
-          </Link>
-          <br />
-          <br />
+          <EditBtn 
+            onClick={() => 
+              navigate(`/game/${gameId}`, {state:{title, thumbnail, questions}})
+            }
+          />
         </div>
       </div>
     </div>
