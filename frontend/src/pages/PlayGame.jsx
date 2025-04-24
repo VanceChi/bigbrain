@@ -4,62 +4,79 @@ import { useEffect, useState } from "react";
 import { BackButton } from "../components/Button";
 import { apiCall } from "../utils/api";
 import { QuestionDisplay } from "../components/EditQuestionCard";
+import { playGetQuestion, playGetResult, playGetStatus } from "../services/playerService";
 
 export default function PlayGame() {
   const { state } = useLocation();
   const { playerId } = useParams();
   let [sessionId] = useState(state?.sessionId);
-  const [gameState, setGameState] = useState(0); // 0: waiting, 1: ongoing, 2: over
-  const [loadingT, setLoadingT] = useState(0);
+  const [gameState, setGameState] = useState(-3);
+  /**
+     -3: Default value.
+     -2: playerId invalid.
+     -1: Session ended.
+      0: Waiting. Game not started, session active.
+      1: Game ongoing.
+   */
   const [question, setQuestion] = useState(null);
+  const [questionId, setQuestionId] = useState('');
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
-  const [result, setResult] = useState('');
+  const [quesResult, setQuesResult] = useState('');
   const [timeLeft, setTimeLeft] = useState(null);
+  const [gameResult, setGameResult] = useState([]);
   const navigate = useNavigate();
 
-  const checkGameStatus = async () => {
-    console.log('checkGameStatus')
-    try {
-      const { started } = await apiCall(`/play/${playerId}/status`, 'GET'); // started: Boolean
-      if ( !started ) {  // not started
-        setGameState(0);
-      } else {  // started
-        setGameState(1);
-        // Fetch current question
-        const { question } = await apiCall(`/play/${playerId}/question`, 'GET');
+  /**
+   * updateGameStatus every 0.5s
+   */
+  const updateGameStatus = async () => {
+    const gameState = await playGetStatus(playerId); // started: Boolean
+    setGameState(gameState);
+
+    // 1. Waiting. Game not started, session active.
+    if ( gameState === 0 ) {
+      console.log('loading...');
+
+    // 2. Game ongoing.
+    } else if (gameState === 1) {
+      const question = await playGetQuestion(playerId);
+      // next question
+      if (question.id !== questionId) {
+        setQuestionId(question.id);
         setQuestion(question);
-        setTimeLeft(question.duration);
-        // setSelectedAnswers([]);
+        setQuesResult('');
         setSubmitted(false);
-        setResult('');
       }
-    } catch (err) {  // game ended (session ended)
-      console.error(err)
-      setGameState(2); 
+      setTimeLeft(question.duration);
+    
+    // 3. Session just ended.
+    } else if (gameState === -1) {
+      const result = await playGetResult(playerId);
+      setGameResult(result);
+
+    // Error: invalid playerId
+    } else if (gameState === -2) {    
+      console.error('Invalid playerId');
     }
   };
 
   useEffect(() => {
-    const init = async () => {
-      await checkGameStatus();
-    };
-    init();
-  }, [playerId]);
-
-  useEffect(() => {
     const intervalId = setInterval(() => {
-      if (gameState === 0) {
-        // console.log(loadingT, 'loading...');
-        setLoadingT((t) => t + 1);
-        checkGameStatus();
-      } else if (gameState === 1) {
-        checkGameStatus(); // Continue polling to detect position changes or session end
+      updateGameStatus();
+      if (gameState === -1){
+        return clearInterval(intervalId);
       }
+      // if (gameState === 0) {
+      //   setLoadingT(t => t + 1);
+      // } else if (gameState === 1) {
+      //   // Continue polling to detect position changes or session end
+      //   // questionId here be updated.
+      // }
     }, 500); // Poll every half second
 
-    return () => clearTimeout(intervalId);
-  }, [loadingT, gameState]);
+    return () => clearInterval(intervalId);
+  }, [questionId, gameState]);  // Refresh cache after question id update.
 
   useEffect(() => {
     if (gameState === 1 && timeLeft > 0 && !submitted) {
@@ -81,15 +98,22 @@ export default function PlayGame() {
   const fetchAnswerResult = async () => {
     try {
       const res = await apiCall(`/play/${playerId}/answer`, 'GET');
-      setResult(res.correct ? 'Correct!' : 'Incorrect');
+      setQuesResult(res.correct ? 'Correct!' : 'Incorrect');
     } catch (err) {
       console.error('Failed to fetch answer result:', err);
-      setResult('Error fetching result');
+      setQuesResult('Error fetching result');
     }
   };
 
   const submitAnswer = async answers => {
-    await apiCall(`/play/${playerId}/answer`, 'PUT', { answers });
+    try {
+      const res = await apiCall(`/play/${playerId}/answer`, 'PUT', { answers });
+      if (res.error) console.error(res.error);
+    } catch (err) {
+      console.error(err);
+    }
+    
+    
   }
 
   /**
@@ -98,7 +122,6 @@ export default function PlayGame() {
    * @param {*} answer 
    */
   const handleSelectAnswer = async (answer) => {
-    console.log('handleSelectAnswer()')
     setSelectedAnswers(answer);
     try {
       const sentAnswer = answer.map(a=>a.text);
@@ -108,9 +131,6 @@ export default function PlayGame() {
     }
   };
 
-  useEffect(() => {
-    console.log('selectedAnswers changed: ', selectedAnswers);
-  }, [selectedAnswers])
 
   return (
     <>
@@ -119,10 +139,12 @@ export default function PlayGame() {
         navigate(`/play/join`);
       }}/>}
       <div className="p-4">
-        {gameState === 0 && (
+        {/*  Waiting. Game not started, session active. */}
+        {gameState === 0 && (  
           <p className="text-xl">Please wait for the game to start</p>
         )}
 
+        {/* Game ongoing. */}
         {gameState === 1 && question && (
           <QuestionDisplay
             questionType={question.questionType ?? 'single'}
@@ -137,14 +159,19 @@ export default function PlayGame() {
             setSubmitted={setSubmitted}
             timeLeft={timeLeft}
             setTimeLeft={setTimeLeft}
-            result={result}
-            setResult={setResult}
+            result={quesResult}
+            setResult={setQuesResult}
             mode="answer"
           />
         )}
 
-        {gameState === 2 && (
-          <p className="text-xl">Game over</p>
+        {/* Session ended. */}
+        {gameState === -1 && (
+          <div aria-label="game-results">
+            <p className="text-xl">Game over</p>
+            <p>{JSON.stringify(gameResult)}</p>
+          </div>
+          
         )}
       </div>
     </>
