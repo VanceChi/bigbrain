@@ -25,4 +25,20 @@ body {
   --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
   --color-mint-500: oklch(0.72 0.11 178);
+
+  --animation-gradient-glow: gradientGlow 2s ease infinite;
+
+}
+
+
+@keyframes gradientGlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

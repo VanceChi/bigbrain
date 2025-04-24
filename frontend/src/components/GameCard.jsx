@@ -1,34 +1,34 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { SessionContext } from '../context/Sessions';
 import { startSession, endSession, cleanSessions, checkSessionState } from '../utils/session';
 import { queryQuestions, querySessionId } from '../utils/query';
-import { EditBtn } from '../components/SVGBtn';
-import { PlayBtn } from '../components/SVGBtn';
+import GlowingCard from './GlowingCard';
+import { CopyBtn, EditBtn, EndBtn, PlayBtn } from './SVGBtn';
 
 
 
 
-export default function GameCard({gameId, title, numQuestions, thumbnail, totalDuration, questions}) {
+export default function GameCard({ gameId, title, numQuestions, thumbnail, totalDuration, questions }) {
   const [gameStarted, setGameStarted] = useState(false);
   const [sessionId, setSessionId] = useState('');
-  const {activeSessions, setActiveSessions} = useContext(SessionContext);
+  const { activeSessions, setActiveSessions } = useContext(SessionContext);
   const [Copied, setCopied] = useState(false);
   const [showResultPop, setShowResultPop] = useState(false);
   const [infoPassedToSession, setInfoPassedToSession] = useState({});
-  const navigate = useNavigate();
+
   // check game started or not
   const initGameCard = async () => {
     cleanSessions(activeSessions, setActiveSessions, gameId);
     const isActive = await checkSessionState(undefined, gameId);
-    if (isActive){  // active
+    if (isActive) {  // active
       setGameStarted(true);
       setSessionId(querySessionId(gameId));
     } else {       // unactive
       setGameStarted(false);
       setSessionId(null);
     }
-    setInfoPassedToSession({title, gameId, questions});
+    setInfoPassedToSession({ title, gameId, questions });
   }
 
   useEffect(() => {
@@ -36,10 +36,10 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
   }, [])
 
   useEffect(() => {
-    if (gameStarted === false){
+    if (gameStarted === false) {
     }
   }, [gameStarted])
-  
+
   const handleCopyLink = async () => {
     try {
       // Construct the link to copy (e.g., a URL for the game session)
@@ -58,9 +58,9 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
 
     // check if questions exist
     const questions = await queryQuestions(gameId);
-    if (questions.length === 0){
+    if (questions.length === 0) {
       alert('Can not start game without questions!');
-      return ;
+      return;
     }
     // start session, return session id.
     const activeSessionId = await startSession(gameId, activeSessions, setActiveSessions);
@@ -68,15 +68,15 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
     setSessionId(activeSessionId);
     setGameStarted(true);
   }
-    
+
   const handleEndGame = async () => {
     // end session, clear all session
     const res = await endSession(gameId, undefined, activeSessions, setActiveSessions);
-    console.log('Game ended.')
+    console.log('Game ended, res: ', res)
 
     // reset game card state
     const isActive = await checkSessionState(sessionId);
-    if (isActive === false){
+    if (isActive === false) {
       setCopied(false)
       setSessionId(null);
       setGameStarted(false);
@@ -85,37 +85,49 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
   }
 
   return (
-    <div className="p-2 bg-white rounded-2xl shadow-md items-center space-x-4">
-      <div className='flex items-center'>
-        {gameStarted? (
-          <>
-            <button 
-              onClick={() => handleEndGame()}>End Game
-            </button>
-            <Link to={`/session/${sessionId}`} state={infoPassedToSession}>Go to session.</Link>&nbsp;&nbsp;&nbsp;
-
-            <button className='text-sm' onClick={handleCopyLink}>{Copied?'Copied':'Click to Copy Link:'}
-            </button>
-            <p>{sessionId}</p>
-          </>
+    <GlowingCard>
+      <div className='flex items-center font-bold'>
+        {gameStarted ? (
+          <div className="flex justify-between items-center w-full">
+            <div
+              className="group/end flex justify-center items-center mr-2" onClick={() => handleEndGame()}>
+              <EndBtn />
+              <p className='opacity-0 group-hover/end:opacity-100 font-semibold'>End</p>
+            </div>
+            <div>
+              <Link to={`/session/${sessionId}`} state={infoPassedToSession}>
+                Go session
+              </Link>
+            </div>
+            <div className="group/copy flex justify-center items-center" onClick={handleCopyLink}>
+              <p>Id:{sessionId}</p>
+              <CopyBtn />
+            </div>
+          </div>
         ) : (
-          <>
-            <button onClick={() => handleStartGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId)}>Start Game</button>
+          <div className='flex place-content-between'>
+            <div
+              className="group/start flex justify-center items-center mr-2 w-1/3"
+              onClick={() => handleStartGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId)}>
+              <PlayBtn />
+              <p className='opacity-0 group-hover/start:opacity-100' >Start</p>
+            </div>
+
             {showResultPop && (
               <Link to={`/session/:${sessionId}`} state={infoPassedToSession}>Would you like to view the results?</Link>
             )}
-          </>
+          </div>
         )}
       </div>
       <div className='flex justify-center'>
         <h4 className="text-lg font-bold">{title}</h4>
       </div>
-      <div className='p-2 bg-white flex items-center place-content-between text-[2vw] '>
+      <div className='p-2 flex items-center place-content-between text-[2vw] '>
         <img src={thumbnail} alt={`${title} thumbnail`} className="w-16 h-16 rounded" />
         <table className="table-fixed w-[45%]">
-          <tbody className="text-sm text-gray-600">
+          <tbody className="text-sm text-gray-600 font-medium">
             <tr>
-              <td className='m-2'>Questions:</td> 
+              <td>Questions:</td>
               <td>{numQuestions}</td>
             </tr>
             <tr>
@@ -125,13 +137,17 @@ export default function GameCard({gameId, title, numQuestions, thumbnail, totalD
           </tbody>
         </table>
         <div>
-          <EditBtn 
-            onClick={() => 
-              navigate(`/game/${gameId}`, {state:{title, thumbnail, questions}})
-            }
-          />
+          <Link
+            to={`/game/${gameId}`}
+            state={{ title, thumbnail, questions }}
+          >
+            <EditBtn />
+          </Link>
+          <br />
+          <br />
         </div>
       </div>
-    </div>
+
+    </GlowingCard>
   );
 }
