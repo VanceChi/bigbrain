@@ -1,5 +1,4 @@
 // src/components/LobbyRoom.jsx
-import React from 'react';
 
 export default function LobbyRoom() {
   return (
