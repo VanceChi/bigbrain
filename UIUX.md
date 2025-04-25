@@ -21,8 +21,8 @@ Clear Form Design: The question editor form uses labeled fields (e.g., "Question
 
 5. Player Experience During Gameplay
 
-Lobby Screen (Bonus Feature): While waiting for the game to start, players see a "Please wait" message on the "Play Game" screen. To make this more engaging, a simple lobby screen was implemented with a subtle loading animation (e.g., a spinning icon) and a welcoming message, improving the waiting experience and keeping players engaged.
-Question Display During Gameplay: The question display includes a countdown timer ("Time Left: 28s") and answer options as radio buttons for single-choice questions, ensuring clarity. The "Submit Answer" button is highlighted in pink, making it the focal point for action, while a "Reset Answer" button provides flexibility, reducing user frustration.
+Lobby Screen: While waiting for the game to start, players see a "Please wait" message on the "Play Game" screen. To make this more engaging, a simple lobby screen was implemented with a subtle loading animation (e.g., a spinning icon) and a welcoming message, improving the waiting experience and keeping players engaged.
+Question Display During Gameplay: The question display includes a countdown time and answer options as radio buttons for single-choice questions, ensuring clarity. The "Submit Answer" button is highlighted in pink, making it the focal point for action, while a "Reset Answer" button provides flexibility, reducing user frustration.
 
 6. Results Visualization
 
@@ -32,7 +32,7 @@ Player Results Screen: Players see a detailed breakdown of their performance in 
 7. Color and Typography Choices
 
 Consistent Color Scheme: A soft pastel color scheme (light green background, pink buttons, and neutral card backgrounds) creates a visually appealing and non-overwhelming interface. Pink is used consistently for primary actions (e.g., "Submit", "Add Answer"), drawing attention to key interactions.
-Readable Typography: The application uses a clean, sans-serif font with appropriate font sizes (e.g., larger headings for "Game2", smaller text for details like "Questions: 1"). This ensures readability across different screen sizes, especially on smaller mobile screens (down to 400px wide).
+Readable Typography: The application uses a clean, sans-serif font with appropriate font sizes (e.g., larger headings for "Game2", smaller text for details like "Questions: 1"). This ensures readability across different screen sizes, especially on smaller mobile screens.
 
 8. Responsive Design
 
