@@ -59,10 +59,10 @@ const QuestionEditor = ({
         answers,
         duration,
         correctAnswers
-     })
-   } catch (err) {
-     console.error(err);
-   }
+      })
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   return (
@@ -468,30 +468,32 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
     <div className="bg-bigbrain-milky-white rounded-2xl m-4 p-5">
       {showAddQues && (
         <div className="max-w-2xl mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Game Question Editor</h1>
-        <QuestionEditor
-          questionType={questionType} setQuestionType={setQuestionType}
-          questionText={questionText} setQuestionText={setQuestionText}
-          duration={duration} setDuration={setDuration}
-          points={points} setPoints={setPoints}
-          mediaUrl={mediaUrl} setMediaUrl={setMediaUrl}
-          answers={answers} setAnswers={setAnswers}
-          saveQuestion={saveQuestion}
-        />
-        <hr className="mt-8 mb-8"/>
-        <h2 className="text-xl font-bold mb-4">Question Display</h2>
-        <QuestionDisplay
-          questionType={questionType}
-          questionText={questionText}
-          duration={duration}
-          points={points}
-          mediaUrl={mediaUrl}
-          answers={answers}
-          selectedAnswers={selectedAnswers} setSelectedAnswers={setSelectedAnswers}
-          submitted={submitted} setSubmitted={setSubmitted}
-          result={result} setResult={setResult}
-          mode={'preview'}
-        />
+          <h1 className="text-2xl font-bold mb-4">
+            Game Question Editor
+          </h1>
+          <QuestionEditor
+            questionType={questionType} setQuestionType={setQuestionType}
+            questionText={questionText} setQuestionText={setQuestionText}
+            duration={duration} setDuration={setDuration}
+            points={points} setPoints={setPoints}
+            mediaUrl={mediaUrl} setMediaUrl={setMediaUrl}
+            answers={answers} setAnswers={setAnswers}
+            saveQuestion={saveQuestion}
+          />
+          <hr className="mt-8 mb-8"/>
+          <h2 className="text-xl font-bold mb-4">Question Display</h2>
+          <QuestionDisplay
+            questionType={questionType}
+            questionText={questionText}
+            duration={duration}
+            points={points}
+            mediaUrl={mediaUrl}
+            answers={answers}
+            selectedAnswers={selectedAnswers} setSelectedAnswers={setSelectedAnswers}
+            submitted={submitted} setSubmitted={setSubmitted}
+            result={result} setResult={setResult}
+            mode={'preview'}
+          />
         </div>
       )}
     </div>

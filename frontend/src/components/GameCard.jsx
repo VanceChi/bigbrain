@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { SessionContext } from '../context/Sessions';
-import { startSession, endSession, cleanSessions, checkSessionState, getLocalSessions } from '../utils/session';
+import { startSession, endSession, checkSessionState } from '../utils/session';
 import { queryQuestions, querySessionId } from '../utils/query';
 import GlowingCard from './GlowingCard';
 import { CopyBtn, EditBtn, EndBtn, PlayBtn } from './SVGBtn';
@@ -70,7 +70,7 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
 
   const handleEndGame = async () => {
     // end session, clear all session
-    const res = await endSession(gameId, undefined, activeSessions, setActiveSessions);
+    await endSession(gameId, undefined, activeSessions, setActiveSessions);
 
     // reset game card state
     const isActive = await checkSessionState(sessionId);

@@ -66,6 +66,8 @@ export const checkSessionState = async (sessionId, gameId) => {
   // only gameId: 
   // If gameId not in activeSessions, return false
   const activeSessionsLocal = getLocalSessions();
+  if (!activeSessionsLocal) return false;
+  
   let sessions = activeSessionsLocal.filter(session => session.gameId == gameId);
   for (const session of sessions){
     try {

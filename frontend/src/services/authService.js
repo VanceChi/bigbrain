@@ -8,7 +8,7 @@ export async function loginUser(email, password) {
 };
 
 export async function logoutUser() {
-  console.log('logouUser start.')
+  console.log('Log out user.')
   try {
     await apiCall('/admin/auth/logout', 'POST');
     localStorage.removeItem('email');

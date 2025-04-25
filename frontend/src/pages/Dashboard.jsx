@@ -14,8 +14,6 @@ export default function Dashboard() {
   const [newGameName, setNewGameName] = useState('');
   const [showCreateGame, setShowCreateGame] = useState(false);
   const [ownerEmail] = useState(JSON.parse(localStorage.getItem('email')));
-  const {activeSessions, setActiveSessions} = useContext(SessionContext);
-
   
   const initDashboard = async () => {
     try {

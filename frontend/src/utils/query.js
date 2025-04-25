@@ -43,6 +43,8 @@ export function querySessionId(gameId) {
     throw Error('gameId undefined.');
   }
   const activeSessions = JSON.parse(localStorage.getItem('activeSessions'));
+  if (!activeSessions) return '';
+  
   const session = activeSessions.find(session => session.gameId == gameId);
   return session?.activeSessionId;
 }
