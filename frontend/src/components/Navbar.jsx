@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { DashBoardBtn } from './Button';
 import { RegisterBtn } from './Button';
 import { LogoutBtn } from './Button';
@@ -20,11 +20,12 @@ export default function Navbar() {
     <div className="bg-bigbrain-light-pink shadow-[0_2px_2px_rgba(0,0,0,0.15)] place-content-between flex mb-1">
       <div className="flex place-content-between">
         <p className="italic text-bigbrain-dark-green font-bold text-lg/8 inline-block p-3">BigBrain</p>
-        {!['/login', '/register'].includes(router) && !router.includes('/play') && (
+        {!['/', '/login', '/register'].includes(router) && !router.includes('/play') && (
           <DashBoardBtn onClick={() => navigate('/dashboard')} />
         )}
       </div>
       {token ? (!router.includes('/play') && <LogoutBtn />) :
+        (router === '/' && <RegisterBtn onClick={() => navigate('/register')} />) ||
         (router === '/login' && <RegisterBtn onClick={() => navigate('/register')} />) ||
         (router === '/register' && <LoginBtn onClick={() => navigate('/login')} />)
       }

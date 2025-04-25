@@ -459,7 +459,7 @@ export default function EditQuestionCard({ gameId, questionId, showAddQues, setS
       console.error('addGame error:', err);
     }
   }
-
+  
   return (
     <div className="bg-bigbrain-milky-canvas rounded-2xl m-4 p-5">
       {showAddQues && (
