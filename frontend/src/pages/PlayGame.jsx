@@ -1,7 +1,6 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
-import { BackButton } from "../components/Button";
 import { apiCall } from "../utils/api";
 import { QuestionDisplay } from "../components/EditQuestionCard";
 import { playGetQuestion, playGetResult, playGetStatus } from "../services/playerService";

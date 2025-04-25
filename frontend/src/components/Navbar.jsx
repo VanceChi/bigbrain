@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { DashBoardBtn } from './Button';
 import { RegisterBtn } from './Button';
 import { LogoutBtn } from './Button';
+import { LoginBtn } from './Button';
 
 
 /**
@@ -24,8 +25,9 @@ export default function Navbar() {
         )}
       </div>
       {token? ( !router.includes('/play') && <LogoutBtn /> ) : 
-      ( router === '/login' && <RegisterBtn onClick={() => navigate('/register')}/> ) ||
-      ( router === '/register' && <LoginBtn onClick={() => navigate('/login')}/> )}
+        ( router === '/login' && <RegisterBtn onClick={() => navigate('/register')}/> ) ||
+        ( router === '/register' && <LoginBtn onClick={() => navigate('/login')}/> )
+      }
     </div>
   );
 }

@@ -17,9 +17,7 @@ import GlowingCard from '../components/GlowingCard';
  */
 export default function EditGame() {
   // pass down games, game, questions to children componet 
-  const location = useLocation();
   const { gameId } = useParams();
-  const [games, setGames] = useState([]);
   const [game, setGame] = useState({});
   const [title, setTitle] = useState('');
   const [questions, setQuestions] = useState([]);
@@ -33,12 +31,9 @@ export default function EditGame() {
   useEffect(() => {
     (async () => {
       try {
-        // get all questions
         const res = await apiCall('/admin/games', 'GET');
         const games = res.games;
-        setGames(games);
-        // const game = games.filter((game) => game.id == gameId)[0];
-        const game = await queryGamebyId(gameId)
+        const game = await queryGamebyId(gameId, games);
         setGame(game);
         setTitle(game.name);
         setQuestions(game.questions ?? []);
@@ -56,7 +51,6 @@ export default function EditGame() {
       setQuestions(newQuestions);
       console.log('delete game')
       setGame(newGame);
-      // debugger
     } catch (err) {
       console.error('delQuestion error:' + err)
     }

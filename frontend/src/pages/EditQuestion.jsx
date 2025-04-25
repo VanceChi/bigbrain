@@ -5,10 +5,10 @@ import { queryQuestions } from "../utils/query";
 import { useEffect, useState } from "react";
 import EditQuestionCard from "../components/EditQuestionCard";
 
-export default function EditQuestion () {
+export default function EditQuestion() {
   const { gameId, questionId } = useParams();
   const [questions, setQuestions] = useState();
-  
+
   useEffect(() => {
     (async () => {
       try {
@@ -18,7 +18,7 @@ export default function EditQuestion () {
         console.error("Failed to load games:", err);
       }
     })();
-    
+
   }, []);
 
 
@@ -26,7 +26,7 @@ export default function EditQuestion () {
     <>
       <Navbar />
       <BackBtn />
-      <EditQuestionCard  
+      <EditQuestionCard
         gameId={gameId}
         questionId={questionId}
         showAddQues={true}
@@ -34,6 +34,6 @@ export default function EditQuestion () {
         setQuestions={setQuestions}
       />
     </>
-    
+
   )
 }

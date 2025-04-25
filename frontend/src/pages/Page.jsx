@@ -13,7 +13,7 @@ import PlayGame from "./PlayGame";
 function ProtectedRoute({ children }) {
   const token = JSON.parse(localStorage.getItem('token'));
   if (!token) localStorage.clear();
-  return token? children : <Navigate to="/login" replace />;
+  return token ? children : <Navigate to="/login" replace />;
 }
 
 function SessionProvider({ children }) {
@@ -26,7 +26,7 @@ function SessionProvider({ children }) {
   const [activeSessions, setActiveSessions] = useState(() => {
     const storedSessions = localStorage.getItem('activeSessions');
     try {
-      return storedSessions? JSON.parse(storedSessions) : [];
+      return storedSessions ? JSON.parse(storedSessions) : [];
     } catch (error) {
       console.error('Failed to parse activeSessions: ', error);
       return [];
@@ -34,13 +34,13 @@ function SessionProvider({ children }) {
   })
 
   return (
-    <SessionContext.Provider value={{activeSessions, setActiveSessions}}>
+    <SessionContext.Provider value={{ activeSessions, setActiveSessions }}>
       {children}
     </SessionContext.Provider>
   )
 }
 
-export default function Page({}) {
+export default function Page({ }) {
 
   return (
     <>
@@ -54,7 +54,7 @@ export default function Page({}) {
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
-            }/>
+            } />
             <Route path="/game/:gameId" element={
               <ProtectedRoute>
                 <EditGame />
@@ -70,9 +70,9 @@ export default function Page({}) {
                 <Session />
               </ProtectedRoute>
             } />
-            <Route path="/play/join/" element={ <PlayJoin /> } />
-            <Route path="/play/join/:sessionId" element={ <PlayJoin /> } />
-            <Route path="/play/:playerId" element={ <PlayGame /> } />
+            <Route path="/play/join/" element={<PlayJoin />} />
+            <Route path="/play/join/:sessionId" element={<PlayJoin />} />
+            <Route path="/play/:playerId" element={<PlayGame />} />
           </Routes>
         </Router>
       </SessionProvider>
