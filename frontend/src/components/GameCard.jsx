@@ -38,7 +38,7 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
   }, [])
 
   useEffect(() => {
-    setInfoPassedToSession({title, gameId, questions})
+    setInfoPassedToSession({ title, gameId, questions })
   }, [title, gameId, questions])
 
   const handleCopyLink = async () => {
@@ -88,7 +88,7 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
           <div className="flex justify-between items-center w-full">
             <div
               className="group/end flex justify-center items-center mr-2">
-              <EndBtn onClick={() => handleEndGame()}/>
+              <EndBtn onClick={() => handleEndGame()} />
               <p className='opacity-0 group-hover/end:opacity-100 font-semibold'>End</p>
             </div>
             <div>
@@ -105,7 +105,7 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
         ) : (
           <div className='flex place-content-between w-full'>
             <div className="group/start flex justify-center items-center mr-2">
-              <PlayBtn 
+              <PlayBtn
                 onClick={() => handleStartGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId)}
               />
               <p className='opacity-0 group-hover/start:opacity-100' >Start</p>

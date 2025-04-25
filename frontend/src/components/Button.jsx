@@ -14,7 +14,7 @@ export function NavButton({ children, onClick }) {
 }
 
 
-export function LoginBtn({onClick}) {
+export function LoginBtn({ onClick }) {
   return (
     <NavButton onClick={onClick}>
       Log in
@@ -22,7 +22,7 @@ export function LoginBtn({onClick}) {
   )
 }
 
-export function BackButton({onClick}) {
+export function BackButton({ onClick }) {
   const navigate = useNavigate();
   if (!onClick)
     onClick = () => navigate(-1);
@@ -32,7 +32,7 @@ export function BackButton({onClick}) {
 }
 
 
-export function DashBoardBtn({onClick}) {
+export function DashBoardBtn({ onClick }) {
   return (
     <NavButton onClick={onClick}>
       Dashboard
@@ -41,7 +41,7 @@ export function DashBoardBtn({onClick}) {
 }
 
 
-export function RegisterBtn({onClick}) {
+export function RegisterBtn({ onClick }) {
   return (
     <NavButton onClick={onClick}>
       Register

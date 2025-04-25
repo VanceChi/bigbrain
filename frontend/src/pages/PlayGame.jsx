@@ -37,10 +37,10 @@ export default function PlayGame() {
     setGameState(gameState);
 
     // 1. Waiting. Game not started, session active.
-    if ( gameState === 0 ) {
+    if (gameState === 0) {
       console.log('loading...');
 
-    // 2. Game ongoing.
+      // 2. Game ongoing.
     } else if (gameState === 1) {
       const question = await playGetQuestion(playerId);
       // next question
@@ -52,25 +52,25 @@ export default function PlayGame() {
         setTimeLeft(question.duration);
         setSubmitted(false);
       }
-    
-    // 3. Session just ended.
+
+      // 3. Session just ended.
     } else if (gameState === -1) {
       const gameResult = await playGetResult(playerId);
       setGameResult(gameResult);
       // generate pointsGot: Arrary [[questionText, points], ...], points: '**/**'
       const pointsGot = [];
-      for (let i=0; i<questions.length; i++){
+      for (let i = 0; i < questions.length; i++) {
         const q = questions[i];
         const r = gameResult[i];
         let ansTime = new Date(r.answeredAt) - new Date(r.questionStartedAt);
-        ansTime = Math.round(ansTime/100)/10;
-        ansTime = ansTime==0?'no answer':ansTime;
-        pointsGot.push([q.questionText, [q.points*r.correct, q.points], ansTime])
+        ansTime = Math.round(ansTime / 100) / 10;
+        ansTime = ansTime == 0 ? 'no answer' : ansTime;
+        pointsGot.push([q.questionText, [q.points * r.correct, q.points], ansTime])
       }
       setPointsGot(pointsGot);
 
-    // Error: invalid playerId
-    } else if (gameState === -2) {    
+      // Error: invalid playerId
+    } else if (gameState === -2) {
       console.error('Invalid playerId');
     }
   };
@@ -78,7 +78,7 @@ export default function PlayGame() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       updateGameStatus();
-      if (gameState === -1){
+      if (gameState === -1) {
         return clearInterval(intervalId);
       }
     }, 200); // Poll every 200ms
@@ -120,8 +120,8 @@ export default function PlayGame() {
     } catch (err) {
       console.error(err);
     }
-    
-    
+
+
   }
 
   /**
@@ -132,7 +132,7 @@ export default function PlayGame() {
   const handleSelectAnswer = async (answer) => {
     setSelectedAnswers(answer);
     try {
-      const sentAnswer = answer.map(a=>a.text);
+      const sentAnswer = answer.map(a => a.text);
       console.log('answer:', answer);
       console.log('sentAnswer:', sentAnswer);
       await submitAnswer(sentAnswer);
@@ -147,7 +147,7 @@ export default function PlayGame() {
       <Navbar />
       {sessionId && <BackBtn onClick={() => {
         navigate(`/play/join`);
-      }}/>}
+      }} />}
       <div className="p-4">
         {/*  Waiting. Game not started, session active. */}
         {gameState === 0 && (
@@ -194,13 +194,13 @@ export default function PlayGame() {
                   {pointsGot.map((r, index) => (
                     <tr key={index}>
                       <td className="border p-2">{r[0]}</td>
-                      <td className="border p-2">{r[1][0]+'/'+r[1][1]}</td>
+                      <td className="border p-2">{r[1][0] + '/' + r[1][1]}</td>
                       <td className="border p-2">{r[2]}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <p className="font-bold mt-3">Total points: {pointsGot.map(r=>r[1][0]).reduce((a, b) => a + b, 0)}</p>
+              <p className="font-bold mt-3">Total points: {pointsGot.map(r => r[1][0]).reduce((a, b) => a + b, 0)}</p>
             </div>
           </div>
         )}

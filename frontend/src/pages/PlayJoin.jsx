@@ -10,7 +10,6 @@ export default function PlayJoin() {
   const [inputSessionId, setInputSessionId] = useState(sessionId ? String(sessionId) : '');
   const [sessionIdSubmitted, setSessionIdSubmitted] = useState(sessionId !== undefined);
   const [name, setName] = useState('');
-  const [sessionIdError, setSessionIdError] = useState(false);
   const [inputError, setInputError] = useState('');
 
   const handleSubmitSessionId = async () => {

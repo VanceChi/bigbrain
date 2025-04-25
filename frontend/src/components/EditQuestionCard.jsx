@@ -49,7 +49,7 @@ const QuestionEditor = ({
     }
     const id = genId();
     try {
-      const correctAnswers = answers.filter(a=>a.correct===true).map(a=>a.text);
+      const correctAnswers = answers.filter(a => a.correct === true).map(a => a.text);
       saveQuestion({
         id,
         questionType,
@@ -95,7 +95,7 @@ const QuestionEditor = ({
           <input
             type="number"
             value={duration}
-            onChange={(e) => {setDuration(Number(e.target.value))}}
+            onChange={(e) => { setDuration(Number(e.target.value)) }}
             className="p-2 border rounded w-full"
             min="1"
           />
@@ -156,10 +156,10 @@ const QuestionEditor = ({
           >
             Add Answer
           </button>
-          <button 
+          <button
             onClick={handleSaveQuestion}
             className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded mt-2  hover:cursor-pointer ml-1"
-          > 
+          >
             Save Question
           </button>
         </div>
@@ -179,7 +179,7 @@ const QuestionEditor = ({
  */
 export const QuestionDisplay = ({
   questionType, questionText, duration, points, mediaUrl, answers,
-  selectedAnswers, setSelectedAnswers, 
+  selectedAnswers, setSelectedAnswers,
   submitted, setSubmitted,
   result, setResult,
   mode
@@ -201,7 +201,7 @@ export const QuestionDisplay = ({
             setSubmitted(true);
             setResult('Time\'s up!');
             return 0;
-          } 
+          }
           console.log('count down.')
           return prev - 1;  // count down
         });
@@ -234,7 +234,7 @@ export const QuestionDisplay = ({
     const isCorrect =
       questionType === 'multiple'
         ? selectedAnswers.length === correctAnswers.length &&
-          selectedAnswers.every((ans) => ans.correct)
+        selectedAnswers.every((ans) => ans.correct)
         : selectedAnswers.length === 1 && selectedAnswers[0].correct;
 
     setResult(isCorrect ? `Correct! +${points} points` : 'Incorrect.');
@@ -245,7 +245,7 @@ export const QuestionDisplay = ({
     ? mediaUrl.replace('watch?v=', 'embed/').replace(/youtu.be\//, 'youtube.com/embed/')
     : null;
 
-  
+
   const handleReset = () => {
     setSelectedAnswers([]);
     setSubmitted(false);
@@ -282,7 +282,7 @@ export const QuestionDisplay = ({
               <div key={index} className="flex items-center mb-2">
                 <input
                   type={questionType === 'multiple' ? 'checkbox' : 'radio'}
-                  checked={selectedAnswers.map(a=>a.text).includes(answer.text)}
+                  checked={selectedAnswers.map(a => a.text).includes(answer.text)}
                   onChange={() => handleSelect(answer)}
                   disabled={submitted}
                   className="mr-2"
@@ -296,15 +296,15 @@ export const QuestionDisplay = ({
           </div>
         </div>
         <div className="flex place-content-between">
-          {mode!=='observe' && (<button
+          {mode !== 'observe' && (<button
             onClick={handleSubmit}
             disabled={submitted || selectedAnswers?.length === 0}
             className="bg-bigbrain-light-pink text-white px-4 py-2 rounded disabled:bg-bigbrain-light-pink m-3 hover:cursor-pointer hover:bg-bigbrain-darker-pink"
           >
             Submit Answer
           </button>)}
-          
-          {mode==='preview' && (<button
+
+          {mode === 'preview' && (<button
             onClick={handleReset}
             className="bg-bigbrain-dark-green text-white px-4 py-2 rounded m-3 hover:cursor-pointer hover:bg-bigbrain-darker-green"
           >
@@ -324,7 +324,7 @@ export const QuestionDisplay = ({
  * @param {*} gameId
  * @returns 
  */
-export default function EditQuestionCard({gameId, questionId, showAddQues, setShowAddQues, questions, setQuestions}) {
+export default function EditQuestionCard({ gameId, questionId, showAddQues, setShowAddQues, questions, setQuestions }) {
   const [games, setGames] = useState([]);
   const [game, setGame] = useState({});
   const [questionType, setQuestionType] = useState('single');
@@ -336,7 +336,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState('');
-  
+
   // initEditor for Edit question / New question
   useEffect(() => {
     async function loadQuestion() {
@@ -347,7 +347,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
       setPoints(q.points);
       setMediaUrl(q.mediaUrl);
       setAnswers(q.answers);
-      setSelectedAnswers(q.answers.filter((answer)=>answer.correct===true));
+      setSelectedAnswers(q.answers.filter((answer) => answer.correct === true));
       setSubmitted(false);
       setResult('');
     }
@@ -369,12 +369,12 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
       if (showAddQues === undefined)
         showAddQues = true;
 
-      if (questionId) 
+      if (questionId)
         loadQuestion();
-      else 
+      else
         resetEditor();
     }
-    
+
     initEditor(gameId, questionId);
   }, []);
 
@@ -395,7 +395,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
     setSubmitted(false);
     setResult('');
   }, [questionType]);
-  
+
 
   /**
    *  Given game, questions from Closure (EditQuizQuestionCard) 
@@ -412,11 +412,11 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
     }
     try {
       let newQuestions = [];
-      if(questionId === undefined){  
-        
+      if (questionId === undefined) {
+
         // Add question
         newQuestions = [...questions, question];
-      } else {  
+      } else {
 
         // Update question
         const restQues = questions.filter(q => q.id != questionId);
@@ -424,7 +424,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
         newQuestions = [...restQues, question];
       }
       await updateQuestions(newQuestions);
-      if(questionId === undefined) setShowAddQues(false);
+      if (questionId === undefined) setShowAddQues(false);
     } catch (err) {
       console.error('saveQuestion error:' + err);
     }
@@ -455,7 +455,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
     try {
       const restGames = games.filter((g) => g.id != game.id);
       const updatedGames = [...restGames, game];
-      await apiCall('/admin/games', 'PUT', {games: updatedGames});
+      await apiCall('/admin/games', 'PUT', { games: updatedGames });
       alert('Question saved.')
       setGames(games);
       setGame(game);
@@ -480,7 +480,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
             answers={answers} setAnswers={setAnswers}
             saveQuestion={saveQuestion}
           />
-          <hr className="mt-8 mb-8"/>
+          <hr className="mt-8 mb-8" />
           <h2 className="text-xl font-bold mb-4">Question Display</h2>
           <QuestionDisplay
             questionType={questionType}
