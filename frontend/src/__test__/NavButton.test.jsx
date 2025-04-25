@@ -1,22 +1,40 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+// src/__tests__/Navbar.test.jsx
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
 import Navbar from '../components/Navbar'
-import { BrowserRouter } from 'react-router-dom'
 
-describe('NavButton in Navbar', () => {
-  it('renders login and register links when no token', () => {
-    localStorage.clear()
+describe('Navbar', () => {
+  afterEach(() => localStorage.clear())
+
+  it('shows Register on the /login page when not authenticated', () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter initialEntries={['/login']}>
         <Navbar />
-      </BrowserRouter>
+      </MemoryRouter>
     )
-    expect(screen.getByRole('button', { name: /Log in/i })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /Log out/i })).toBeNull()
+    // At /login, we should see a Register button
+    expect(screen.getByRole('button', { name: /Register/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Log in/i })).toBeNull()
   })
 
-  it('calls navigate on click', () => {
-    // you can mock useNavigate or simply assert button is clickable
-    // for brevity, check it exists
-    expect(screen.getByRole('button', { name: /Log in/i })).toBeEnabled()
+  it('shows Log in on the /register page when not authenticated', () => {
+    render(
+      <MemoryRouter initialEntries={['/register']}>
+        <Navbar />
+      </MemoryRouter>
+    )
+    expect(screen.getByRole('button', { name: /Log in/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Register/i })).toBeNull()
+  })
+
+  it('shows Log out whenever a token is present', () => {
+    localStorage.setItem('token', JSON.stringify('fake'))
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Navbar />
+      </MemoryRouter>
+    )
+    expect(screen.getByRole('button', { name: /Log out/i })).toBeInTheDocument()
   })
 })
