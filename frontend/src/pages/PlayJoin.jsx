@@ -61,11 +61,11 @@ export default function PlayJoin() {
                     value={name} 
                     placeholder="Enter Name" 
                     onChange={e => setName(e.target.value)}
-                    className="border-2 rounded-md mr-4 h-[50px]"
+                    className="border-2 border-bigbrain-darker-pink rounded-md mr-4 h-[50px]"
                   />
                   <button 
                     onClick={handleSubmitName}
-                    className="border h-full p-3 rounded-2xl text-black font-bold hover:cursor-pointer hover:bg-bigbrain-light-pink hover:text-white"
+                    className="border h-full p-3 rounded-2xl text-bigbrain-darker-pink font-bold hover:cursor-pointer hover:bg-bigbrain-light-pink hover:text-white"
                   >Submit</button>
                 </div>
               </div>
@@ -80,11 +80,11 @@ export default function PlayJoin() {
                     value={inputSessionId} 
                     placeholder="Enter Session id" 
                     onChange={e => setInputSessionId(e.target.value)}
-                    className="border-2 rounded-md mr-4 h-[50px]"
+                    className="border-2 border-bigbrain-darker-pink rounded-md mr-4 h-[50px]"
                   />
                   <button 
                       onClick={handleSubmitSessionId}
-                      className="border p-3 rounded-2xl text-black font-bold hover:cursor-pointer hover:bg-bigbrain-light-pink hover:text-white"
+                      className="border p-3 rounded-2xl text-bigbrain-darker-pink font-bold hover:cursor-pointer hover:bg-bigbrain-light-pink hover:text-white"
                   >Submit
                   </button>
                 </div>

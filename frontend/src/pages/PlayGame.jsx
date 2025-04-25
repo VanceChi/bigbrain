@@ -181,8 +181,8 @@ export default function PlayGame() {
         {/* Session ended. */}
         {gameState === -1 && (
           <div aria-label="game-results">
-            <p className="text-xl">Game over</p>
-            <div aria-label="question-points-aquired">
+            <p className="text-2xl italic font-black ">Game over</p>
+            <div aria-label="question-points-aquired" className="m-10">
               <table className="table-auto">
                 <thead>
                   <tr>
@@ -201,8 +201,7 @@ export default function PlayGame() {
                   ))}
                 </tbody>
               </table>
-              {console.log(pointsGot[0], typeof pointsGot[0])}
-              <p>Total points: {pointsGot.map(r=>r[1][0]).reduce((a, b) => a + b, 0)}</p>
+              <p className="font-bold mt-3">Total points: {pointsGot.map(r=>r[1][0]).reduce((a, b) => a + b, 0)}</p>
             </div>
           </div>
         )}
