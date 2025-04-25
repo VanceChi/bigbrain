@@ -184,24 +184,26 @@ export default function PlayGame() {
             <p className="text-2xl italic font-black ">Game over</p>
             <div aria-label="question-points-aquired" className="m-10 bg-bigbrain-milky-canvas rounded-2xl p-5">
               <p className="font-bold mt-3">Total points: {pointsGot.map(r => r[1][0]).reduce((a, b) => a + b, 0)}</p>
-              <table className="table-auto m-5">
-                <thead>
-                  <tr>
-                    <th>Question</th>
-                    <th>Score</th>
-                    <th>Seconds</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pointsGot.map((r, index) => (
-                    <tr key={index}>
-                      <td className="border p-2">{r[0]}</td>
-                      <td className="border p-2">{r[1][0] + '/' + r[1][1]}</td>
-                      <td className="border p-2">{r[2]}</td>
+              <div className="flex place-content-center">
+                <table className="table-auto m-5">
+                  <thead>
+                    <tr>
+                      <th>Question</th>
+                      <th>Score</th>
+                      <th>Seconds</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {pointsGot.map((r, index) => (
+                      <tr key={index}>
+                        <td className="border p-2">{r[0]}</td>
+                        <td className="border p-2">{r[1][0] + '/' + r[1][1]}</td>
+                        <td className="border p-2">{r[2]}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
