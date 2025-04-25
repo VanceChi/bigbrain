@@ -308,7 +308,7 @@ export const QuestionDisplay = ({
           </button>)}
         </div>
       </div>
-      {submitted && <p className="mt-4 text-lg font-semibold italic">{result}</p>}
+      {submitted && <p className="mt-4 text-lg font-semibold italic">---- {result} ----</p>}
     </div>
   );
 };
