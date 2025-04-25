@@ -1,27 +1,40 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import Navbar from "../components/Navbar";
-import { checkSessionState, endSession } from "../utils/session";
+import { endSession } from "../utils/session";
 import { useContext, useEffect, useState } from "react";
 import { SessionContext } from "../context/Sessions";
-import { BackButton } from "../components/Button";
 import { apiCall } from "../utils/api";
 import { QuestionDisplay } from "../components/EditQuestionCard";
 import { queryQuestions } from "../utils/query";
 import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
+import { BackBtn } from "../components/SVGBtn";
+import { EndBtn } from "../components/SVGBtn";
+import { adminGetGameState } from "../services/adminSessionService";
 
 export default function Session() {
   const {activeSessions, setActiveSessions} = useContext(SessionContext);
   const { sessionId } = useParams();
-  const [active, setActive] = useState(false);
+  const [gameState, setGameState] = useState();
+  /**
+     -5: Default value.
+     -4: Session id error.
+     -3: Session finished. No player result.
+     -2: Session finished. Show result.
+     -1: Waiting. Game not started, session active.
+      0: question index 0.  Game ongoing.
+      1: question index 1.  Game ongoing.
+      ...
+   */
   const {state} = useLocation();  // keys: title, gameId, questions
   const [title, setTitle] = useState('');
   const [gameId, setGameId] = useState();
   const [position, setPosition] = useState(-1);  
   // -1: not start yet
   const [question, setQuestion] = useState({}); 
-  const [nofQuestions, setNofQuestions] = useState(0); 
+  const [nOfQuestions, setNOfQuestions] = useState(0); 
   const [showResult, setShowResult] = useState(false); 
+  const [noResult, setNoResult] = useState(false); 
   const [scoreTable, setScoreTable] = useState([]); 
   const [correctRateTable, setCorrectRateTable] = useState([]); 
   const [ansTime, setAnsTime] = useState([]); 
@@ -36,11 +49,17 @@ export default function Session() {
     height: 200,
   };
 
+  const updateGameStatus = async () => {
+    const gameState = await adminGetGameState(sessionId);
+    setGameState(gameState);
+  }
+
   useEffect(() => {
     const init = async () => {
+      await updateGameStatus();
       // set session active or not
-      const isActive = await checkSessionState(sessionId);
-      setActive(isActive);
+      
+      const isActive = gameState >= -1;
 
       // set gameId
       setGameId(state.gameId);
@@ -55,8 +74,8 @@ export default function Session() {
   // Since cant restart session. The effect here means active -> unactive
   // Shows result.
   useEffect(() => {
-    getStatus();
-  }, [active])
+    updateStatus();
+  }, [gameState])
 
   useEffect(() => {
     if (showResult){
@@ -81,13 +100,18 @@ export default function Session() {
     * 
     * scoreTable [score1, score2,...] index: player
     * correctRate [rate1, rate2,...] index: question
-   * @param {*} resResults 
+   * @param {Array} resResults 
    */
   const genAnswerResult = async (resResults) => {
+    if (resResults.length===0){
+      setGameState(-3);
+      return;
+    }
+    setNoResult(false);
     const questions = await queryQuestions(gameId);
     const ansResults = [];  
     const nOfPlayers = resResults.length;
-    for (let i=0; i<nofQuestions; i++){  // question
+    for (let i=0; i<nOfQuestions; i++){  // question
       const qArr = [];
       const points = questions[i].points;
       const questionText = questions[i].questionText;
@@ -105,7 +129,7 @@ export default function Session() {
     let scoreTable=[];  // [[name, score], ...]
     for (let p=0; p<nOfPlayers; p++){
       let score = 0;
-      for (let q=0; q<nofQuestions; q++){
+      for (let q=0; q<nOfQuestions; q++){
         score += ansResults[q][p].points*ansResults[q][p].correct;
       }
       scoreTable.push([ansResults[0][p].playerName, score]);
@@ -117,7 +141,7 @@ export default function Session() {
     // correct rate
     const correctRate = []; // index: question
     const questionsText = []; // index: question
-    for (let q=0; q<nofQuestions; q++){
+    for (let q=0; q<nOfQuestions; q++){
       let correctN = 0;
       questionsText.push(ansResults[q][0].questionText);
       for (let p=0; p<nOfPlayers; p++){
@@ -128,7 +152,8 @@ export default function Session() {
     setCorrectRateTable({correctRate, questionsText});
 
     // respond time
-    for (let q=0; q<nofQuestions; q++){
+    const ansTime = [];
+    for (let q=0; q<nOfQuestions; q++){
       let respondTime = 0;
       for (let p=0; p<nOfPlayers; p++){
         respondTime += ansResults[q][p].time;
@@ -147,21 +172,26 @@ export default function Session() {
   const loadResult = async () => {
     const res = await apiCall(`/admin/session/${sessionId}/results`, 'GET'); //{results: Array(0)}
     const resResults = res.results;
-    setPosition(nofQuestions);
+    setPosition(nOfQuestions);
     // generate customize answering results
     await genAnswerResult(resResults);
   }
 
-  const getStatus = async () => {
+  const updateStatus = async () => {
+    updateGameStatus();
     const res = await apiCall(`/admin/session/${sessionId}/status`, 'GET')
     const results = res.results;
-    setNofQuestions(results.questions.length);
+    setNOfQuestions(results.questions.length);
     const position = results.position;
     const question = results.questions[position]??{};
     if (Object.keys(question).length === 0 && position != -1) {
       setShowResult(true);
     } else {
       setShowResult(false);
+      if(position===nOfQuestions){
+        console.log('--------', position===nOfQuestions)
+      }
+        
       setPosition(position);
       setQuestion(question);
     }
@@ -170,7 +200,7 @@ export default function Session() {
   const handleEndSession = async () => {
     try {
       await endSession(undefined, sessionId, activeSessions, setActiveSessions);
-      setActive(false);
+      updateGameStatus();
       setShowResult(true);
     } catch (error) {
       console.log(error);
@@ -179,70 +209,128 @@ export default function Session() {
 
   const hanleAdvanceQuestion = async () => {
     await apiCall(`/admin/game/${gameId}/mutate`, 'POST', { "mutationType": "ADVANCE" });
-    getStatus();
+    updateStatus();
+  }
+
+  function AdvanceQuesBtn({children, title}) {
+    return (
+      <button 
+        className="m-2 bg-bigbrain-light-pink text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-1.5 mb-2 rounded-3xl inline-block"
+        onClick={hanleAdvanceQuestion}
+        title={title}
+      >
+        <p className="font-medium text-[15px]/1 p-3">
+          {children}
+        </p>
+      </button>
+    )
+  }
+
+  const ChartTitle = ({children}) => {
+
+    return (
+      <p className="font-bold">
+        {children}
+      </p>
+    )
   }
 
   return (
     <>
       <Navbar />
-      <BackButton onClick={() => navigate('/dashboard')}/>
-      {active? (
-        <>
-          <p>Session active</p>
-          <button onClick={handleEndSession} className="border">End Session</button>
-        </>
-      ) : (
-        <p>Session inactive</p>
-      )}
-      <p>Session of {title} -- session id: {sessionId}</p>
-      <button className="border inline-block" onClick={hanleAdvanceQuestion}>Advance Question</button> &nbsp;&nbsp;&nbsp;
-      <p className="inline-block">
-        {position === -1 && 'not start'}
-        {(-1 < position && position < nofQuestions) && `${position+1} out of ${nofQuestions}`}
-        {position === nofQuestions && 'Finished'}
-      </p>
+      <BackBtn onClick={() => navigate('/dashboard')}/>
+      <div className="flex justify-center">
+        {gameState >= -1 ? (
+            <div className="flex place-content-between w-[200px]">
+              <EndBtn onClick={handleEndSession}/>
+              <div className="relative group w-1xs">
+                <div className="absolute -inset-0.5 rounded-2xl bg-[linear-gradient(90deg,#800080,#ff0000,#ffff00)] bg-[length:200%_50%] 
+                  animate-[var(--animation-gradient-glow)] blur-sm opacity-10">
+                </div>
+                <div className="italic font-bold text-lg/8 inline-block p-3 text-shadow-2xs">
+                  Session active
+                </div>
+              </div>
+            </div>
+        ) : (
+          <p className="italic font-bold text-lg/8 inline-block p-3 text-shadow-2xs">Session Ended</p>
+        )}
+      </div>
+      <div className="flex justify-center">
+        <p className="italic font-medium text-lg/8 p-3">Session of {title} ---- session id: {sessionId}</p>
+      </div>
 
-      <div>
-        {Object.keys(question).length !== 0 && !showResult && (
-          <QuestionDisplay 
-            questionType={question.questionType}
-            questionText={question.questionText}
-            duration={question.duration}
-            points={question.points}
-            mediaUrl={question.mediaUrl}
-            answers={question.answers}
-            selectedAnswers={[]}
-            setSubmitted={() => console.log('Finished.')}
-            setSelectedAnswers={()=>console.log('You can not answer here.')}
-            setResult={()=>console.log('setResult.')}
-            mode={'observe'}
-          />
+      {/* Control Center */}
+      <div 
+        aria-label="Control-center"               className=" bg-bigbrain-milky-canvas m-4 border-[1.5px] rounded-xl p-3"
+      >
+        {(gameState === -2 || gameState === -3) && (
+          <p className="font-bold text-[15px]/1 p-3">Fnished</p>
+        )}
+        {gameState === -1 &&  (
+          <>
+            <AdvanceQuesBtn>Start !</ AdvanceQuesBtn>
+          </>
+        )}
+        {gameState >= 0 &&  (
+          <>
+            <AdvanceQuesBtn title="Click to go next question">
+              Next
+            </ AdvanceQuesBtn>
+            <p className="inline-block font-bold ml-2">
+            {(-1 < position && position < nOfQuestions) && `Questions: ${position+1} / ${nOfQuestions}`}
+            </p>
+          </>
+        )}
+      </div>
+
+      {/* Show question */}
+      <div className="bg-bigbrain-milky-canvas p-8 pt-4 shadow-lg shadow-grey m-3">
+        {gameState === -1 && (
+          <p className="inline-block font-medium text-[15px]/1 p-3">Game Not Start Yet</p>
+        )}
+        {gameState >=0 && Object.keys(question).length !== 0 && (
+          <>
+            <p className="inline-block font-medium text-[15px]/1 p-3">(You can not answer)</p>
+            <QuestionDisplay 
+              questionType={question.questionType}
+              questionText={question.questionText}
+              duration={question.duration}
+              points={question.points}
+              mediaUrl={question.mediaUrl}
+              answers={question.answers}
+              selectedAnswers={[]}
+              setSubmitted={() => console.log('Finished.')}
+              setSelectedAnswers={()=>console.log('You can not answer here.')}
+              setResult={()=>console.log('setResult.')}
+              mode={'observe'}
+            />
+          </>
         )} 
 
-        {showResult && Object.keys(correctRateTable).length !==0 && (
+        {gameState === -2 && !noResult && Object.keys(correctRateTable).length !==0 && (
           <div>
-            <div aria-label="score-container">
-              <p>Score Table</p>
-              <table className="table-auto">
+            <div aria-label="score-container" className="border rounded-2xl p-5">
+              <ChartTitle>Score:</ChartTitle>
+              <table className="table-auto w-[100%]">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Score</th>
+                    <th className="font-semibold">Name</th>
+                    <th className="font-semibold">Score</th>
                   </tr>
                 </thead>
                 <tbody>
                   {scoreTable.slice(0, 5).map((score, index) => (
                     <tr key={index}>
-                      <td className="border">{score[0]}</td>
-                      <td className="border">{score[1]}</td>
+                      <td className="border p-1 pl-3">{score[0]}</td>
+                      <td className="border p-1 pl-3">{score[1]}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div className="mt-6">
-              <p>Correct Rate</p>
-              {console.log('correctRateTable', correctRateTable)}
+            <div className="mt-6 border rounded-2xl p-4">
+              <ChartTitle>Correct Rate</ChartTitle>
               <BarChart
                 yAxis={[
                   {
@@ -257,7 +345,8 @@ export default function Session() {
               />
               {ansTime.length !==0 && 
                (<>
-                  <p>Average Respond Time (s)</p>
+                  <ChartTitle>Average Respond Time (s)</ChartTitle>
+                  {console.log(ansTime)}
                   <PieChart
                     series={[
                       {
@@ -271,6 +360,13 @@ export default function Session() {
               }
             </div>
           </div>
+        )}
+
+        {/* No Player Results */}
+        {gameState === -3 && (
+          <p className="font-bold italic">
+            No Player Answerred!
+          </p>
         )}
       </div>
     </>
