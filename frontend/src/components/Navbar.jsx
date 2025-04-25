@@ -1,4 +1,4 @@
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { DashBoardBtn } from './Button';
 import { RegisterBtn } from './Button';
 import { LogoutBtn } from './Button';

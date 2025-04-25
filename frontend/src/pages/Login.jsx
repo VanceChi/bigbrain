@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/authService';
 import Form from '../components/Form';
-import Navbar from "../components/Navbar"
 
 function Login() {
   const navigate = useNavigate();
@@ -27,7 +26,6 @@ function Login() {
 
   return (
     <>
-      <Navbar />
       <div className="bg-bigbrain-light-mint flex justify-center items-center h-[80vh]">
         <Form
           onSubmit={handleLoginSubmit}

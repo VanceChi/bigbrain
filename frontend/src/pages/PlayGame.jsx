@@ -1,5 +1,4 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { apiCall } from "../utils/api";
 import { QuestionDisplay } from "../components/EditQuestionCard";
@@ -143,7 +142,6 @@ export default function PlayGame() {
 
   return (
     <>
-      <Navbar />
       {sessionId && <BackBtn onClick={() => {
         navigate(`/play/join`);
       }} />}

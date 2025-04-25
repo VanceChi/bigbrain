@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { apiCall } from "../utils/api"
 import GameCard from "../components/GameCard"
-import Navbar from "../components/Navbar";
 import { queryGames } from "../utils/query";
 import { genId } from "../utils/genId";
 
@@ -41,7 +40,6 @@ export default function Dashboard() {
   return (
     <>
       <div>
-        <Navbar />
         <div className={`flex gap-4 p-4 `}>
           <div className={`flex p-2 w-full ${showCreateGame && 'bg-bigbrain-milky-canvas/80 rounded-2xl place-items-center'}`}>
             <button

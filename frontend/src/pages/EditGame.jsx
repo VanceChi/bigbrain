@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/api';
-import Navbar from '../components/Navbar';
 import { BackBtn, MinusBtn, EditBtn } from "../components/SVGBtn"
 import { queryGamebyId } from '../utils/query';
 import EditQuestionCard from "../components/EditQuestionCard";
@@ -58,7 +57,6 @@ export default function EditGame() {
 
   return (
     <>
-      <Navbar />
       <BackBtn />
       <div className="p-5 bg-bigbrain-light-mint min-h-[80vh]">
         <h2 className="text-2xl font-bold mb-4 ">Edit Game: {title}-- Id: {gameId}</h2>

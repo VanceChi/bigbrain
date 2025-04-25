@@ -9,6 +9,7 @@ import { useState } from 'react';
 import Session from "./Session";
 import PlayJoin from "./PlayJoin";
 import PlayGame from "./PlayGame";
+import Navbar from "../components/Navbar";
 
 function ProtectedRoute({ children }) {
   const token = JSON.parse(localStorage.getItem('token'));
@@ -46,6 +47,7 @@ export default function Page() {
     <>
       <SessionProvider>
         <Router>
+          <Navbar />
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />

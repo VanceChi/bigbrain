@@ -1,4 +1,3 @@
-import Navbar from "../components/Navbar"
 import { BackBtn } from "../components/SVGBtn"
 import { useParams } from "react-router-dom"
 import { queryQuestions } from "../utils/query";
@@ -24,7 +23,6 @@ export default function EditQuestion() {
 
   return (
     <>
-      <Navbar />
       <BackBtn />
       <EditQuestionCard
         gameId={gameId}

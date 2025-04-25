@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/api';
 import Form from '../components/Form';
-import Navbar from "../components/Navbar"
 
 function Register() {
   const navigate = useNavigate();
@@ -31,7 +30,6 @@ function Register() {
   };
   return (
     <>
-      <Navbar />
       <div className="bg-bigbrain-light-mint flex justify-center items-center h-[80vh]">
         <Form
           onSubmit={handleRegisterSubmit}

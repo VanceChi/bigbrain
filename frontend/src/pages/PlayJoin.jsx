@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { useState } from "react";
 import { apiCall } from "../utils/api";
 import { BackBtn } from "../components/SVGBtn";
@@ -38,7 +37,6 @@ export default function PlayJoin() {
 
   return (
     <>
-      <Navbar />
       <BackBtn onClick={() => {
         navigate('/play/join');
         setSessionIdSubmitted(false);

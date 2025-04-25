@@ -1,5 +1,4 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom"
-import Navbar from "../components/Navbar";
 import { endSession } from "../utils/session";
 import { useContext, useEffect, useState } from "react";
 import { SessionContext } from "../context/Sessions";
@@ -238,7 +237,6 @@ export default function Session() {
 
   return (
     <>
-      <Navbar />
       <BackBtn onClick={() => navigate('/dashboard')} />
       <div className="flex justify-center">
         {gameState >= -1 ? (
