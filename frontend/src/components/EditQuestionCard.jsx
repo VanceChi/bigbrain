@@ -66,7 +66,7 @@ const QuestionEditor = ({
   }
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 p-3">
       <div className="mb-4">
         <label className="block mb-1 font-semibold">Question Type:</label>
         <select
@@ -91,7 +91,7 @@ const QuestionEditor = ({
       </div>
       <div className="mb-4 flex space-x-4">
         <div className="flex-1">
-          <label className="block mb-1 font-semibold">Time Limit (seconds):</label>
+          <label className="block mb-1 font-semibold">Duration (s):</label>
           <input
             type="number"
             value={duration}
@@ -285,7 +285,7 @@ export const QuestionDisplay = ({
                 />
                 <span>{answer.text}</span>
                 {submitted && (
-                  <span className="ml-2">{answer.correct ? '✅' : '❌'}</span>
+                  <span className="ml-2">{answer.correct ? '✔' : '✘'}</span>
                 )}
               </div>
             ))}
