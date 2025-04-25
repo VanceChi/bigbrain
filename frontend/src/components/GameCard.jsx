@@ -90,7 +90,7 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
             <div
               className="group/end flex justify-center items-center mr-2">
               <EndBtn onClick={() => handleEndGame()} />
-              <p className='opacity-0 group-hover/end:opacity-100 font-semibold'>End</p>
+              <p className='opacity-0 group-hover/end:opacity-100 font-semibold text-bigbrain-dark-pink'>End</p>
             </div>
             <div>
               <Link to={`/session/${sessionId}`} state={infoPassedToSession}>
@@ -109,7 +109,7 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
               <PlayBtn
                 onClick={() => handleStartGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId)}
               />
-              <p className='opacity-0 group-hover/start:opacity-100' >Start</p>
+              <p className='opacity-0 group-hover/start:opacity-100 text-bigbrain-dark-pink' >Start</p>
             </div>
             <div>
               {showResultPop && (
