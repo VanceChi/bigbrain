@@ -92,7 +92,7 @@ export const checkSessionState = async (sessionId, gameId) => {
  * @param {*} setActiveSessions set function from SessionContext
  * @returns {*} respond from backend.
  */
-export const endSession = async (gameId, sessionId, activeSessions, setActiveSessions) => {
+export const endSession = async (gameId, sessionId, activeSessions) => {
   if (gameId === undefined) {
     const session = activeSessions.find(session => session.activeSessionId == sessionId);
     if (session === undefined) {

@@ -40,7 +40,7 @@ function SessionProvider({ children }) {
   )
 }
 
-export default function Page({ }) {
+export default function Page() {
 
   return (
     <>

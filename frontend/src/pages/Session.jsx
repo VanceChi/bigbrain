@@ -12,8 +12,31 @@ import { BackBtn } from "../components/SVGBtn";
 import { EndBtn } from "../components/SVGBtn";
 import { adminGetGameState } from "../services/adminSessionService";
 
+
+function AdvanceQuesBtn({ children, title, onClick }) {
+  return (
+    <button
+      className="m-2 bg-bigbrain-light-pink text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-1.5 mb-2 rounded-3xl inline-block"
+      onClick={onClick}
+      title={title}
+    >
+      <p className="font-medium text-[15px]/1 p-3">
+        {children}
+      </p>
+    </button>
+  )
+}
+
+const ChartTitle = ({ children }) => {
+  return (
+    <p className="font-bold">
+      {children}
+    </p>
+  )
+}
+
 export default function Session() {
-  const {activeSessions, setActiveSessions} = useContext(SessionContext);
+  const { activeSessions } = useContext(SessionContext);
   const { sessionId } = useParams();
   const [gameState, setGameState] = useState();
   /**
@@ -26,18 +49,18 @@ export default function Session() {
       1: question index 1.  Game ongoing.
       ...
    */
-  const {state} = useLocation();  // keys: title, gameId, questions
+  const { state } = useLocation();  // keys: title, gameId, questions
   const [title, setTitle] = useState('');
   const [gameId, setGameId] = useState();
-  const [position, setPosition] = useState(-1);  
+  const [position, setPosition] = useState(-1);
   // -1: not start yet
-  const [question, setQuestion] = useState({}); 
-  const [nOfQuestions, setNOfQuestions] = useState(0); 
-  const [showResult, setShowResult] = useState(false); 
-  const [noResult, setNoResult] = useState(false); 
-  const [scoreTable, setScoreTable] = useState([]); 
-  const [correctRateTable, setCorrectRateTable] = useState([]); 
-  const [ansTime, setAnsTime] = useState([]); 
+  const [question, setQuestion] = useState({});
+  const [nOfQuestions, setNOfQuestions] = useState(0);
+  const [showResult, setShowResult] = useState(false);
+  const [noResult, setNoResult] = useState(false);
+  const [scoreTable, setScoreTable] = useState([]);
+  const [correctRateTable, setCorrectRateTable] = useState([]);
+  const [ansTime, setAnsTime] = useState([]);
   const navigate = useNavigate();
 
   const correctRateSetting = {
@@ -58,7 +81,7 @@ export default function Session() {
     const init = async () => {
       await updateGameStatus();
       // set session active or not
-      
+
       // set gameId
       setGameId(state.gameId);
 
@@ -78,7 +101,7 @@ export default function Session() {
   }, [gameState])
 
   useEffect(() => {
-    if (showResult){
+    if (showResult) {
       console.log('showResult, gameId changed.')
       loadResult();
     }
@@ -104,77 +127,77 @@ export default function Session() {
    * @param {Array} resResults 
    */
   const genAnswerResult = async (resResults) => {
-    if (resResults.length===0){
+    if (resResults.length === 0) {
       setGameState(-3);
       return [];
     }
     setNoResult(false);
     const questions = await queryQuestions(gameId);
-    const ansResults = [];  
+    const ansResults = [];
     const nOfPlayers = resResults.length;
     console.log('nOfQuestions:', nOfQuestions)
-    for (let i=0; i<nOfQuestions; i++){  // question
+    for (let i = 0; i < nOfQuestions; i++) {  // question
       const qArr = [];
       const points = questions[i].points;
       const questionText = questions[i].questionText;
-      for (let j=0; j<nOfPlayers; j++) {  // player
+      for (let j = 0; j < nOfPlayers; j++) {  // player
         const p = resResults[j];
         const correct = p.answers[i].correct;
         const time = new Date(p.answers[i].answeredAt) - new Date(p.answers[i].questionStartedAt);
         const playerName = p.name;
-        qArr.push({correct, time, points, playerName, questionText});
+        qArr.push({ correct, time, points, playerName, questionText });
       }
       ansResults.push(qArr);
     }
     try {
       // calculate scoreTable
-      let scoreTable=[];  // [[name, score], ...]
-      for (let p=0; p<nOfPlayers; p++){
+      let scoreTable = [];  // [[name, score], ...]
+      for (let p = 0; p < nOfPlayers; p++) {
         let score = 0;
-        for (let q=0; q<nOfQuestions; q++){
-          score += ansResults[q][p].points*ansResults[q][p].correct;
+        for (let q = 0; q < nOfQuestions; q++) {
+          score += ansResults[q][p].points * ansResults[q][p].correct;
         }
         scoreTable.push([ansResults[0][p].playerName, score]);
       }
-      
-      scoreTable.sort((s1, s2) => s2[1]-s1[1]);
+
+      scoreTable.sort((s1, s2) => s2[1] - s1[1]);
       setScoreTable(scoreTable);
-  
+
       // correct rate
       const correctRate = []; // index: question
       const questionsText = []; // index: question
-      for (let q=0; q<nOfQuestions; q++){
+      for (let q = 0; q < nOfQuestions; q++) {
         let correctN = 0;
         questionsText.push(ansResults[q][0].questionText);
-        for (let p=0; p<nOfPlayers; p++){
+        for (let p = 0; p < nOfPlayers; p++) {
           correctN += ansResults[q][p].correct;
         }
-        correctRate.push(correctN/nOfPlayers);
+        correctRate.push(correctN / nOfPlayers);
       }
-      setCorrectRateTable({correctRate, questionsText});
-  
+      setCorrectRateTable({ correctRate, questionsText });
+
       // respond time
       const ansTime = [];
-      for (let q=0; q<nOfQuestions; q++){
+      for (let q = 0; q < nOfQuestions; q++) {
         let respondTime = 0;
-        for (let p=0; p<nOfPlayers; p++){
+        for (let p = 0; p < nOfPlayers; p++) {
           respondTime += ansResults[q][p].time;
         }
-        respondTime /= 100*nOfPlayers;
-        respondTime = Math.round(respondTime)/10;
-        
-        ansTime.push({value:respondTime, label: ansResults[q][0].questionText})
+        respondTime /= 100 * nOfPlayers;
+        respondTime = Math.round(respondTime) / 10;
+
+        ansTime.push({ value: respondTime, label: ansResults[q][0].questionText })
       }
-  
+
       setAnsTime(ansTime);
 
-    } catch (err){
+    } catch (err) {
       console.log(err);
     }
 
     return ansResults;
   }
-  
+
   const loadResult = async () => {
     console.log('loadResult')
     const res = await apiCall(`/admin/session/${sessionId}/results`, 'GET'); //{results: Array(0)}
@@ -190,20 +213,20 @@ export default function Session() {
     const results = res.results;
     setNOfQuestions(results.questions.length);
     const position = results.position;
-    const question = results.questions[position]??{};
+    const question = results.questions[position] ?? {};
     if (Object.keys(question).length === 0 && position != -1) {
       setShowResult(true);
     } else {
       setShowResult(false);
-        
+
       setPosition(position);
       setQuestion(question);
     }
   }
-  
+
   const handleEndSession = async () => {
     try {
-      await endSession(undefined, sessionId, activeSessions, setActiveSessions);
+      await endSession(undefined, sessionId, activeSessions);
       updateGameStatus();
       setShowResult(true);
     } catch (error) {
@@ -216,46 +239,24 @@ export default function Session() {
     updateStatus();
   }
 
-  function AdvanceQuesBtn({children, title}) {
-    return (
-      <button 
-        className="m-2 bg-bigbrain-light-pink text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-1.5 mb-2 rounded-3xl inline-block"
-        onClick={hanleAdvanceQuestion}
-        title={title}
-      >
-        <p className="font-medium text-[15px]/1 p-3">
-          {children}
-        </p>
-      </button>
-    )
-  }
-
-  const ChartTitle = ({children}) => {
-
-    return (
-      <p className="font-bold">
-        {children}
-      </p>
-    )
-  }
 
   return (
     <>
       <Navbar />
-      <BackBtn onClick={() => navigate('/dashboard')}/>
+      <BackBtn onClick={() => navigate('/dashboard')} />
       <div className="flex justify-center">
         {gameState >= -1 ? (
-            <div className="flex place-content-between w-[200px]">
-              <EndBtn onClick={handleEndSession}/>
-              <div className="relative group w-1xs">
-                <div className="absolute -inset-0.5 rounded-2xl bg-[linear-gradient(90deg,#800080,#ff0000,#ffff00)] bg-[length:200%_50%] 
+          <div className="flex place-content-between w-[200px]">
+            <EndBtn onClick={handleEndSession} />
+            <div className="relative group w-1xs">
+              <div className="absolute -inset-0.5 rounded-2xl bg-[linear-gradient(90deg,#800080,#ff0000,#ffff00)] bg-[length:200%_50%] 
                   animate-[var(--animation-gradient-glow)] blur-sm opacity-10">
-                </div>
-                <div className="italic font-bold text-lg/8 inline-block p-3 text-shadow-2xs">
-                  Session active
-                </div>
+              </div>
+              <div className="italic font-bold text-lg/8 inline-block p-3 text-shadow-2xs">
+                Session active
               </div>
             </div>
+          </div>
         ) : (
           <p className="italic font-bold text-lg/8 inline-block p-3 text-shadow-2xs">Session Ended</p>
         )}
@@ -265,24 +266,24 @@ export default function Session() {
       </div>
 
       {/* Control Center */}
-      <div 
-        aria-label="Control-center"               className=" bg-bigbrain-milky-canvas m-4 border-[1.5px] rounded-xl p-3"
+      <div
+        aria-label="Control-center" className=" bg-bigbrain-milky-canvas m-4 border-[1.5px] rounded-xl p-3"
       >
         {(gameState === -2 || gameState === -3) && (
           <p className="font-bold text-[15px]/1 p-3">Fnished</p>
         )}
-        {gameState === -1 &&  (
+        {gameState === -1 && (
           <>
-            <AdvanceQuesBtn>Start !</ AdvanceQuesBtn>
+            <AdvanceQuesBtn onClick={hanleAdvanceQuestion}>Start !</ AdvanceQuesBtn>
           </>
         )}
-        {gameState >= 0 &&  (
+        {gameState >= 0 && (
           <>
             <AdvanceQuesBtn title="Click to go next question">
               Next
             </ AdvanceQuesBtn>
             <p className="inline-block font-bold ml-2">
-            {(-1 < position && position < nOfQuestions) && `Questions: ${position+1} / ${nOfQuestions}`}
+              {(-1 < position && position < nOfQuestions) && `Questions: ${position + 1} / ${nOfQuestions}`}
             </p>
           </>
         )}
@@ -293,10 +294,10 @@ export default function Session() {
         {gameState === -1 && (
           <p className="inline-block font-medium text-[15px]/1 p-3">Game Not Start Yet</p>
         )}
-        {gameState >=0 && Object.keys(question).length !== 0 && (
+        {gameState >= 0 && Object.keys(question).length !== 0 && (
           <>
             <p className="inline-block font-medium text-[15px]/1 p-3">(You can not answer)</p>
-            <QuestionDisplay 
+            <QuestionDisplay
               questionType={question.questionType}
               questionText={question.questionText}
               duration={question.duration}
@@ -305,13 +306,13 @@ export default function Session() {
               answers={question.answers}
               selectedAnswers={[]}
               setSubmitted={() => console.log('Finished.')}
-              setSelectedAnswers={()=>console.log('You can not answer here.')}
-              setResult={()=>console.log('setResult.')}
+              setSelectedAnswers={() => console.log('You can not answer here.')}
+              setResult={() => console.log('setResult.')}
               mode={'observe'}
             />
           </>
-        )} 
-        {gameState === -2 && !noResult && Object.keys(correctRateTable).length !==0 && (
+        )}
+        {gameState === -2 && !noResult && Object.keys(correctRateTable).length !== 0 && (
           <div>
             <div aria-label="score-container" className="border rounded-2xl p-5">
               <ChartTitle>Score:</ChartTitle>
@@ -342,12 +343,12 @@ export default function Session() {
                     scaleType: 'band',
                   },
                 ]}
-                series={[{data: correctRateTable.correctRate}]}
+                series={[{ data: correctRateTable.correctRate }]}
                 layout="horizontal"
                 {...correctRateSetting}
               />
-              {ansTime.length !==0 && 
-               (<>
+              {ansTime.length !== 0 &&
+                (<>
                   <ChartTitle>Average Respond Time (s)</ChartTitle>
                   {console.log(ansTime)}
                   <PieChart
@@ -373,6 +374,6 @@ export default function Session() {
         )}
       </div>
     </>
-    
+
   )
 }

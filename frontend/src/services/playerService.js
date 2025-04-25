@@ -15,7 +15,7 @@ export async function playGetResult(playerId) {
     return res;
   } catch (error) {
     console.error(error);
-    return res;
+    return ;
   }
 }
 
@@ -33,7 +33,7 @@ export async function playGetQuestion(playerId) {
     // {"error":"Player ID does not refer to valid player id"}
     const res = await apiCall(`/play/${playerId}/question`, 'GET');
     if (res.error) {
-      console.error(error);
+      console.error(res.error);
       return {};
     }
     return res.question;
