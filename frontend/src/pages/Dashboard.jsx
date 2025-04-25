@@ -28,7 +28,6 @@ export default function Dashboard() {
 
 
   const updateGames = () => {
-    console.log('updateGames', ownerEmail)
     const newGames = [...games, { id: genId(), name: newGameName, owner: ownerEmail }];
     setGames(newGames)
     apiCall('/admin/games', 'PUT', { games: newGames });

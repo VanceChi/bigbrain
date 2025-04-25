@@ -62,6 +62,7 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
       return;
     }
     // start session, return session id.
+    console.log('handle start game triggered startSession()');
     const activeSessionId = await startSession(gameId, activeSessions, setActiveSessions);
 
     setSessionId(activeSessionId);

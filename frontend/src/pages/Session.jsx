@@ -38,7 +38,7 @@ const ChartTitle = ({ children }) => {
 export default function Session() {
   const { activeSessions } = useContext(SessionContext);
   const { sessionId } = useParams();
-  const [gameState, setGameState] = useState();
+  const [gameState, setGameState] = useState(-5);
   /**
      -5: Default value.
      -4: Session id error.
@@ -88,7 +88,6 @@ export default function Session() {
       // set title
       setTitle(state.title);
 
-      console.log('gameId changed.')
       loadResult();
     }
     init();
@@ -102,7 +101,6 @@ export default function Session() {
 
   useEffect(() => {
     if (showResult) {
-      console.log('showResult, gameId changed.')
       loadResult();
     }
   }, [showResult, gameId, nOfQuestions])
@@ -135,7 +133,6 @@ export default function Session() {
     const questions = await queryQuestions(gameId);
     const ansResults = [];
     const nOfPlayers = resResults.length;
-    console.log('nOfQuestions:', nOfQuestions)
     for (let i = 0; i < nOfQuestions; i++) {  // question
       const qArr = [];
       const points = questions[i].points;
@@ -199,7 +196,6 @@ export default function Session() {
   }
 
   const loadResult = async () => {
-    console.log('loadResult')
     const res = await apiCall(`/admin/session/${sessionId}/results`, 'GET'); //{results: Array(0)}
     const resResults = res.results;
     setPosition(nOfQuestions);
@@ -266,12 +262,9 @@ export default function Session() {
       </div>
 
       {/* Control Center */}
-      <div
+      {gameState > -2 && (<div
         aria-label="Control-center" className=" bg-bigbrain-milky-canvas m-4 border-[1.5px] rounded-xl p-3"
       >
-        {(gameState === -2 || gameState === -3) && (
-          <p className="font-bold text-[15px]/1 p-3">Fnished</p>
-        )}
         {gameState === -1 && (
           <>
             <AdvanceQuesBtn onClick={hanleAdvanceQuestion}>Start !</ AdvanceQuesBtn>
@@ -279,7 +272,7 @@ export default function Session() {
         )}
         {gameState >= 0 && (
           <>
-            <AdvanceQuesBtn title="Click to go next question">
+            <AdvanceQuesBtn title="Click to go next question" onClick={hanleAdvanceQuestion}>
               Next
             </ AdvanceQuesBtn>
             <p className="inline-block font-bold ml-2">
@@ -287,12 +280,12 @@ export default function Session() {
             </p>
           </>
         )}
-      </div>
+      </div>)}
 
       {/* Show question */}
       <div className="bg-bigbrain-milky-canvas p-8 pt-4 shadow-lg shadow-grey m-3 rounded-2xl">
         {gameState === -1 && (
-          <p className="inline-block font-medium text-[15px]/1 p-3">Game Not Start Yet</p>
+          <p className="inline-block font-medium text-[20px]/1 p-3 mt-3">Game Wait to Start...</p>
         )}
         {gameState >= 0 && Object.keys(question).length !== 0 && (
           <>
@@ -312,8 +305,10 @@ export default function Session() {
             />
           </>
         )}
+
+        {/* Session finished. Show result. */}
         {gameState === -2 && !noResult && Object.keys(correctRateTable).length !== 0 && (
-          <div>
+          <div className="mt-4">
             <div aria-label="score-container" className="border rounded-2xl p-5">
               <ChartTitle>Score:</ChartTitle>
               <table className="table-auto w-[100%]">
@@ -350,7 +345,6 @@ export default function Session() {
               {ansTime.length !== 0 &&
                 (<>
                   <ChartTitle>Average Respond Time (s)</ChartTitle>
-                  {console.log(ansTime)}
                   <PieChart
                     series={[
                       {
@@ -368,9 +362,11 @@ export default function Session() {
 
         {/* No Player Results */}
         {gameState === -3 && (
-          <p className="font-bold italic">
-            No Player Answerred!
-          </p>
+          <div className="flex place-content-center">
+            <p className="font-bold italic mt-3">
+              No Player Answerred!
+            </p>
+          </div>
         )}
       </div>
     </>

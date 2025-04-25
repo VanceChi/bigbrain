@@ -34,7 +34,6 @@ export default function PlayJoin() {
       console.error('Player join session error:', error);
       setInputError(error.message);
     }
-    console.log('waiting.')
   }
 
   return (
@@ -46,7 +45,7 @@ export default function PlayJoin() {
       }} />
       <div className="bg-bigbrain-milky-canvas rounded-3xl shadow-2xl  h-[600px] p-10 m-5">
         <div aria-label="Title" className="place-items-center">
-          <p className="text-2xl font-bold mb-4 italic">Join The Game</p>
+          <p className="text-2xl font-bold mb-4 italic text-bigbrain-darker-pink">Join The Game</p>
         </div>
         <div className=" m-10flex place-items-center">
           <div aria-label="input-session-id" className="flex place-content-center">
@@ -59,7 +58,7 @@ export default function PlayJoin() {
                     value={name}
                     placeholder="Enter Name"
                     onChange={e => setName(e.target.value)}
-                    className="border-2 border-bigbrain-darker-pink rounded-md mr-4 h-[50px]"
+                    className="border-1 rounded-md mr-4 h-[50px]"
                   />
                   <button
                     onClick={handleSubmitName}
@@ -78,7 +77,7 @@ export default function PlayJoin() {
                     value={inputSessionId}
                     placeholder="Enter Session id"
                     onChange={e => setInputSessionId(e.target.value)}
-                    className="border-2 border-bigbrain-darker-pink rounded-md mr-4 h-[50px]"
+                    className="border-1 rounded-md mr-4 h-[50px]"
                   />
                   <button
                     onClick={handleSubmitSessionId}

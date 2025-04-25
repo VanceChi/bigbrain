@@ -1,7 +1,7 @@
 import { apiCall } from '../utils/api';
 
 export async function loginUser(email, password) {
-  console.log("loginUser")
+  console.log("log in User")
   const data = { email, password };
   const res = await apiCall('/admin/auth/login', 'POST', data);
   return res;

@@ -25,10 +25,6 @@ export default function EditGame() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('showAddQues changed')
-  }, [showAddQues])
-
-  useEffect(() => {
     (async () => {
       try {
         const res = await apiCall('/admin/games', 'GET');
@@ -49,7 +45,6 @@ export default function EditGame() {
       const newQuestions = questions.filter(question => question.id != id);
       const newGame = await updateQuestions(newQuestions, game);
       setQuestions(newQuestions);
-      console.log('delete game')
       setGame(newGame);
     } catch (err) {
       console.error('delQuestion error:' + err)

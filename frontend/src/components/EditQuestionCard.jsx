@@ -187,12 +187,10 @@ export const QuestionDisplay = ({
   // set time limit
   const [timeLeft, setTimeLeft] = useState(duration);
   useEffect(() => {
-    console.log('setTimeLeft.', duration)
     setTimeLeft(duration);
   }, [duration])
 
   useEffect(() => {
-    console.log('submitted, timeLeft:', submitted, timeLeft)
     if (!submitted && timeLeft > 0) {  // able to answer
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
@@ -202,7 +200,6 @@ export const QuestionDisplay = ({
             setResult('Time\'s up!');
             return 0;
           }
-          console.log('count down.')
           return prev - 1;  // count down
         });
       }, 1000);
@@ -228,7 +225,6 @@ export const QuestionDisplay = ({
   };
 
   const handleSubmit = () => {
-    console.log('submit-----')
     setSubmitted(true);
     const correctAnswers = answers.filter((ans) => ans.correct);
     const isCorrect =

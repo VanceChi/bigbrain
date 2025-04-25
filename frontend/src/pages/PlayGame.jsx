@@ -133,8 +133,6 @@ export default function PlayGame() {
     setSelectedAnswers(answer);
     try {
       const sentAnswer = answer.map(a => a.text);
-      console.log('answer:', answer);
-      console.log('sentAnswer:', sentAnswer);
       await submitAnswer(sentAnswer);
     } catch (err) {
       console.error('Failed to submit answer:', err);
@@ -181,8 +179,9 @@ export default function PlayGame() {
         {gameState === -1 && (
           <div aria-label="game-results">
             <p className="text-2xl italic font-black ">Game over</p>
-            <div aria-label="question-points-aquired" className="m-10">
-              <table className="table-auto">
+            <div aria-label="question-points-aquired" className="m-10 bg-bigbrain-milky-canvas rounded-2xl p-5">
+              <p className="font-bold mt-3">Total points: {pointsGot.map(r => r[1][0]).reduce((a, b) => a + b, 0)}</p>
+              <table className="table-auto m-5">
                 <thead>
                   <tr>
                     <th>Question</th>
@@ -200,7 +199,6 @@ export default function PlayGame() {
                   ))}
                 </tbody>
               </table>
-              <p className="font-bold mt-3">Total points: {pointsGot.map(r => r[1][0]).reduce((a, b) => a + b, 0)}</p>
             </div>
           </div>
         )}

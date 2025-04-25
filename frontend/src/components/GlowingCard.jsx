@@ -1,6 +1,6 @@
-export default function GlowingCard({ children, key }) {
+export default function GlowingCard({ children }) {
   return (
-    <div className="relative group" key={key}>
+    <div className="relative group">
       <div className="absolute -inset-0.5 rounded-2xl bg-[linear-gradient(90deg,#800080,#ff0000,#ffff00)] bg-[length:200%_50%] 
         animate-[var(--animation-gradient-glow)] blur-sm opacity-0 group-hover:opacity-50">
       </div>

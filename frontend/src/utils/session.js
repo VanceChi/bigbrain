@@ -28,7 +28,6 @@ export function getLocalSessions() {
  * @returns {*} active Session Id
  */
 export const startSession = async (gameId, activeSessions, setActiveSessions) => {
-  console.log('starSessions');
   cleanSessions(activeSessions, setActiveSessions, gameId);
   const res = await apiCall(`/admin/game/${gameId}/mutate`, 'POST', {
     "mutationType": "START"
@@ -36,7 +35,7 @@ export const startSession = async (gameId, activeSessions, setActiveSessions) =>
   const activeSessionId = res.data.sessionId;
   const updatedSession = [...activeSessions, { gameId, activeSessionId }];
   setActiveSessions(updatedSession);
-  console.log('start session')
+  console.log('startSession updated local sessions');
   localStorage.setItem('activeSessions', JSON.stringify(updatedSession));
   return activeSessionId;
 };
@@ -143,7 +142,7 @@ export async function cleanSessions(activeSessions, setActiveSessions, gameId) {
   }
   const newSessions = [...cleanedSessions, ...sessionsNotClean];
   setActiveSessions(newSessions);
-  console.log('cleanSessions ! gameId:', gameId)
+  console.log('cleansession updated local sessions');
   localStorage.setItem('activeSessions', JSON.stringify(newSessions));
 
   return cleanedSessions;
