@@ -29,7 +29,7 @@ export function getLocalSessions() {
  */
 export const startSession = async (gameId, activeSessions, setActiveSessions) => {
   console.log('starSessions');
-  cleanSessions(activeSessions,setActiveSessions, gameId);
+  cleanSessions(activeSessions, setActiveSessions, gameId);
   const res = await apiCall(`/admin/game/${gameId}/mutate`, 'POST', {
     "mutationType": "START"
   })
@@ -49,12 +49,12 @@ export const startSession = async (gameId, activeSessions, setActiveSessions) =>
  * @returns {Boolean}
  */
 export const checkSessionState = async (sessionId, gameId) => {
-  if (sessionId && gameId){
+  if (sessionId && gameId) {
     console.error('Can not pass both sessionId and gameId');
     return;
   }
   // only sessionId
-  if (sessionId){
+  if (sessionId) {
     try {
       const res = await apiCall(`/admin/session/${sessionId}/status`, 'GET');
       return res.results.active;
@@ -67,9 +67,9 @@ export const checkSessionState = async (sessionId, gameId) => {
   // If gameId not in activeSessions, return false
   const activeSessionsLocal = getLocalSessions();
   if (!activeSessionsLocal) return false;
-  
+
   let sessions = activeSessionsLocal.filter(session => session.gameId == gameId);
-  for (const session of sessions){
+  for (const session of sessions) {
     try {
       const res = await apiCall(`/admin/session/${session.activeSessionId}/status`, 'GET');
       if (res.results.active === true)
@@ -93,7 +93,7 @@ export const checkSessionState = async (sessionId, gameId) => {
  * @returns {*} respond from backend.
  */
 export const endSession = async (gameId, sessionId, activeSessions, setActiveSessions) => {
-  if (gameId === undefined){
+  if (gameId === undefined) {
     const session = activeSessions.find(session => session.activeSessionId == sessionId);
     if (session === undefined) {
       console.log('Session already Ended.');
@@ -116,7 +116,7 @@ export const endSession = async (gameId, sessionId, activeSessions, setActiveSes
  * @param {Number|String} gameId if undefined, clean all sessions. If defined, clean sessions about that game.
  * @returns {Array} active session[of that game].
  */
-export async function cleanSessions (activeSessions, setActiveSessions, gameId) {
+export async function cleanSessions(activeSessions, setActiveSessions, gameId) {
   if (!gameId) {
     console.log('cleanSession with no gameId !')
     return;
@@ -124,9 +124,9 @@ export async function cleanSessions (activeSessions, setActiveSessions, gameId) 
   // Divide all active sessions -> toClean + notToClean
   let sessionsToClean = [];
   let sessionsNotClean = [];
-  if (gameId){  // if passed gameId, only clean sessions with that gameId
+  if (gameId) {  // if passed gameId, only clean sessions with that gameId
     sessionsToClean = activeSessions.filter(session => session.gameId == gameId);
-    sessionsNotClean = activeSessions.filter(session => session.gameId != gameId); 
+    sessionsNotClean = activeSessions.filter(session => session.gameId != gameId);
   } else {
     sessionsToClean = activeSessions;
     sessionsNotClean = [];

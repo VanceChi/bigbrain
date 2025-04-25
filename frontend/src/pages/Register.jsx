@@ -18,7 +18,7 @@ function Register() {
       return;
     }
     try {
-      const response = await apiCall('/admin/auth/register', 'POST', { email, password, name });
+      await apiCall('/admin/auth/register', 'POST', { email, password, name });
       setName('');
       setEmail('');
       setPassword('');

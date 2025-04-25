@@ -10,13 +10,13 @@ import { apiCall } from "./api";
  */
 export async function addGame(game, games) {
   try {
-    if(!games){
+    if (!games) {
       games = await queryGames();
     }
     const restGames = games.filter((g) => g.id != game.id);
     const updatedGames = [...restGames, game];
     // debugger
-    await apiCall('/admin/games', 'PUT', {games: updatedGames});
+    await apiCall('/admin/games', 'PUT', { games: updatedGames });
     // setGames(games);
     // setGame(game);
   } catch (err) {

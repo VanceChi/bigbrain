@@ -41,7 +41,7 @@ export async function apiCall(path, method, data = null) {
       headers,
       data,
     };
-    
+
     const responseBody = response.data;
     if (responseBody.error) {
       throw new Error(responseBody.error);
@@ -49,7 +49,7 @@ export async function apiCall(path, method, data = null) {
     return responseBody;
   } catch (error) {
     // alert('Failed! ' + (error.response?.data?.error || ''));
-    
+
     throw new Error(error.response?.data?.error || error.message || 'API request failed');
   }
 }

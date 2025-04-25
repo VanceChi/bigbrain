@@ -10,7 +10,7 @@ export async function adminGetSessionStatus(sessionId) {
     const res = await apiCall(`/admin/session/${sessionId}/status`, "GET");
     return res.results;
   } catch (err) {
-    if (err.message === 'A system error ocurred'){
+    if (err.message === 'A system error ocurred') {
       return -4;
     }
   }

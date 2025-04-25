@@ -8,7 +8,7 @@ import { apiCall } from "../utils/api";
  * If not seccess: (ongoing, playerId wrong)
  *  return undefined.
  */
-export async function playGetResult (playerId) {
+export async function playGetResult(playerId) {
   try {
     const res = await apiCall(`/play/${playerId}/results`, 'GET');
     // debugger
@@ -25,7 +25,7 @@ export async function playGetResult (playerId) {
  * @param {String|Number} playerId 
  * @returns {Object {}} secceed: {...} , unseccessful: {}
  */
-export async function  playGetQuestion (playerId) {
+export async function playGetQuestion(playerId) {
   try {
     // All res value:
     // {"error":"Session ID is not an active session"}
@@ -35,7 +35,7 @@ export async function  playGetQuestion (playerId) {
     if (res.error) {
       console.error(error);
       return {};
-    } 
+    }
     return res.question;
   } catch (error) {
     console.error(error);
@@ -67,11 +67,11 @@ export async function playGetStatus(playerId) {
     return Number(res.started);
   } catch (error) {
     const message = error.message;
-    if (message === 'Session ID is not an active session'){
+    if (message === 'Session ID is not an active session') {
       return -1;
-    } else if(message === 'Player ID does not refer to valid player id'){
+    } else if (message === 'Player ID does not refer to valid player id') {
       return -2;
     }
-    return ;
+    return;
   }
 }
