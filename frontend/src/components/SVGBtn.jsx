@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 
-export function SVGBtn({onClick, children, viewBox}) {
+export function SVGBtn({ onClick, children, viewBox, title }) {
   return (
     <button
       onClick={onClick}
+      title={title}
       className="flex items-center gap-2 p-1 text-white bg-transparent fill-bigbrain-light-pink rounded hover:fill-bigbrain-dark-pink hover:cursor-pointer hover:scale-110"
     >
       <svg
@@ -18,14 +19,14 @@ export function SVGBtn({onClick, children, viewBox}) {
   );
 }
 
-export function BackBtn({onClick}){
+export function BackBtn({ onClick }) {
   const navigate = useNavigate();
   if (!onClick)
     onClick = () => navigate(-1);
-  
-  
+
+
   return (
-    <SVGBtn onClick={onClick} viewBox={'0 0 612 612'}>
+    <SVGBtn onClick={onClick} title="Back" viewBox={'0 0 612 612'}>
       <path
         d="M612,306C612,137.004,474.995,0,306,0C137.004,0,0,137.004,0,306c0,168.995,137.004,306,306,306
         C474.995,612,612,474.995,612,306z M328.895,160.511l39.502,39.502L260.239,308.226l117.838,117.838l-39.335,39.335L181.375,308.03
@@ -34,64 +35,64 @@ export function BackBtn({onClick}){
   )
 }
 
-export function EditBtn({onClick}){
-  return(
-    <SVGBtn onClick={onClick} viewBox={'0 0 48 48'}>
+export function EditBtn({ onClick }) {
+  return (
+    <SVGBtn onClick={onClick} title="Edit" viewBox={'0 0 48 48'}>
       <path d="m46.242,10.245l-4.467,4.467-8.616-8.352 4.599-4.599c2.34-2.343 6.141-2.343 8.484,0 2.343,2.34 2.343,6.138 0,8.484zm-7.083,7.08l-18.465,18.42-11.694,3.255 3.207-11.739 18.363-18.315 8.589,8.379zm7.083-7.08l-4.467,4.467-8.616-8.352 4.599-4.599c2.34-2.343 6.141-2.343 8.484,0 2.343,2.34 2.343,6.138 0,8.484zm-7.083,7.08l-18.465,18.42-11.694,3.255 3.204-11.739 18.363-18.315 8.592,8.379zm2.841,5.643l6-5.997v22.029c0,4.971-4.029,9-9,9h-30c-4.971,0-9-4.029-9-9v-30c0-4.971 4.029-9 9-9h22.026l-6.012,6h-16.014c-1.656,0-3,1.344-3,3v30c0,1.659 1.344,3 3,3h30c1.659,0 3-1.341 3-3v-16.032Z"
       />
     </SVGBtn>
 
   )
- 
+
 }
 
-export function MinusBtn({onClick}){
-  return(
+export function MinusBtn({ onClick }) {
+  return (
     <SVGBtn onClick={onClick} viewBox={'0 0 612 612'}>
-    <circle  cx="306" cy="306" r="306"/>
-    <rect
-width="250"
-height="60"
-x="181"  // 306 - 100 (centered)
-y="276"  // 306 - 10 (40 height => half = 20)
-style={{fill:'white'}}
-rx="20" // optional: rounded corners
-/>
-    <rect style={{fill:'white'}} width="200" height="20" x="-100" y="6" transform="matrix(0,-1,1,0,0,0)"/>
+      <circle cx="306" cy="306" r="306" />
+      <rect
+        width="250"
+        height="60"
+        x="181"  // 306 - 100 (centered)
+        y="276"  // 306 - 10 (40 height => half = 20)
+        style={{ fill: 'white' }}
+        rx="20" // optional: rounded corners
+      />
+      <rect style={{ fill: 'white' }} width="200" height="20" x="-100" y="6" transform="matrix(0,-1,1,0,0,0)" />
     </SVGBtn>
 
   )
- 
+
 }
 
-export function PlayBtn({onClick}){
-  return(
+export function PlayBtn({ onClick }) {
+  return (
     <SVGBtn onClick={onClick} viewBox={'0 0 512 512'}>
-    <path d="M256,0C114.609,0,0,114.609,0,256c0,141.391,114.609,256,256,256c141.391,0,256-114.609,256-256
+      <path d="M256,0C114.609,0,0,114.609,0,256c0,141.391,114.609,256,256,256c141.391,0,256-114.609,256-256
 		C512,114.609,397.391,0,256,0z M256,472c-119.297,0-216-96.703-216-216S136.703,40,256,40s216,96.703,216,216S375.297,472,256,472z
 		"/>
-	<path d="M353.661,237.879l-154.174-89.594c-16.844-9.969-32.987-1.938-32.987,17.844v179.766c0,19.75,16.143,27.797,32.987,17.812
+      <path d="M353.661,237.879l-154.174-89.594c-16.844-9.969-32.987-1.938-32.987,17.844v179.766c0,19.75,16.143,27.797,32.987,17.812
 		l152.956-89.578C369.348,264.16,370.552,247.848,353.661,237.879z"/>
     </SVGBtn>
   )
 }
 
 
-export function EndBtn({onClick}){
-  return(
+export function EndBtn({ onClick }) {
+  return (
     <SVGBtn onClick={onClick} viewBox={'0 0 512 512'}>
-      	<path d="M256,0C114.609,0,0,114.609,0,256c0,141.391,114.609,256,256,256c141.391,0,256-114.609,256-256
+      <path d="M256,0C114.609,0,0,114.609,0,256c0,141.391,114.609,256,256,256c141.391,0,256-114.609,256-256
 			C512,114.609,397.391,0,256,0z M256,472c-119.297,0-216-96.703-216-216S136.703,40,256,40s216,96.703,216,216S375.297,472,256,472
 			z"/>
-		<rect x="176" y="176" width="160" height="160"/>
+      <rect x="176" y="176" width="160" height="160" />
     </SVGBtn>
   )
 }
 
-export function CopyBtn({onClick}){
-  return(
-    <SVGBtn onClick={onClick} viewBox={'0 0  700 700'}>
-      	<path d="M502.714,0c-2.71,0-262.286,0-262.286,0C194.178,0,153,42.425,153,87.429l-25.267,0.59
+export function CopyBtn({ onClick }) {
+  return (
+    <SVGBtn onClick={onClick} title="Copy Link" viewBox={'0 0  700 700'}>
+      <path d="M502.714,0c-2.71,0-262.286,0-262.286,0C194.178,0,153,42.425,153,87.429l-25.267,0.59
 				c-46.228,0-84.019,41.834-84.019,86.838V612c0,45.004,41.179,87.428,87.429,87.428H459c46.249,0,87.428-42.424,87.428-87.428
 				h21.857c46.25,0,87.429-42.424,87.429-87.428v-349.19L502.714,0z M459,655.715H131.143c-22.95,0-43.714-21.441-43.714-43.715
 				V174.857c0-22.272,18.688-42.993,41.638-42.993L153,131.143v393.429C153,569.576,194.178,612,240.428,612h262.286

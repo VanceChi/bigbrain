@@ -35,6 +35,7 @@ export default function Dashboard() {
 
 
   const updateGames = () => {
+    console.log('updateGames', ownerEmail)
     const newGames = [...games, {id:genId(), name: newGameName, owner: ownerEmail}];
     setGames(newGames)
     apiCall('/admin/games', 'PUT', {games: newGames});
@@ -48,27 +49,31 @@ export default function Dashboard() {
     <>
       <div>
         <Navbar />
-        <div className="flex">
-          <button 
-            className=" bg-bigbrain-light-pink font-bold text-sm/4 text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3 mb-2 rounded-3xl" 
-            onClick={() => createGame()}
-          >+ Game
-          </button>
-          {showCreateGame && (<>
-            <input
-              id="name"
-              type="text"
-              value={newGameName}
-              style={{display:showCreateGame}}
-              onChange={(e) => setNewGameName(e.target.value)}
-              placeholder="Set Name"
-              className="block p-2 border rounded"
-              autoComplete="off"
-            />
-            <button onClick={updateGames}>Sumbit</button>
-          </>)}
+        <div className={`flex gap-4 p-4 `}>
+          <div className={`flex p-2 w-full ${showCreateGame&&'bg-bigbrain-milky-white/80 rounded-2xl place-items-center'}`}>
+            <button 
+              className="m-2 bg-bigbrain-light-pink font-bold text-sm/4 text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3 mb-2 rounded-3xl" 
+              onClick={() => createGame()}
+            >+ Game
+            </button>
+            {showCreateGame && (
+              <div className="flex gap-4 h-[70%]">
+                <input
+                  id="name"
+                  type="text"
+                  value={newGameName}
+                  style={{display:showCreateGame}}
+                  onChange={(e) => setNewGameName(e.target.value)}
+                  placeholder="Set Name"
+                  className="p-2 border-2 rounded border-bigbrain-light-pink "
+                  autoComplete="off"
+                />
+                <button onClick={updateGames} className="bg-bigbrain-light-pink w-full p-2 text-white rounded-2xl hover:bg-bigbrain-dark-pink hover:cursor-pointer inline-block">Sumbit</button>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="m-3">
+        <div className="m-3 sm:grid sm:grid-cols-1 sm:gap-2 md:grid md:grid-cols-2 md:gap-4 ">
           {games.map((game, index) => (
             <div key={index}>
               <GameCard 

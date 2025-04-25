@@ -105,24 +105,25 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
             </div>
           </div>
         ) : (
-          <div className='flex place-content-between'>
+          <div className='flex place-content-between w-full'>
             <div
-              className="group/start flex justify-center items-center mr-2 w-1/3"
+              className="group/start flex justify-center items-center mr-2"
               onClick={() => handleStartGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId)}>
               <PlayBtn />
               <p className='opacity-0 group-hover/start:opacity-100' >Start</p>
             </div>
-
-            {showResultPop && (
-              <Link to={`/session/:${sessionId}`} state={infoPassedToSession}>Would you like to view the results?</Link>
-            )}
+            <div>
+              {showResultPop && (
+                <Link to={`/session/:${sessionId}`} state={infoPassedToSession} className='italic font-normal hover:cursor-pointer hover:underline decoration-red-500'>View Game Results</Link>
+              )}
+            </div>
           </div>
         )}
       </div>
       <div className='flex justify-center'>
-        <h4 className="text-lg font-bold">{title}</h4>
+        <h4 className="font-bold text-2xl">{title}</h4>
       </div>
-      <div className='p-2 flex items-center place-content-between text-[2vw] '>
+      <div className='p-2 flex items-center place-content-between text-[10px] '>
         <img src={thumbnail} alt={`${title} thumbnail`} className="w-16 h-16 rounded" />
         <table className="table-fixed w-[45%]">
           <tbody className="text-sm text-gray-600 font-medium">
