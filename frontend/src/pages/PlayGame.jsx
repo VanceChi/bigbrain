@@ -5,6 +5,7 @@ import { apiCall } from "../utils/api";
 import { QuestionDisplay } from "../components/EditQuestionCard";
 import { playGetQuestion, playGetResult, playGetStatus } from "../services/playerService";
 import { BackBtn } from "../components/SVGBtn"
+import LobbyRoom from "../components/LobbyRoom";
 
 export default function PlayGame() {
   const { state } = useLocation();
@@ -147,12 +148,14 @@ export default function PlayGame() {
         navigate(`/play/join`);
       }} />}
       <div className="p-4">
+        
         {/*  Waiting. Game not started, session active. */}
         {gameState === 0 && (
-          <div className="flex place-content-center">
-            <p className="text-xl font-bold">Please wait for the game to start...</p>
+          <div className="h-[60vh]">
+            <LobbyRoom />
           </div>
         )}
+        
 
         {/* Game ongoing. */}
         {gameState === 1 && question && (
