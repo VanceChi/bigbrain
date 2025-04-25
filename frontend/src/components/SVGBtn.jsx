@@ -26,7 +26,7 @@ export function BackBtn({ onClick }) {
 
 
   return (
-    <SVGBtn onClick={onClick} title="Back" viewBox={'0 0 612 612'}>
+    <SVGBtn onClick={onClick} title="Click to go back" viewBox={'0 0 612 612'}>
       <path
         d="M612,306C612,137.004,474.995,0,306,0C137.004,0,0,137.004,0,306c0,168.995,137.004,306,306,306
         C474.995,612,612,474.995,612,306z M328.895,160.511l39.502,39.502L260.239,308.226l117.838,117.838l-39.335,39.335L181.375,308.03
@@ -80,7 +80,7 @@ export function PlayBtn({ onClick }) {
 
 export function EndBtn({ onClick }) {
   return (
-    <SVGBtn onClick={onClick} viewBox={'0 0 512 512'}>
+    <SVGBtn onClick={onClick} viewBox={'0 0 512 512'} title="Click to end session">
       <path d="M256,0C114.609,0,0,114.609,0,256c0,141.391,114.609,256,256,256c141.391,0,256-114.609,256-256
 			C512,114.609,397.391,0,256,0z M256,472c-119.297,0-216-96.703-216-216S136.703,40,256,40s216,96.703,216,216S375.297,472,256,472
 			z"/>

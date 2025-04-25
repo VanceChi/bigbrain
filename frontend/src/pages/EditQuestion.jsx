@@ -1,9 +1,9 @@
 import Navbar from "../components/Navbar"
+import { BackBtn } from "../components/SVGBtn"
 import { useParams } from "react-router-dom"
 import { queryQuestions } from "../utils/query";
 import { useEffect, useState } from "react";
 import EditQuestionCard from "../components/EditQuestionCard";
-import { BackBtn } from "../components/SVGBtn";
 
 export default function EditQuestion () {
   const { gameId, questionId } = useParams();

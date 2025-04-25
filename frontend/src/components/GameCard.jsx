@@ -102,6 +102,7 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
             <div className="group/copy flex justify-center items-center" onClick={handleCopyLink}>
               <p>Id:{sessionId}</p>
               <CopyBtn />
+              {Copied && <p className='text-[6px]'>&#x2714;</p>}
             </div>
           </div>
         ) : (

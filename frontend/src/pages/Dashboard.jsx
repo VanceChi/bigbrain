@@ -50,14 +50,15 @@ export default function Dashboard() {
       <div>
         <Navbar />
         <div className={`flex gap-4 p-4 `}>
-          <div className={`flex p-2 w-full ${showCreateGame&&'bg-bigbrain-milky-white/80 rounded-2xl place-items-center'}`}>
+          <div className={`flex p-2 w-full ${showCreateGame&&'bg-bigbrain-milky-canvas/80 rounded-2xl place-items-center'}`}>
             <button 
-              className="m-2 bg-bigbrain-light-pink font-bold text-sm/4 text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3 mb-2 rounded-3xl" 
+              className="m-2 bg-bigbrain-light-pink font-bold text-sm/4 text-white hover:cursor-pointer hover:bg-bigbrain-dark-pink p-3 mb-2 w-40 rounded-3xl" 
               onClick={() => createGame()}
+              title="Click to Add Game"
             >+ Game
             </button>
             {showCreateGame && (
-              <div className="flex gap-4 h-[70%]">
+              <div className="flex gap-1  w-[170%]">
                 <input
                   id="name"
                   type="text"
@@ -65,10 +66,10 @@ export default function Dashboard() {
                   style={{display:showCreateGame}}
                   onChange={(e) => setNewGameName(e.target.value)}
                   placeholder="Set Name"
-                  className="p-2 border-2 rounded border-bigbrain-light-pink "
+                  className="p-2 border-2 rounded border-bigbrain-light-pink  w-[200%]"
                   autoComplete="off"
                 />
-                <button onClick={updateGames} className="bg-bigbrain-light-pink w-full p-2 text-white rounded-2xl hover:bg-bigbrain-dark-pink hover:cursor-pointer inline-block">Sumbit</button>
+                <button onClick={updateGames} className="bg-bigbrain-light-pink p-2 text-white rounded-2xl hover:bg-bigbrain-dark-pink hover:cursor-pointer inline-block">Sumbit</button>
               </div>
             )}
           </div>

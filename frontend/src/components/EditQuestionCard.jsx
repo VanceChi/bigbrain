@@ -212,7 +212,6 @@ export const QuestionDisplay = ({
                               "correct": true }
    */
   const handleSelect = (answer) => {
-    console.log('handleSelect()')
     if (questionType === 'multiple') {
       if (selectedAnswers.includes(answer)) {
         setSelectedAnswers(selectedAnswers.filter((ans) => ans !== answer));
@@ -268,7 +267,7 @@ export const QuestionDisplay = ({
           )}
         </div>
       )}
-      <p className="mb-2">Time Left: {timeLeft}s | Points: {points}</p>
+      <p className="mb-2 font-bold">Time Left: {timeLeft}s | Points: {points}</p>
       {answers?.map((answer, index) => (
         <div key={index} className="flex items-center mb-2">
           <input
