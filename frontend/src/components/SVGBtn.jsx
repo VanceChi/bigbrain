@@ -37,7 +37,7 @@ export function BackBtn({ onClick }) {
 
 export function EditBtn({ onClick }) {
   return (
-    <SVGBtn onClick={onClick} title="Edit" viewBox={'0 0 48 48'}>
+    <SVGBtn onClick={onClick} title="Edit this question" viewBox={'0 0 48 48'}>
       <path d="m46.242,10.245l-4.467,4.467-8.616-8.352 4.599-4.599c2.34-2.343 6.141-2.343 8.484,0 2.343,2.34 2.343,6.138 0,8.484zm-7.083,7.08l-18.465,18.42-11.694,3.255 3.207-11.739 18.363-18.315 8.589,8.379zm7.083-7.08l-4.467,4.467-8.616-8.352 4.599-4.599c2.34-2.343 6.141-2.343 8.484,0 2.343,2.34 2.343,6.138 0,8.484zm-7.083,7.08l-18.465,18.42-11.694,3.255 3.204-11.739 18.363-18.315 8.592,8.379zm2.841,5.643l6-5.997v22.029c0,4.971-4.029,9-9,9h-30c-4.971,0-9-4.029-9-9v-30c0-4.971 4.029-9 9-9h22.026l-6.012,6h-16.014c-1.656,0-3,1.344-3,3v30c0,1.659 1.344,3 3,3h30c1.659,0 3-1.341 3-3v-16.032Z"
       />
     </SVGBtn>
@@ -48,7 +48,7 @@ export function EditBtn({ onClick }) {
 
 export function MinusBtn({ onClick }) {
   return (
-    <SVGBtn onClick={onClick} viewBox={'0 0 612 612'}>
+    <SVGBtn onClick={onClick} viewBox={'0 0 612 612'} title="Click to delete this question">
       <circle cx="306" cy="306" r="306" />
       <rect
         width="250"

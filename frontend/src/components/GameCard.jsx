@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { SessionContext } from '../context/Sessions';
-import { startSession, endSession, cleanSessions, checkSessionState } from '../utils/session';
+import { startSession, endSession, cleanSessions, checkSessionState, getLocalSessions } from '../utils/session';
 import { queryQuestions, querySessionId } from '../utils/query';
 import GlowingCard from './GlowingCard';
 import { CopyBtn, EditBtn, EndBtn, PlayBtn } from './SVGBtn';
@@ -19,16 +19,18 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
 
   // check game started or not
   const initGameCard = async () => {
-    cleanSessions(activeSessions, setActiveSessions, gameId);
     const isActive = await checkSessionState(undefined, gameId);
     if (isActive) {  // active
       setGameStarted(true);
-      setSessionId(querySessionId(gameId));
     } else {       // unactive
       setGameStarted(false);
-      setSessionId(null);
     }
+    const sessionId = querySessionId(gameId);
+    setSessionId(sessionId);
     setInfoPassedToSession({ title, gameId, questions });
+
+    const showResultPop = activeSessions.map(s => s.gameId).includes(gameId);;
+    setShowResultPop(showResultPop);
   }
 
   useEffect(() => {
@@ -36,9 +38,8 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
   }, [])
 
   useEffect(() => {
-    if (gameStarted === false) {
-    }
-  }, [gameStarted])
+    setInfoPassedToSession({title, gameId, questions})
+  }, [title, gameId, questions])
 
   const handleCopyLink = async () => {
     try {
@@ -54,8 +55,6 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
 
   // It must be quesitons to start.
   const handleStartGame = async (gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId) => {
-    console.log('start gameId: ' + gameId)
-
     // check if questions exist
     const questions = await queryQuestions(gameId);
     if (questions.length === 0) {
@@ -72,13 +71,11 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
   const handleEndGame = async () => {
     // end session, clear all session
     const res = await endSession(gameId, undefined, activeSessions, setActiveSessions);
-    console.log('Game ended, res: ', res)
 
     // reset game card state
     const isActive = await checkSessionState(sessionId);
     if (isActive === false) {
       setCopied(false)
-      setSessionId(null);
       setGameStarted(false);
       setShowResultPop(true);
     }
@@ -90,13 +87,13 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
         {gameStarted ? (
           <div className="flex justify-between items-center w-full">
             <div
-              className="group/end flex justify-center items-center mr-2" onClick={() => handleEndGame()}>
-              <EndBtn />
+              className="group/end flex justify-center items-center mr-2">
+              <EndBtn onClick={() => handleEndGame()}/>
               <p className='opacity-0 group-hover/end:opacity-100 font-semibold'>End</p>
             </div>
             <div>
               <Link to={`/session/${sessionId}`} state={infoPassedToSession}>
-                Go session
+                Active! Go session
               </Link>
             </div>
             <div className="group/copy flex justify-center items-center" onClick={handleCopyLink}>
@@ -107,15 +104,15 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
           </div>
         ) : (
           <div className='flex place-content-between w-full'>
-            <div
-              className="group/start flex justify-center items-center mr-2"
-              onClick={() => handleStartGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId)}>
-              <PlayBtn />
+            <div className="group/start flex justify-center items-center mr-2">
+              <PlayBtn 
+                onClick={() => handleStartGame(gameId, setGameStarted, activeSessions, setActiveSessions, setSessionId)}
+              />
               <p className='opacity-0 group-hover/start:opacity-100' >Start</p>
             </div>
             <div>
               {showResultPop && (
-                <Link to={`/session/:${sessionId}`} state={infoPassedToSession} className='italic font-normal hover:cursor-pointer hover:underline decoration-red-500'>View Game Results</Link>
+                <Link to={`/session/${sessionId}`} state={infoPassedToSession} className='italic font-normal hover:cursor-pointer hover:underline decoration-red-500'>View Game Results</Link>
               )}
             </div>
           </div>

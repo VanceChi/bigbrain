@@ -5,6 +5,7 @@ import { BackButton } from "../components/Button";
 import { apiCall } from "../utils/api";
 import { QuestionDisplay } from "../components/EditQuestionCard";
 import { playGetQuestion, playGetResult, playGetStatus } from "../services/playerService";
+import { BackBtn } from "../components/SVGBtn"
 
 export default function PlayGame() {
   const { state } = useLocation();
@@ -30,7 +31,7 @@ export default function PlayGame() {
   const navigate = useNavigate();
 
   /**
-   * updateGameStatus every 0.5s
+   * updateGameStatus every 200ms
    */
   const updateGameStatus = async () => {
     const gameState = await playGetStatus(playerId); // started: Boolean
@@ -81,7 +82,7 @@ export default function PlayGame() {
       if (gameState === -1){
         return clearInterval(intervalId);
       }
-    }, 500); // Poll every half second
+    }, 200); // Poll every 200ms
 
     return () => clearInterval(intervalId);
   }, [questionId, gameState, timeLeft]);  // Refresh cache
@@ -133,6 +134,8 @@ export default function PlayGame() {
     setSelectedAnswers(answer);
     try {
       const sentAnswer = answer.map(a=>a.text);
+      console.log('answer:', answer);
+      console.log('sentAnswer:', sentAnswer);
       await submitAnswer(sentAnswer);
     } catch (err) {
       console.error('Failed to submit answer:', err);
@@ -143,14 +146,14 @@ export default function PlayGame() {
   return (
     <>
       <Navbar />
-      {sessionId && <BackButton onClick={() => {
+      {sessionId && <BackBtn onClick={() => {
         navigate(`/play/join`);
       }}/>}
       <div className="p-4">
         {/*  Waiting. Game not started, session active. */}
         {gameState === 0 && (
-          <div>
-            <p className="text-xl">Please wait for the game to start</p>
+          <div className="flex place-content-center">
+            <p className="text-xl font-bold">Please wait for the game to start...</p>
           </div>
         )}
 

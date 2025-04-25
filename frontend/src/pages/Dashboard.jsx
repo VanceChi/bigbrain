@@ -5,7 +5,6 @@ import GameCard from "../components/GameCard"
 import Navbar from "../components/Navbar";
 import { queryGames } from "../utils/query";
 import { genId } from "../utils/genId";
-import { cleanSessions } from "../utils/session";
 import { SessionContext } from "../context/Sessions";
 
 
@@ -20,7 +19,6 @@ export default function Dashboard() {
   
   const initDashboard = async () => {
     try {
-      cleanSessions(activeSessions, setActiveSessions);
       const games = await queryGames();
       setGames(games);
     } catch (err) {
@@ -39,6 +37,7 @@ export default function Dashboard() {
     const newGames = [...games, {id:genId(), name: newGameName, owner: ownerEmail}];
     setGames(newGames)
     apiCall('/admin/games', 'PUT', {games: newGames});
+    setShowCreateGame(false);
   }
   
   const createGame = () => {

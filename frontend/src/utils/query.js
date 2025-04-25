@@ -44,7 +44,7 @@ export function querySessionId(gameId) {
   }
   const activeSessions = JSON.parse(localStorage.getItem('activeSessions'));
   const session = activeSessions.find(session => session.gameId == gameId);
-  return session.activeSessionId;
+  return session?.activeSessionId;
 }
 
 /**
@@ -84,7 +84,7 @@ export async function queryQuestions(gameId, game, games) {
     const questions = game.questions;
     return questions ?? [];
   } catch(error) {
-    throw new Error(error);
+    console.log(error);
   }
 }
 
