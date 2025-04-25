@@ -59,17 +59,17 @@ export default function Session() {
       await updateGameStatus();
       // set session active or not
       
-      const isActive = gameState >= -1;
-
       // set gameId
       setGameId(state.gameId);
 
       // set title
       setTitle(state.title);
 
+      console.log('gameId changed.')
+      loadResult();
     }
     init();
-  }, [])
+  }, [gameId, nOfQuestions])
 
   // Since cant restart session. The effect here means active -> unactive
   // Shows result.
@@ -79,9 +79,10 @@ export default function Session() {
 
   useEffect(() => {
     if (showResult){
+      console.log('showResult, gameId changed.')
       loadResult();
     }
-  }, [showResult])
+  }, [showResult, gameId, nOfQuestions])
 
   /**
    * Generate ansResults, scoreTable, correctRate.
@@ -105,12 +106,13 @@ export default function Session() {
   const genAnswerResult = async (resResults) => {
     if (resResults.length===0){
       setGameState(-3);
-      return;
+      return [];
     }
     setNoResult(false);
     const questions = await queryQuestions(gameId);
     const ansResults = [];  
     const nOfPlayers = resResults.length;
+    console.log('nOfQuestions:', nOfQuestions)
     for (let i=0; i<nOfQuestions; i++){  // question
       const qArr = [];
       const points = questions[i].points;
@@ -124,52 +126,57 @@ export default function Session() {
       }
       ansResults.push(qArr);
     }
-
-    // calculate scoreTable
-    let scoreTable=[];  // [[name, score], ...]
-    for (let p=0; p<nOfPlayers; p++){
-      let score = 0;
-      for (let q=0; q<nOfQuestions; q++){
-        score += ansResults[q][p].points*ansResults[q][p].correct;
-      }
-      scoreTable.push([ansResults[0][p].playerName, score]);
-    }
-    
-    scoreTable.sort((s1, s2) => s2[1]-s1[1]);
-    setScoreTable(scoreTable);
-
-    // correct rate
-    const correctRate = []; // index: question
-    const questionsText = []; // index: question
-    for (let q=0; q<nOfQuestions; q++){
-      let correctN = 0;
-      questionsText.push(ansResults[q][0].questionText);
+    try {
+      // calculate scoreTable
+      let scoreTable=[];  // [[name, score], ...]
       for (let p=0; p<nOfPlayers; p++){
-        correctN += ansResults[q][p].correct;
+        let score = 0;
+        for (let q=0; q<nOfQuestions; q++){
+          score += ansResults[q][p].points*ansResults[q][p].correct;
+        }
+        scoreTable.push([ansResults[0][p].playerName, score]);
       }
-      correctRate.push(correctN/nOfPlayers);
-    }
-    setCorrectRateTable({correctRate, questionsText});
-
-    // respond time
-    const ansTime = [];
-    for (let q=0; q<nOfQuestions; q++){
-      let respondTime = 0;
-      for (let p=0; p<nOfPlayers; p++){
-        respondTime += ansResults[q][p].time;
-      }
-      respondTime /= 100*nOfPlayers;
-      respondTime = Math.round(respondTime)/10;
       
-      ansTime.push({value:respondTime, label: ansResults[q][0].questionText})
-    }
+      scoreTable.sort((s1, s2) => s2[1]-s1[1]);
+      setScoreTable(scoreTable);
+  
+      // correct rate
+      const correctRate = []; // index: question
+      const questionsText = []; // index: question
+      for (let q=0; q<nOfQuestions; q++){
+        let correctN = 0;
+        questionsText.push(ansResults[q][0].questionText);
+        for (let p=0; p<nOfPlayers; p++){
+          correctN += ansResults[q][p].correct;
+        }
+        correctRate.push(correctN/nOfPlayers);
+      }
+      setCorrectRateTable({correctRate, questionsText});
+  
+      // respond time
+      const ansTime = [];
+      for (let q=0; q<nOfQuestions; q++){
+        let respondTime = 0;
+        for (let p=0; p<nOfPlayers; p++){
+          respondTime += ansResults[q][p].time;
+        }
+        respondTime /= 100*nOfPlayers;
+        respondTime = Math.round(respondTime)/10;
+        
+        ansTime.push({value:respondTime, label: ansResults[q][0].questionText})
+      }
+  
+      setAnsTime(ansTime);
 
-    setAnsTime(ansTime);
+    } catch (err){
+      console.log(err);
+    }
 
     return ansResults;
   }
   
   const loadResult = async () => {
+    console.log('loadResult')
     const res = await apiCall(`/admin/session/${sessionId}/results`, 'GET'); //{results: Array(0)}
     const resResults = res.results;
     setPosition(nOfQuestions);
@@ -188,9 +195,6 @@ export default function Session() {
       setShowResult(true);
     } else {
       setShowResult(false);
-      if(position===nOfQuestions){
-        console.log('--------', position===nOfQuestions)
-      }
         
       setPosition(position);
       setQuestion(question);
@@ -285,7 +289,7 @@ export default function Session() {
       </div>
 
       {/* Show question */}
-      <div className="bg-bigbrain-milky-canvas p-8 pt-4 shadow-lg shadow-grey m-3">
+      <div className="bg-bigbrain-milky-canvas p-8 pt-4 shadow-lg shadow-grey m-3 rounded-2xl">
         {gameState === -1 && (
           <p className="inline-block font-medium text-[15px]/1 p-3">Game Not Start Yet</p>
         )}
@@ -307,7 +311,6 @@ export default function Session() {
             />
           </>
         )} 
-
         {gameState === -2 && !noResult && Object.keys(correctRateTable).length !==0 && (
           <div>
             <div aria-label="score-container" className="border rounded-2xl p-5">

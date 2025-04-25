@@ -44,7 +44,7 @@ const QuestionEditor = ({
   const handleSaveQuestion = () => {
     // detect inputs value null, prompt
     if (!questionText || !answers) {
-      alert('please Enter all.');
+      alert('please Enter question information.');
       return;
     }
     const id = genId();
@@ -68,7 +68,7 @@ const QuestionEditor = ({
   return (
     <div className="mb-4">
       <div className="mb-4">
-        <label className="block mb-1">Question Type:</label>
+        <label className="block mb-1 font-semibold">Question Type:</label>
         <select
           value={questionType}
           onChange={(e) => setQuestionType(e.target.value)}
@@ -80,7 +80,7 @@ const QuestionEditor = ({
         </select>
       </div>
       <div className="mb-4">
-        <label className="block mb-1">Question:</label>
+        <label className="block mb-1 font-semibold">Question:</label>
         <input
           type="text"
           value={questionText}
@@ -91,7 +91,7 @@ const QuestionEditor = ({
       </div>
       <div className="mb-4 flex space-x-4">
         <div className="flex-1">
-          <label className="block mb-1">Time Limit (seconds):</label>
+          <label className="block mb-1 font-semibold">Time Limit (seconds):</label>
           <input
             type="number"
             value={duration}
@@ -101,7 +101,7 @@ const QuestionEditor = ({
           />
         </div>
         <div className="flex-1">
-          <label className="block mb-1">Points:</label>
+          <label className="block mb-1 font-semibold">Points:</label>
           <input
             type="number"
             value={points}
@@ -112,7 +112,7 @@ const QuestionEditor = ({
         </div>
       </div>
       <div className="mb-4">
-        <label className="block mb-1">Media URL (YouTube or Image):</label>
+        <label className="block mb-1 font-semibold">Media URL (YouTube or Image):</label>
         <input
           type="text"
           value={mediaUrl}
@@ -122,7 +122,7 @@ const QuestionEditor = ({
         />
       </div>
       <div className="mb-4">
-        <label className="block mb-1">Answers (2-6) Tick correct answer:</label>
+        <label className="block mb-1 font-semibold">Answers: (2-6) (Tick correct answer):</label>
         {answers.map((answer, index) => (
           <div key={index} className="flex items-center mb-2">
             <input
@@ -148,19 +148,21 @@ const QuestionEditor = ({
             </button>
           </div>
         ))}
-        <button
-          onClick={addAnswer}
-          className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded mt-2  hover:cursor-pointer"
-          disabled={answers.length >= 6}
-        >
-          Add Answer
-        </button>
-        <button 
-          onClick={handleSaveQuestion}
-          className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded mt-2  hover:cursor-pointer ml-1"
-        > 
-          Save Question
-        </button>
+        <div aria-label="action-buttons" className="flex place-content-between w-full">
+          <button
+            onClick={addAnswer}
+            className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded mt-2  hover:cursor-pointer"
+            disabled={answers.length >= 6}
+          >
+            Add Answer
+          </button>
+          <button 
+            onClick={handleSaveQuestion}
+            className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded mt-2  hover:cursor-pointer ml-1"
+          > 
+            Save Question
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -185,10 +187,12 @@ export const QuestionDisplay = ({
   // set time limit
   const [timeLeft, setTimeLeft] = useState(duration);
   useEffect(() => {
+    console.log('setTimeLeft.', duration)
     setTimeLeft(duration);
   }, [duration])
 
   useEffect(() => {
+    console.log('submitted, timeLeft:', submitted, timeLeft)
     if (!submitted && timeLeft > 0) {  // able to answer
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
@@ -198,13 +202,13 @@ export const QuestionDisplay = ({
             setResult('Time\'s up!');
             return 0;
           } 
-
+          console.log('count down.')
           return prev - 1;  // count down
         });
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [submitted]);
+  }, [submitted, timeLeft]);
 
   /**
    * 
@@ -224,6 +228,7 @@ export const QuestionDisplay = ({
   };
 
   const handleSubmit = () => {
+    console.log('submit-----')
     setSubmitted(true);
     const correctAnswers = answers.filter((ans) => ans.correct);
     const isCorrect =
@@ -249,55 +254,65 @@ export const QuestionDisplay = ({
   };
 
   return (
-    <div className="mb-4">
-      <h2 className="text-lg font-semibold mb-2">{questionText}</h2>
-      {mediaUrl && (
-        <div className="mb-4">
-          {isYouTubeUrl ? (
-            <iframe
-              width="100%"
-              height="315"
-              src={youtubeEmbedUrl}
-              title="YouTube video"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          ) : (
-            <img src={mediaUrl} alt="Question media" className="w-full h-auto rounded" />
+    <div className="bg-bigbrain-milky-canvas p-10 rounded-4xl place-items-center">
+      <div>
+        <div aria-label="question-describe">
+          <h2 className="text-lg font-semibold mb-2 inline-block m-2">{questionText}</h2>
+          {mediaUrl && (
+            <div className="mb-4">
+              {isYouTubeUrl ? (
+                <iframe
+                  width="100%"
+                  height="315"
+                  src={youtubeEmbedUrl}
+                  title="YouTube video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              ) : (
+                <img src={mediaUrl} alt="Question media" className="w-full h-auto rounded" />
+              )}
+            </div>
           )}
+          <p className="m-2 font-bold inline-block">Time Left: {timeLeft}s | Points: {points}</p>
         </div>
-      )}
-      <p className="mb-2 font-bold">Time Left: {timeLeft}s | Points: {points}</p>
-      {answers?.map((answer, index) => (
-        <div key={index} className="flex items-center mb-2">
-          <input
-            type={questionType === 'multiple' ? 'checkbox' : 'radio'}
-            checked={selectedAnswers.map(a=>a.text).includes(answer.text)}
-            onChange={() => handleSelect(answer)}
-            disabled={submitted}
-            className="mr-2"
-          />
-          <span>{answer.text}</span>
-          {submitted && (
-            <span className="ml-2">{answer.correct ? '✅' : '❌'}</span>
-          )}
+        <div>
+          <div aria-label="answers" className="m-5">
+            {answers?.map((answer, index) => (
+              <div key={index} className="flex items-center mb-2">
+                <input
+                  type={questionType === 'multiple' ? 'checkbox' : 'radio'}
+                  checked={selectedAnswers.map(a=>a.text).includes(answer.text)}
+                  onChange={() => handleSelect(answer)}
+                  disabled={submitted}
+                  className="mr-2"
+                />
+                <span>{answer.text}</span>
+                {submitted && (
+                  <span className="ml-2">{answer.correct ? '✅' : '❌'}</span>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-      {mode!=='observe' && (<button
-        onClick={handleSubmit}
-        disabled={submitted || selectedAnswers?.length === 0}
-        className="bg-bigbrain-dark-pink text-white px-4 py-2 rounded disabled:bg-bigbrain-light-pink mt-4 hover:cursor-pointer"
-      >
-        Submit Answer
-      </button>)}
-      
-      {mode==='preview' && (<button
-        onClick={handleReset}
-        className="bg-gray-500 text-white px-4 py-2 rounded ml-1"
-      >
-        Reset Answering
-      </button>)}
-      {submitted && <p className="mt-4 text-lg">{result}</p>}
+        <div className="flex place-content-between">
+          {mode!=='observe' && (<button
+            onClick={handleSubmit}
+            disabled={submitted || selectedAnswers?.length === 0}
+            className="bg-bigbrain-light-pink text-white px-4 py-2 rounded disabled:bg-bigbrain-light-pink m-3 hover:cursor-pointer hover:bg-bigbrain-darker-pink"
+          >
+            Submit Answer
+          </button>)}
+          
+          {mode==='preview' && (<button
+            onClick={handleReset}
+            className="bg-bigbrain-dark-green text-white px-4 py-2 rounded m-3 hover:cursor-pointer hover:bg-bigbrain-darker-green"
+          >
+            Reset Answering
+          </button>)}
+        </div>
+      </div>
+      {submitted && <p className="mt-4 text-lg font-bold">{result}</p>}
     </div>
   );
 };
@@ -441,7 +456,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
       const restGames = games.filter((g) => g.id != game.id);
       const updatedGames = [...restGames, game];
       await apiCall('/admin/games', 'PUT', {games: updatedGames});
-      console.log('Question saved.')
+      alert('Question saved.')
       setGames(games);
       setGame(game);
     } catch (err) {
@@ -450,7 +465,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
   }
 
   return (
-    <>
+    <div className="bg-bigbrain-milky-white rounded-2xl m-4 p-5">
       {showAddQues && (
         <div className="max-w-2xl mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Game Question Editor</h1>
@@ -463,6 +478,7 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
           answers={answers} setAnswers={setAnswers}
           saveQuestion={saveQuestion}
         />
+        <hr className="mt-8 mb-8"/>
         <h2 className="text-xl font-bold mb-4">Question Display</h2>
         <QuestionDisplay
           questionType={questionType}
@@ -478,6 +494,6 @@ export default function EditQuestionCard({gameId, questionId, showAddQues, setSh
         />
         </div>
       )}
-    </>
+    </div>
   );
 };

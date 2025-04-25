@@ -15,7 +15,7 @@ import { apiCall } from "./api";
  * 
  * @returns {Array} activeSessions in localStorage
  */
-export function getActiveSessions() {
+export function getLocalSessions() {
   return JSON.parse(localStorage.getItem('activeSessions'));
 }
 
@@ -28,12 +28,15 @@ export function getActiveSessions() {
  * @returns {*} active Session Id
  */
 export const startSession = async (gameId, activeSessions, setActiveSessions) => {
+  console.log('starSessions');
+  cleanSessions(activeSessions,setActiveSessions, gameId);
   const res = await apiCall(`/admin/game/${gameId}/mutate`, 'POST', {
     "mutationType": "START"
   })
   const activeSessionId = res.data.sessionId;
   const updatedSession = [...activeSessions, { gameId, activeSessionId }];
   setActiveSessions(updatedSession);
+  console.log('start session')
   localStorage.setItem('activeSessions', JSON.stringify(updatedSession));
   return activeSessionId;
 };
@@ -62,19 +65,18 @@ export const checkSessionState = async (sessionId, gameId) => {
 
   // only gameId: 
   // If gameId not in activeSessions, return false
-  const activeSessionsLocal = getActiveSessions();
-  let session = activeSessionsLocal.find(session => session.gameId == gameId);
-  if (session) { // If gameId in activeSessions, check activeSessionId.
+  const activeSessionsLocal = getLocalSessions();
+  let sessions = activeSessionsLocal.filter(session => session.gameId == gameId);
+  for (const session of sessions){
     try {
       const res = await apiCall(`/admin/session/${session.activeSessionId}/status`, 'GET');
-      // debugger
-      return res.results.active;
+      if (res.results.active === true)
+        return true;
     } catch (error) {
       console.error('checkSessionState error:', error);
     }
-  } else {
-    return false;
   }
+  return false;
 }
 
 
@@ -101,9 +103,6 @@ export const endSession = async (gameId, sessionId, activeSessions, setActiveSes
     "mutationType": "END"
   })
 
-  // double check backend the session status. If unactive, delete sessions in localstorage.
-  cleanSessions(activeSessions, setActiveSessions, gameId);
-
   return res;
 }
 
@@ -112,10 +111,14 @@ export const endSession = async (gameId, sessionId, activeSessions, setActiveSes
  * 
  * @param {Array} activeSessions 
  * @param {*} setActiveSessions 
- * @param {Number|String|undefined} gameId if undefined, clean all sessions. If defined, clean sessions about that game.
+ * @param {Number|String} gameId if undefined, clean all sessions. If defined, clean sessions about that game.
  * @returns {Array} active session[of that game].
  */
 export async function cleanSessions (activeSessions, setActiveSessions, gameId) {
+  if (!gameId) {
+    console.log('cleanSession with no gameId !')
+    return;
+  }
   // Divide all active sessions -> toClean + notToClean
   let sessionsToClean = [];
   let sessionsNotClean = [];
@@ -138,6 +141,7 @@ export async function cleanSessions (activeSessions, setActiveSessions, gameId) 
   }
   const newSessions = [...cleanedSessions, ...sessionsNotClean];
   setActiveSessions(newSessions);
+  console.log('cleanSessions ! gameId:', gameId)
   localStorage.setItem('activeSessions', JSON.stringify(newSessions));
 
   return cleanedSessions;
