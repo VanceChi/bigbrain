@@ -250,7 +250,7 @@ export const QuestionDisplay = ({
   };
 
   return (
-    <div className="bg-bigbrain-milky-canvas p-10 rounded-4xl place-items-center">
+    <div className="p-10 rounded-4xl place-items-center border">
       <div>
         <div aria-label="question-describe">
           <h2 className="text-lg font-semibold mb-2 inline-block m-2">{questionText}</h2>
@@ -308,7 +308,7 @@ export const QuestionDisplay = ({
           </button>)}
         </div>
       </div>
-      {submitted && <p className="mt-4 text-lg font-bold">{result}</p>}
+      {submitted && <p className="mt-4 text-lg font-semibold italic">{result}</p>}
     </div>
   );
 };
@@ -461,7 +461,7 @@ export default function EditQuestionCard({ gameId, questionId, showAddQues, setS
   }
 
   return (
-    <div className="bg-bigbrain-milky-white rounded-2xl m-4 p-5">
+    <div className="bg-bigbrain-milky-canvas rounded-2xl m-4 p-5">
       {showAddQues && (
         <div className="max-w-2xl mx-auto p-4">
           <h1 className="text-2xl font-bold mb-4">
