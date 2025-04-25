@@ -250,7 +250,7 @@ export const QuestionDisplay = ({
   };
 
   return (
-    <div className="p-10 rounded-4xl place-items-center border">
+    <div className="p-10 rounded-4xl place-items-center border bg-bigbrain-milky-canvas">
       <div>
         <div aria-label="question-describe">
           <h2 className="text-lg font-semibold mb-2 inline-block m-2">{questionText}</h2>
