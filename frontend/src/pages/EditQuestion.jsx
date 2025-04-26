@@ -17,7 +17,6 @@ export default function EditQuestion() {
         console.error("Failed to load games:", err);
       }
     })();
-
   }, []);
 
 

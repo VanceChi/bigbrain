@@ -5,8 +5,7 @@ import { startSession, endSession, checkSessionState } from '../utils/session';
 import { queryQuestions, querySessionId } from '../utils/query';
 import GlowingCard from './GlowingCard';
 import { CopyBtn, EditBtn, EndBtn, PlayBtn } from './SVGBtn';
-
-
+import { gameHandler } from '../temp/gameIdHandler';
 
 
 export default function GameCard({ gameId, title, numQuestions, thumbnail, totalDuration, questions }) {
@@ -16,7 +15,8 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
   const [Copied, setCopied] = useState(false);
   const [showResultPop, setShowResultPop] = useState(false);
   const [infoPassedToSession, setInfoPassedToSession] = useState({});
-
+  const gH = gameHandler(gameId);
+  
   // check game started or not
   const initGameCard = async () => {
     const isActive = await checkSessionState(undefined, gameId);
@@ -62,7 +62,6 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
       return;
     }
     // start session, return session id.
-    console.log('handle start game triggered startSession()');
     const activeSessionId = await startSession(gameId, activeSessions, setActiveSessions);
 
     setSessionId(activeSessionId);
