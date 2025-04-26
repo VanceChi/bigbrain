@@ -4,16 +4,10 @@ import { RegisterBtn } from './Button';
 import { LogoutBtn } from './Button';
 import { LoginBtn } from './Button';
 
-
-/**
- * 
- * @returns Nav bar
- */
 export default function Navbar() {
   const location = useLocation();
   const router = location.pathname;
   const token = JSON.parse(localStorage.getItem('token'));
-
   const navigate = useNavigate();
 
   return (

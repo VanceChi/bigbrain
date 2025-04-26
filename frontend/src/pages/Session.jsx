@@ -260,25 +260,27 @@ export default function Session() {
       </div>
 
       {/* Control Center */}
-      {gameState > -2 && (<div
-        aria-label="Control-center" className=" bg-bigbrain-milky-canvas m-4 border-[1.5px] rounded-xl p-3"
-      >
-        {gameState === -1 && (
-          <>
-            <AdvanceQuesBtn onClick={hanleAdvanceQuestion}>Start !</ AdvanceQuesBtn>
-          </>
-        )}
-        {gameState >= 0 && (
-          <>
-            <AdvanceQuesBtn title="Click to go next question" onClick={hanleAdvanceQuestion}>
-              Next
-            </ AdvanceQuesBtn>
-            <p className="inline-block font-bold ml-2">
-              {(-1 < position && position < nOfQuestions) && `Questions: ${position + 1} / ${nOfQuestions}`}
-            </p>
-          </>
-        )}
-      </div>)}
+      {gameState > -2 && (
+        <div
+          aria-label="Control-center" 
+          className=" bg-bigbrain-milky-canvas m-4 border-[1.5px] rounded-xl p-3"
+        >
+          {gameState === -1 && (
+            <>
+              <AdvanceQuesBtn onClick={hanleAdvanceQuestion}>Start !</ AdvanceQuesBtn>
+            </>
+          )}
+          {gameState >= 0 && (
+            <>
+              <AdvanceQuesBtn title="Click to go next question" onClick={hanleAdvanceQuestion}>
+                Next
+              </ AdvanceQuesBtn>
+              <p className="inline-block font-bold ml-2">
+                {(-1 < position && position < nOfQuestions) && `Questions: ${position + 1} / ${nOfQuestions}`}
+              </p>
+            </>
+          )}
+        </div>)}
 
       {/* Show question */}
       <div className="bg-bigbrain-milky-canvas p-8 pt-4 shadow-lg shadow-grey m-3 rounded-2xl">
