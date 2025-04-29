@@ -39,7 +39,7 @@ export async function adminGetGameResult(sessionId) {
       1: question index 1.  Game ongoing.
       ...
  */
-export async function adminGetGameState(sessionId) {
+export async function adminGet_gameState(sessionId) {
   const results = await adminGetSessionStatus(sessionId);
   if (results === -4) return -4;
   if (results.active === false) {

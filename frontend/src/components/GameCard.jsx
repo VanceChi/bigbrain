@@ -5,7 +5,6 @@ import { startSession, endSession, checkSessionState } from '../utils/session';
 import { queryQuestions, querySessionId } from '../utils/query';
 import GlowingCard from './GlowingCard';
 import { CopyBtn, EditBtn, EndBtn, PlayBtn } from './SVGBtn';
-import { gameHandler } from '../temp/gameIdHandler';
 
 
 export default function GameCard({ gameId, title, numQuestions, thumbnail, totalDuration, questions }) {
@@ -15,7 +14,10 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
   const [Copied, setCopied] = useState(false);
   const [showResultPop, setShowResultPop] = useState(false);
   const [infoPassedToSession, setInfoPassedToSession] = useState({});
-  const gH = gameHandler(gameId);
+  
+  useEffect(() => {
+    initGameCard();
+  }, [])
   
   // check game started or not
   const initGameCard = async () => {
@@ -32,10 +34,6 @@ export default function GameCard({ gameId, title, numQuestions, thumbnail, total
     const showResultPop = activeSessions.map(s => s.gameId).includes(gameId);;
     setShowResultPop(showResultPop);
   }
-
-  useEffect(() => {
-    initGameCard();
-  }, [])
 
   useEffect(() => {
     setInfoPassedToSession({ title, gameId, questions })

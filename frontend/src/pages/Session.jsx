@@ -5,11 +5,11 @@ import { SessionContext } from "../context/Sessions";
 import { apiCall } from "../utils/api";
 import { QuestionDisplay } from "../components/EditQuestionCard";
 import { queryQuestions } from "../utils/query";
-import { BarChart } from '@mui/x-charts/BarChart';
-import { PieChart } from '@mui/x-charts/PieChart';
 import { BackBtn } from "../components/SVGBtn";
 import { EndBtn } from "../components/SVGBtn";
-import { adminGetGameState } from "../services/adminSessionService";
+import { adminGet_gameState, adminGetGameResult, adminGetSessionStatus } from "../services/adminSessionService";
+import { BarChart } from '@mui/x-charts/BarChart';
+import { PieChart } from '@mui/x-charts/PieChart';
 
 
 function AdvanceQuesBtn({ children, title, onClick }) {
@@ -35,8 +35,12 @@ const ChartTitle = ({ children }) => {
 }
 
 export default function Session() {
+  const navigate = useNavigate();
   const { activeSessions } = useContext(SessionContext);
   const { sessionId } = useParams();
+  const { state } = useLocation();  // keys: title, gameId, questions
+  const title = state.title;
+  const gameId = state.gameId;
   const [gameState, setGameState] = useState(-5);
   /**
      -5: Default value.
@@ -48,20 +52,13 @@ export default function Session() {
       1: question index 1.  Game ongoing.
       ...
    */
-  const { state } = useLocation();  // keys: title, gameId, questions
-  const [title, setTitle] = useState('');
-  const [gameId, setGameId] = useState();
-  const [position, setPosition] = useState(-1);
   // -1: not start yet
   const [question, setQuestion] = useState({});
+  const [quesitons, setQuestions] = useState([]);
   const [nOfQuestions, setNOfQuestions] = useState(0);
-  const [showResult, setShowResult] = useState(false);
-  const [noResult, setNoResult] = useState(false);
   const [scoreTable, setScoreTable] = useState([]);
   const [correctRateTable, setCorrectRateTable] = useState([]);
   const [ansTime, setAnsTime] = useState([]);
-  const navigate = useNavigate();
-
   const correctRateSetting = {
     xAxis: [
       {
@@ -71,41 +68,33 @@ export default function Session() {
     height: 200,
   };
 
-  const updateGameStatus = async () => {
-    const gameState = await adminGetGameState(sessionId);
+  useEffect(() => {
+    const init = async () => {
+      console.log('initial session.');
+
+      update_gameState();
+    }
+    init();
+  }, [])
+
+  /**
+   * Only for update "gameState".
+   */
+  const update_gameState = async () => {
+    console.log('updateGameStatus');
+    const gameState = await adminGet_gameState(sessionId);
     setGameState(gameState);
   }
 
   useEffect(() => {
-    const init = async () => {
-      await updateGameStatus();
-      // set session active or not
-
-      // set gameId
-      setGameId(state.gameId);
-
-      // set title
-      setTitle(state.title);
-
-      loadResult();
-    }
-    init();
-  }, [gameId, nOfQuestions])
-
-  // Since cant restart session. The effect here means active -> unactive
-  // Shows result.
-  useEffect(() => {
-    updateStatus();
+    if (gameState !== -5)
+      updatePage();
   }, [gameState])
 
-  useEffect(() => {
-    if (showResult) {
-      loadResult();
-    }
-  }, [showResult, gameId, nOfQuestions])
-
   /**
-   * Generate ansResults, scoreTable, correctRate.
+   * Generate customize answering results:
+   *    ansResults, scoreTable, correctRate, respond time
+   * 
    * ansResults:
     * Three dimesion: question, player, {correct, time, points, playerName, questionText}
     * [
@@ -121,17 +110,18 @@ export default function Session() {
     * 
     * scoreTable [score1, score2,...] index: player
     * correctRate [rate1, rate2,...] index: question
-   * @param {Array} resResults 
+   * @returns {undefined}
    */
-  const genAnswerResult = async (resResults) => {
-    if (resResults.length === 0) {
-      setGameState(-3);
-      return [];
-    }
-    setNoResult(false);
+  const loadResult = async () => {
+    console.log('load result.')
+
+    const resResults = await adminGetGameResult(sessionId);
+    const nOfQuestions = resResults[0].answers.length;
     const questions = await queryQuestions(gameId);
-    const ansResults = [];
     const nOfPlayers = resResults.length;
+
+    // ansResults
+    const ansResults = [];
     for (let i = 0; i < nOfQuestions; i++) {  // question
       const qArr = [];
       const points = questions[i].points;
@@ -145,6 +135,7 @@ export default function Session() {
       }
       ansResults.push(qArr);
     }
+
     try {
       // calculate scoreTable
       let scoreTable = [];  // [[name, score], ...]
@@ -184,46 +175,41 @@ export default function Session() {
 
         ansTime.push({ value: respondTime, label: ansResults[q][0].questionText })
       }
-
       setAnsTime(ansTime);
 
     } catch (err) {
       console.log(err);
     }
-
-    return ansResults;
   }
 
-  const loadResult = async () => {
-    const res = await apiCall(`/admin/session/${sessionId}/results`, 'GET'); //{results: Array(0)}
-    const resResults = res.results;
-    setPosition(nOfQuestions);
-    // generate customize answering results
-    await genAnswerResult(resResults);
-  }
-
-  const updateStatus = async () => {
-    updateGameStatus();
-    const res = await apiCall(`/admin/session/${sessionId}/status`, 'GET')
-    const results = res.results;
-    setNOfQuestions(results.questions.length);
-    const position = results.position;
-    const question = results.questions[position] ?? {};
-    if (Object.keys(question).length === 0 && position != -1) {
-      setShowResult(true);
-    } else {
-      setShowResult(false);
-
-      setPosition(position);
-      setQuestion(question);
+  const updatePage = async () => {
+    console.log('update page.')
+    if (gameState === -5) {
+      console.error('gameState didnt updated.')
+    } else if (gameState === -4) {
+      console.error('Session Id error.');
+    } else if (gameState === -3) {
+      console.log('No player answerred.')
+    } else if (gameState === -2) {
+      loadResult();
+    } else if (gameState >= 0) {
+      loadQuestion();
     }
+  }
+
+  const loadQuestion = async () => {
+    const results = await adminGetSessionStatus(sessionId);
+    const questions = results.questions;
+    setQuestions(quesitons);
+    setNOfQuestions(questions.length);
+    const curQuestion = questions[gameState];
+    setQuestion(curQuestion);
   }
 
   const handleEndSession = async () => {
     try {
       await endSession(undefined, sessionId, activeSessions);
-      updateGameStatus();
-      setShowResult(true);
+      update_gameState();
     } catch (error) {
       console.log(error);
     }
@@ -231,13 +217,15 @@ export default function Session() {
 
   const hanleAdvanceQuestion = async () => {
     await apiCall(`/admin/game/${gameId}/mutate`, 'POST', { "mutationType": "ADVANCE" });
-    updateStatus();
+    update_gameState();
   }
 
 
   return (
     <>
       <BackBtn onClick={() => navigate('/dashboard')} />
+
+      {/* Session state title */}
       <div className="flex justify-center">
         {gameState >= -1 ? (
           <div className="flex place-content-between w-[200px]">
@@ -255,6 +243,8 @@ export default function Session() {
           <p className="italic font-bold text-lg/8 inline-block p-3 text-shadow-2xs">Session Ended</p>
         )}
       </div>
+
+      {/* Session Info */}
       <div className="flex justify-center">
         <p className="italic font-medium text-lg/8 p-3">Session of {title} ---- session id: {sessionId}</p>
       </div>
@@ -262,7 +252,7 @@ export default function Session() {
       {/* Control Center */}
       {gameState > -2 && (
         <div
-          aria-label="Control-center" 
+          aria-label="Control-center"
           className=" bg-bigbrain-milky-canvas m-4 border-[1.5px] rounded-xl p-3"
         >
           {gameState === -1 && (
@@ -276,7 +266,7 @@ export default function Session() {
                 Next
               </ AdvanceQuesBtn>
               <p className="inline-block font-bold ml-2">
-                {(-1 < position && position < nOfQuestions) && `Questions: ${position + 1} / ${nOfQuestions}`}
+                {-1 < gameState && `Questions: ${gameState + 1} / ${nOfQuestions}`}
               </p>
             </>
           )}
@@ -307,7 +297,7 @@ export default function Session() {
         )}
 
         {/* Session finished. Show result. */}
-        {gameState === -2 && !noResult && Object.keys(correctRateTable).length !== 0 && (
+        {gameState === -2 && Object.keys(correctRateTable).length !== 0 && (
           <div className="mt-4">
             <div aria-label="score-container" className="border rounded-2xl p-5">
               <ChartTitle>Score:</ChartTitle>

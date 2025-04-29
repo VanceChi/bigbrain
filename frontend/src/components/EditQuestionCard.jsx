@@ -129,7 +129,7 @@ const QuestionEditor = ({
               type="text"
               value={answer.text}
               onChange={(e) => updateAnswer(index, e.target.value)}
-              className="p-2 border rounded flex-1 mr-2"
+              className="p-2 border rounded flex-1 mr-2 w-0.5"
               placeholder={`Answer ${index + 1}`}
             />
             <input
@@ -335,28 +335,7 @@ export default function EditQuestionCard({ gameId, questionId, showAddQues, setS
 
   // initEditor for Edit question / New question
   useEffect(() => {
-    async function loadQuestion() {
-      const q = await queryQuestion(gameId, questionId);
-      setQuestionType(q.questionType);
-      setQuestionText(q.questionText);
-      setDuration(q.duration);
-      setPoints(q.points);
-      setMediaUrl(q.mediaUrl);
-      setAnswers(q.answers);
-      setSelectedAnswers(q.answers.filter((answer) => answer.correct === true));
-      setSubmitted(false);
-      setResult('');
-    }
-    function resetEditor() {
-      setQuestionText('What is the capital of Australia?');
-      setAnswers([
-        { text: 'Canberra', correct: true },
-        { text: 'London', correct: false },
-        { text: 'Berlin', correct: false },
-      ]);
-    }
-
-    async function initEditor(gameId, questionId) {
+    async function initEditor() {
       const games = await queryGames();
       const game = await queryGamebyId(gameId, games);
       questions = await queryQuestions(gameId, game);
@@ -371,8 +350,29 @@ export default function EditQuestionCard({ gameId, questionId, showAddQues, setS
         resetEditor();
     }
 
-    initEditor(gameId, questionId);
+    initEditor();
   }, []);
+
+  async function loadQuestion() {
+    const q = await queryQuestion(gameId, questionId);
+    setQuestionType(q.questionType);
+    setQuestionText(q.questionText);
+    setDuration(q.duration);
+    setPoints(q.points);
+    setMediaUrl(q.mediaUrl);
+    setAnswers(q.answers);
+    setSelectedAnswers(q.answers.filter((answer) => answer.correct === true));
+    setSubmitted(false);
+    setResult('');
+  }
+  function resetEditor() {
+    setQuestionText('What is the capital of Australia?');
+    setAnswers([
+      { text: 'Canberra', correct: true },
+      { text: 'London', correct: false },
+      { text: 'Berlin', correct: false },
+    ]);
+  }
 
   // Reset answers and time when question type changes
   useEffect(() => {
@@ -461,7 +461,7 @@ export default function EditQuestionCard({ gameId, questionId, showAddQues, setS
   }
   
   return (
-    <div className="bg-bigbrain-milky-canvas rounded-2xl m-4 p-5">
+    <div className="bg-bigbrain-milky-canvas rounded-2xl m-4 ml-[10%] mr-[10%] p-5">
       {showAddQues && (
         <div className="max-w-2xl mx-auto p-4">
           <h1 className="text-2xl font-bold mb-4">

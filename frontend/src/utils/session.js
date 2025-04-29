@@ -35,7 +35,6 @@ export const startSession = async (gameId, activeSessions, setActiveSessions) =>
   const activeSessionId = res.data.sessionId;
   const updatedSession = [...activeSessions, { gameId, activeSessionId }];
   setActiveSessions(updatedSession);
-  console.log('startSession updated local sessions');
   localStorage.setItem('activeSessions', JSON.stringify(updatedSession));
   return activeSessionId;
 };
@@ -142,7 +141,6 @@ export async function cleanSessions(activeSessions, setActiveSessions, gameId) {
   }
   const newSessions = [...cleanedSessions, ...sessionsNotClean];
   setActiveSessions(newSessions);
-  console.log('cleansession updated local sessions');
   localStorage.setItem('activeSessions', JSON.stringify(newSessions));
 
   return cleanedSessions;
