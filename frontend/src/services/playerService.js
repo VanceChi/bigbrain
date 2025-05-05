@@ -11,7 +11,6 @@ import { apiCall } from "../utils/api";
 export async function playGetResult(playerId) {
   try {
     const res = await apiCall(`/play/${playerId}/results`, 'GET');
-    // debugger
     return res;
   } catch (error) {
     console.error(error);

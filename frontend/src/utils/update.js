@@ -15,7 +15,6 @@ export async function addGame(game, games) {
     }
     const restGames = games.filter((g) => g.id != game.id);
     const updatedGames = [...restGames, game];
-    // debugger
     await apiCall('/admin/games', 'PUT', { games: updatedGames });
     // setGames(games);
     // setGame(game);
